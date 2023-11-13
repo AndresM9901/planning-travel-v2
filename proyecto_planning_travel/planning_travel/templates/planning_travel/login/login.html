@@ -1,0 +1,24 @@
+{% extends 'tienda/base2.html' %}
+{% load static %}
+
+{% block titulo %}Login{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-50">
+        <h1 class="text-center">Inicio Sesion</h1>
+        <form action="{% url 'categorias_crear' %}" method="post">
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nombre" placeholder="Nombre" name="nombre">
+                <label for="nombre">Nombre</label>
+            </div>
+            <div class="form-floating">
+                <input type="text" class="form-control" id="password" placeholder="Contraseña" name="password">
+                <label for="password">Contraseña</label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Iniciar Sesion</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
