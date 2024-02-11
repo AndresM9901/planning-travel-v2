@@ -6,7 +6,7 @@
 {% block contenedor %}
     <div class="container my-5 w-25">
         <h1 class="text-center">Actualizar Reportes Moderador</h1>
-        <form action="{% url 'reportesModerador_actualizar' %}" method="post">
+        <form action="{% url 'reportes_moderador_actualizar' %}" method="post">
             {% csrf_token %}
             <input hidden type="text" name="id" value="{{ data.id }}">
             <div class="form-floating mb-3 col-12 p-1">

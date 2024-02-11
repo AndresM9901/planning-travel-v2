@@ -9,7 +9,7 @@ class CategoriaAdmin(admin.ModelAdmin):
     list_display = ['id', 'nombre', 'descripcion']
     search_fields = ['nombre']
 
-@admin.register(Reportes)
+@admin.register(Reporte)
 class ReporteAdmin(admin.ModelAdmin):
     list_display = ['id','id_usuario', 'nombre', 'descripcion'] 
 
@@ -19,7 +19,7 @@ class ReporteModeradorAdmin(admin.ModelAdmin):
 
 @admin.register(PerfilUsuario)
 class PerfilUsuarioAdmin(admin.ModelAdmin):
-    list_display = ['id_hotel', 'id_usuario', 'nombre', 'numero_contacto', 'fotoPerfil']
+    list_display = ['id_hotel', 'id_usuario', 'nombre', 'numero_contacto']
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):

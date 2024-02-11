@@ -1,0 +1,45 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Formulario Comentario{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Actualizar Comentario</h1>
+        <form action="{% url 'comentarios_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input hidden type="text" name="id" value="{{ data.id }}">
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="id_hotel" name="id_hotel" required>
+                    {% for c in hotel %}
+                        <option value="{{ c.id }}" {% if data.hotel.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_hotel"
+                    >Hotel</label
+                >
+            </div>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="id_usuario" name="id_usuario" required>
+                    {% for c in usuario %}
+                        <option value="{{ c.id }}" {% if data.usuario.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_usuario"
+                    >Usuario</label
+                >
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="id_usuario" placeholder="Usuario" name="contenido" value="{{ data.contenido }}" required>
+                <label for="Comentario">Contenido</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input class="form-control" placeholder="Selecciona una fecha:" type="datetime-local" id="fecha" name="fecha" value="{{ data.fecha|date:'Y-m-d\TH:i' }}">
+                <label for="fecha">Selecciona una fecha:</label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

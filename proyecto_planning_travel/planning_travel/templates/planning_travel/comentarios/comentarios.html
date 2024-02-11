@@ -1,0 +1,60 @@
+{% extends 'planning_travel/base.html' %} 
+{% load static %} 
+{% block titulo %}Comentarios{% endblock %}
+{% block contenedor %}
+    <h1>Comentarios</h1>
+    <a class="btn btn-success" href="{% url 'comentarios_form' %}">Agregar comentario</a>
+
+    <table class="table">
+        <thead>
+            <th>ID</th>
+            <th>ID Hotel</th>
+            <th>ID Usuario</th>
+            <th>Contenido</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </thead>
+
+        <tbody>
+            {% for r in data %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.id_hotel }}</td>
+                <td>{{ r.id_usuario }}</td>
+                <td>{{ r.contenido }}</td>
+                <td>{{ r.fecha }}</td>
+
+                <td>
+                    <button
+                        type="button"
+                        class="btn btn-info"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalVer-1"
+                    >
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                    <a
+                        class="btn btn-warning"
+                        href="{% url 'comentarios_form_editar' r.id %}"
+                        ><i class="bi bi-pencil"></i
+                    ></a>
+                    <a
+                        href="javascript:eliminar('{% url 'comentarios_eliminar' r.id %}')"
+                        class="btn btn-danger"
+                        ><i class="bi bi-x-lg"></i
+                    ></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+        </ul>
+    </nav>
+{% endblock %}

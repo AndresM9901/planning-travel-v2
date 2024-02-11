@@ -6,7 +6,7 @@
 {% block contenedor %}
 
     <h1>Perfil Usuario</h1>
-    <a class="btn btn-success" href="{% url 'perfilUsuarios_form' %}">Agregar</a>
+    <a class="btn btn-success" href="{% url 'perfil_usuarios_form' %}">Agregar</a>
     <table class="table">
         <thead>
             <tr>
@@ -30,8 +30,8 @@
                     <td>{{ r.numero_contacto }}</td>
                     <td>{{ r.fotoPerfil }}</td>
                     <td>
-                        <a class="btn btn-danger" href="javascript:eliminar('{% url 'perfilUsuarios_eliminar' r.id %}')">Eliminar</a>
-                        <a class="btn btn-info" href="{% url 'perfilUsuarios_form_editar' r.id %}">Editar</a>
+                        <a class="btn btn-danger" href="javascript:eliminar('{% url 'perfil_usuarios_eliminar' r.id %}')">Eliminar</a>
+                        <a class="btn btn-info" href="{% url 'perfil_usuarios_form_editar' r.id %}">Editar</a>
                     </td>
                 </tr>
             {% endfor %}
