@@ -1,0 +1,43 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Registrar Reserva Usuario{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Actualizar Reserva Usuario</h1>
+        <form action="{% url 'reservas_usuarios_actualizar' %}" method="post">
+            {% csrf_token %} 
+            <input hidden type="text" name="id" value="{{ data.id }}">
+            <div class="form-floating mb-3 ">
+                <select class="form-select" id="usuario" name="usuario" required>
+                    <option value="">Seleccionar usuario</option>
+                    {% for c in usuario %}
+                    <option value="{{ c.id }}" {% if data.id_hotel.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="categoria">Usuario</label>
+            </div>
+            <div class="form-floating mb-3 ">
+                <select class="form-select" id="reserva" name="reserva" required>
+                    <option value="">Seleccionar Reserva</option>
+                    {% for c in reserva %}
+                    <option value="{{ c.id }}" {% if data.habitacion.id == c.id %}selected{% endif %}>{{ c.habitacion }}</option>
+                    {% endfor %}
+                </select>
+                <label for="categoria">Reserva</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" value="{{ data.estado_reserva }}" class="form-control" id="estado_reserva" placeholder="Estado de la reserva" name="estado_reserva">
+                <label for="estado_reserva">Estado de la reserva</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="datetime-local" value="{{ data.fecha_realizacion|date:'Y-m-d\TH:i' }}" class="form-control" id="fecha_realizacion" placeholder="Fecha de realizacion" name="fecha_realizacion">
+                <label for="fecha_realizacion"> Fecha de realizacion </label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

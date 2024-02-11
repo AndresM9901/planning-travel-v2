@@ -18,7 +18,9 @@
 <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'inicio' %}">Tienda Sena</a>
+            <a class="navbar-brand logo" href="{% url 'inicio' %}"
+                        ><i class="bi bi-globe-americas"></i> Planning Travel</a
+                    >
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -26,23 +28,77 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'categorias_listar' %}">Categorias</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Reportes
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'reportes_listar' %}">Ver Reportes</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'reportes_moderador_listar' %}">Ver Reportes del Moderador</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'clientes_listar' %}">Ver Clientes</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'perfil_usuarios_listar' %}">Ver Perfil de Usuario</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Productos</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Hoteles
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'hoteles_listar' %}">Ver Hoteles</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'categorias_listar' %}">Ver Categorias</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'hoteles_comodidades_listar' %}">Ver Comodidades de los Hoteles</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'reservas_listar' %}">Ver Reservas</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'reservas_usuarios_listar' %}">Ver Reservas de los Usuarios</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'puntuaciones_listar' %}">Ver Puntuaciones</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'habitaciones_listar' %}">Ver Habitaciones</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'comentarios_listar' %}">Ver Comentarios</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'favoritos_listar' %}">Ver Favoritos</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link">Disable</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Login</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'usuarios_listar' %}">Ver Usuarios</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'clientes_listar' %}">Ver Clientes</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'fotos_listar' %}">Ver Fotos</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'roles_listar' %}">Ver Roles</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
             </div>
         </div>
     </nav>

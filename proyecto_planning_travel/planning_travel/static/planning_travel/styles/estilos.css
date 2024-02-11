@@ -12,9 +12,8 @@
     --gradiant-color: linear-gradient(#ffc107, #ff5c5c);
 }
 
-
 * {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
 }
 
 .header-page {
@@ -35,7 +34,7 @@
 .nav-link,
 .dropdown-item {
     font-family: "Poppins" !important;
-    color: white !important;
+    color: black !important;
     font-weight: 500 !important;
     font-size: 1.1rem;
 }
@@ -173,7 +172,7 @@
 }
 
 .lugares:hover {
-    filter: grayscale(.5);
+    filter: grayscale(0.5);
     cursor: pointer;
 }
 
@@ -192,7 +191,7 @@
 
 .contenedor-texto p {
     font-size: 1.3rem;
-    font-family: 'Poppins';
+    font-family: "Poppins";
 }
 
 .contenedor-links {
@@ -285,7 +284,6 @@
     color: var(--primary-color);
 }
 
-
 .registro-empleado {
     height: 70vh;
     min-height: 500px;
@@ -294,7 +292,7 @@
 /* pagina verHoteles */
 .texto-puntos {
     font-size: 14px;
-    background-color: #C4C4C4;
+    background-color: #c4c4c4;
     border-radius: 10px;
     padding: 0 5px;
 }
@@ -310,13 +308,13 @@
 
 .tarjetas-hotel {
     height: fit-content;
-    border: 1px solid #CCC;
+    border: 1px solid #ccc;
     padding: 0;
     max-width: 1050px;
 }
 
 .tarjeta-llamativa {
-    background-color: #CCC;
+    background-color: #ccc;
     border-radius: 10px;
     padding: 10px;
 }
@@ -328,7 +326,6 @@
 }
 
 /* Tablas */
-
 
 /* Animaciones */
 

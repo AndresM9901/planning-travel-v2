@@ -1,0 +1,25 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Formulario Categoria{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Actualizar Categoria</h1>
+        <form action="{% url 'categorias_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input hidden type="text" name="id" value="{{ data.id }}">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nombre" placeholder="Nombre" name="nombre" value="{{ data.nombre }}">
+                <label for="nombre">Nombre</label>
+            </div>
+            <div class="form-floating">
+                <input type="text" class="form-control" id="descripcion" placeholder="Descripcion" name="descripcion" value="{{ data.descripcion }}">
+                <label for="descripcion">Descripcion</label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

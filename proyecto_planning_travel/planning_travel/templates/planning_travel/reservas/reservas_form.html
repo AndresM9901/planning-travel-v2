@@ -1,0 +1,37 @@
+{% extends 'planning_travel/base.html' %} 
+{% load static %} 
+{% block titulo %}Registrar Reserva{% endblock %}
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Registrar Reservas</h1>
+        <form action="{% url 'reservas_crear' %}" method="post">
+            {% csrf_token %}
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="habitacion" name="habitacion" required>
+                    <option value="">Seleccionar Número de Habitación</option>
+                    {% for c in data %}
+                        <option value="{{ c.id }}">{{ c.num_habitacion }}</option>
+                    {% endfor %}
+                </select>
+                <label for="habitacion"
+                    >Número de la Habitación</label
+                >
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" class="form-control" id="fecha_llegada" placeholder="Fecha de Llegada" name="fecha_llegada">
+                <label for="fecha_llegada">Fecha de Llegada</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="date" class="form-control" id="fecha_salida" placeholder="Fecha de Salida" name="fecha_salida">
+                <label for="fecha_salida">Fecha de Salida</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="cantidad_personas" placeholder="Número de Personas" name="cantidad_personas">
+                <label for="cantidad_personas">Número de Personas</label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
