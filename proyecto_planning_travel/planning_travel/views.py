@@ -3,10 +3,123 @@ from django.contrib import messages
 from .models import *
 from .serializers import *
 from rest_framework import viewsets
+from django.db.models import Min
 
 # Create your views here.
+
 def inicio(request):
-    return render(request, 'planning_travel/inicio.html')
+    # Obtener todos los hoteles, fotos y servicios
+    hoteles = Hotel.objects.all()
+    fotos = Foto.objects.all()
+    servicios = Servicio.objects.all()
+    servicio_activo = None
+    
+    # Filtrar hoteles por servicios seleccionados
+    if 'servicio' in request.GET:
+        servicio_id = request.GET.get('servicio')
+        servicio_activo = servicio_id
+        hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
+        ids_hoteles_servicio = hoteles_servicio.values_list('id_hotel', flat=True)
+        hoteles = Hotel.objects.filter(id__in=ids_hoteles_servicio)
+        # hoteles = [hotel for hotel in hoteles if hotel.id in hoteles_filtrados]
+        # Obtener fotos para los hoteles filtrados
+        # fotos_por_hotel = {hotel.id: fotos_por_hotel.get(hotel.id, []) for hotel in hoteles}
+        
+    # Obtener los hoteles con la cantidad de opiniones y el promedio de valoración
+    for hotel in hoteles:
+        opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
+        valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
+        promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
+
+        hotel.opiniones_count = opiniones_count
+        hotel.promedio_valoracion = promedio_valoracion
+    
+    # Crear un diccionario para agrupar las fotos por ID de hotel
+    fotos_por_hotel = {}
+    for foto in fotos:
+        if foto.id_hotel not in fotos_por_hotel:
+            fotos_por_hotel[foto.id_hotel] = []
+        fotos_por_hotel[foto.id_hotel].append(foto)
+    
+    # Crear una lista de tuplas que contengan cada hotel y sus fotos asociadas
+    hoteles_con_fotos = [(hotel, fotos_por_hotel.get(hotel, [])) for hotel in hoteles]
+    if servicio_activo:
+        servicio_activo = int(servicio_activo)
+    # Enviar los datos a la plantilla
+    return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'hoteles': hoteles_con_fotos, 'servicios': servicios, 'servicio_activo': servicio_activo})
+
+def detalle_hotel(request, id):
+    hotel = Hotel.objects.get(pk=id)
+    servicios = HotelServicio.objects.filter(id_hotel=id)
+    habitaciones = Habitacion.objects.filter(id_hotel=id)
+    fotos = Foto.objects.filter(id_hotel=id)
+    contexto = {
+        'hotel': hotel,
+        'servicios': servicios,
+        'habitaciones': habitaciones,
+        'fotos': fotos
+    }
+    return render(request, 'planning_travel/hoteles/hotel_home/hotel_detail.html', contexto)
+
+
+# def inicio(request):
+#     hoteles = Hotel.objects.all()
+#     fotos = Foto.objects.all()
+#     servicios = Servicio.objects.all()
+    
+#     servicio_id = request.GET.get('servicio')
+#     if servicio_id:
+#         # hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
+#         # print(hoteles_servicio)
+#         # hoteles = [hotel for hotel in hoteles if hotel.id in hoteles_servicio]
+#         # print(hoteles)
+#         hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
+#         hoteles_ids = [hs.id_hotel_id for hs in hoteles_servicio]
+#         hoteles = hoteles.filter(id__in=hoteles_ids)
+
+#     for hotel in hoteles:
+#         # Obtener la cantidad de opiniones
+#         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
+#         # Obtener el promedio de valoración
+#         valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
+#         promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
+
+#         hotel.opiniones_count = opiniones_count
+#         hotel.promedio_valoracion = promedio_valoracion
+    
+#     fotos_por_hotel = {}
+#     for foto in fotos:
+#         fotos_por_hotel.setdefault(foto.id_hotel, []).append(foto)
+
+#     hoteles_con_fotos = [(hotel, fotos_por_hotel.get(hotel.id, [])) for hotel in hoteles]
+
+#     context = {'hoteles': hoteles_con_fotos, 'servicios': servicios}
+#     return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', context)
+
+# def inicio(request):
+#     hoteles = Hotel.objects.all()
+#     fotos = Foto.objects.all()
+#     servicios = Servicio.objects.all()
+    
+#     for hotel in hoteles:
+#         # Obtener la cantidad de opiniones
+#         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
+#         # Obtener el promedio de valoración
+#         valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
+#         promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
+
+#         hotel.opiniones_count = opiniones_count
+#         hotel.promedio_valoracion = promedio_valoracion
+#     # Crea un diccionario para agrupar las fotos por ID de hotel
+#     fotos_por_hotel = {}
+#     for foto in fotos:
+#         if foto.id_hotel not in fotos_por_hotel:
+#             fotos_por_hotel[foto.id_hotel] = []
+#         fotos_por_hotel[foto.id_hotel].append(foto)
+        
+#     hoteles_con_fotos = [(hotel, fotos_por_hotel.get(hotel, [])) for hotel in hoteles]
+#     # Envía los datos a la plantilla 'hoteles': hoteles, 'fotos_por_hotel': fotos_por_hotel
+#     return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'hoteles': hoteles_con_fotos, 'servicios': servicios})
 
 # Crud de Categorias
 def categorias(request):
@@ -230,50 +343,50 @@ def hoteles_actualizar(request):
 
 # Crud de puntuacion
 
-def puntuaciones(request):
-    q = Puntuacion.objects.all()
-    contexto = {'data': q}
-    return render(request, 'planning_travel/puntuaciones/puntuaciones.html', contexto)
+# def puntuaciones(request):
+#     q = Puntuacion.objects.all()
+#     contexto = {'data': q}
+#     return render(request, 'planning_travel/puntuaciones/puntuaciones.html', contexto)
 
-def puntuaciones_form(request):
-    q = Comentario.objects.all()
-    contexto = {'data': q}
-    return render(request, 'planning_travel/puntuaciones/puntuaciones_form.html', contexto)
+# def puntuaciones_form(request):
+#     q = Comentario.objects.all()
+#     contexto = {'data': q}
+#     return render(request, 'planning_travel/puntuaciones/puntuaciones_form.html', contexto)
 
-def puntuaciones_crear(request):
-    if request.method == 'POST':
-        comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
-        valoracion = request.POST.get('valoracion')
-        try:
-            q = Puntuacion(
-                comentario=comentario,
-                valoracion=valoracion,
-            )
-            q.save()
-            messages.success(request, "Fue actualizado correctamente")
-        except Exception as e:
-            messages.error(request,f'Error: {e}')
+# def puntuaciones_crear(request):
+#     if request.method == 'POST':
+#         comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
+#         valoracion = request.POST.get('valoracion')
+#         try:
+#             q = Puntuacion(
+#                 comentario=comentario,
+#                 valoracion=valoracion,
+#             )
+#             q.save()
+#             messages.success(request, "Fue actualizado correctamente")
+#         except Exception as e:
+#             messages.error(request,f'Error: {e}')
 
-        return redirect('puntuaciones_listar')
-    else:
-        messages.warning(request,'No se enviaron datos')
-        return redirect('puntuaciones_listar')
+#         return redirect('puntuaciones_listar')
+#     else:
+#         messages.warning(request,'No se enviaron datos')
+#         return redirect('puntuaciones_listar')
     
-def puntuaciones_eliminar(request, id):
-    try:
-        q = Puntuacion.objects.get(pk = id)
-        q.delete()
-        messages.success(request, 'Puntuacion eliminada correctamente!!')
-    except Exception as e:
-        messages.error(request,f'Error: {e}')
+# def puntuaciones_eliminar(request, id):
+#     try:
+#         q = Puntuacion.objects.get(pk = id)
+#         q.delete()
+#         messages.success(request, 'Puntuacion eliminada correctamente!!')
+#     except Exception as e:
+#         messages.error(request,f'Error: {e}')
         
-def puntuaciones_form_editar(request, id):
-    q = Puntuacion.objects.get(pk = id)
-    c = Comentario.objects.all()
-    contexto = {'data': q, 'comentario': c}
-    return render(request, 'planning_travel/puntuaciones/puntuaciones_form_editar.html', contexto)
+# def puntuaciones_form_editar(request, id):
+#     q = Puntuacion.objects.get(pk = id)
+#     c = Comentario.objects.all()
+#     contexto = {'data': q, 'comentario': c}
+#     return render(request, 'planning_travel/puntuaciones/puntuaciones_form_editar.html', contexto)
 
-def puntuaciones_actualizar(request):
+# def puntuaciones_actualizar(request):
     if request.method == 'POST':
         id = request.POST.get('id')
         comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
@@ -373,19 +486,14 @@ def habitaciones_crear(request):
         ocupado = request.POST.get('ocupado')
         ocupado = True if ocupado == 'on' else False    
         capacidad_huesped = request.POST.get('capacidad_huesped')
-        tipoHabitacion = request.POST.get('tipoHabitacion')
-        foto =  Foto.objects.get(pk=request.POST.get('foto'))
-        precio = request.POST.get('precio')
-        print(foto)
+        tipo_habitacion = request.POST.get('tipoHabitacion')
         try:
             q = Habitacion(
                 num_habitacion = num_habitacion,
                 id_hotel = hotel,
                 ocupado = ocupado,
                 capacidad_huesped = capacidad_huesped,
-                tipoHabitacion = tipoHabitacion,
-                foto = foto,
-                precio = precio
+                tipo_habitacion = tipo_habitacion,
             )
             q.save()
             messages.success(request, "Fue actualizado correctamente")
@@ -422,19 +530,14 @@ def habitaciones_actualizar(request):
         ocupado = request.POST.get('ocupado')
         ocupado = True if ocupado == 'on' else False    
         capacidad_huesped = request.POST.get('capacidad_huesped')
-        tipoHabitacion = request.POST.get('tipoHabitacion')
-        foto =  Foto.objects.get(pk=request.POST.get('foto'))
-        precio = request.POST.get('precio')
+        tipo_habitacion = request.POST.get('tipoHabitacion')
         try:
             q = Habitacion.objects.get(pk = id)
             q.num_habitacion = num_habitacion
             q.id_hotel = hotel
             q.ocupado = ocupado
             q.capacidad_huesped = capacidad_huesped
-            q.tipoHabitacion = tipoHabitacion
-            q.foto = foto
-            q.precio = precio
-          
+            q.tipo_habitacion = tipo_habitacion
             q.save()
             messages.success(request, "Fue actualizado correctamente")
 
@@ -1077,62 +1180,62 @@ def perfil_usuarios_actualizar(request):
         messages.warning(request,'No se enviaron datos')
     return redirect('perfil_usuarios_listar')
 
-# Crud Comentarios
-def comentarios(request):
-    q = Comentario.objects.all()
-    e = Hotel.objects.all()
-    c = Usuario.objects.all()
-    contexto = {'data': q, 'usuario': c}
-    return render(request, 'planning_travel/comentarios/comentarios.html', contexto)
+# # Crud Comentarios
+# def comentarios(request):
+#     q = Comentario.objects.all()
+#     e = Hotel.objects.all()
+#     c = Usuario.objects.all()
+#     contexto = {'data': q, 'usuario': c}
+#     return render(request, 'planning_travel/comentarios/comentarios.html', contexto)
 
-def comentarios_form(request):
-    q = Hotel.objects.all()
-    c = Usuario.objects.all()
-    contexto = {'data': q, 'usuario': c}
-    return render(request, 'planning_travel/comentarios/comentarios_form.html',contexto)
+# def comentarios_form(request):
+#     q = Hotel.objects.all()
+#     c = Usuario.objects.all()
+#     contexto = {'data': q, 'usuario': c}
+#     return render(request, 'planning_travel/comentarios/comentarios_form.html',contexto)
 
-def comentarios_crear(request):
-    if request.method == 'POST':
-        id_hotel = Hotel.objects.get(pk=request.POST.get('id_hotel'))
-        id_usuario = Usuario.objects.get(pk=request.POST.get('id_usuario'))
-        contenido = request.POST.get('contenido')
-        fecha = request.POST.get('fecha')
+# def comentarios_crear(request):
+#     if request.method == 'POST':
+#         id_hotel = Hotel.objects.get(pk=request.POST.get('id_hotel'))
+#         id_usuario = Usuario.objects.get(pk=request.POST.get('id_usuario'))
+#         contenido = request.POST.get('contenido')
+#         fecha = request.POST.get('fecha')
 
-        try:
-            q = Comentario(
-                id_hotel=id_hotel,
-                id_usuario=id_usuario,
-                contenido=contenido,
-                fecha=fecha
-            )
-            q.save()
-            messages.success(request, "Fue agregado correctamente")
-        except Exception as e:
-            messages.error(request,f'Error: {e}')
+#         try:
+#             q = Comentario(
+#                 id_hotel=id_hotel,
+#                 id_usuario=id_usuario,
+#                 contenido=contenido,
+#                 fecha=fecha
+#             )
+#             q.save()
+#             messages.success(request, "Fue agregado correctamente")
+#         except Exception as e:
+#             messages.error(request,f'Error: {e}')
 
-        return redirect('comentarios_listar')
-    else:
-        messages.warning(request,'No se enviaron datos')
-        return redirect('comentarios_listar')
+#         return redirect('comentarios_listar')
+#     else:
+#         messages.warning(request,'No se enviaron datos')
+#         return redirect('comentarios_listar')
 
-def comentarios_eliminar(request, id):
-    try:
-        q = Comentario.objects.get(pk = id)
-        q.delete()
-        messages.success(request, 'Comentario eliminado correctamente!!')
-    except Exception as e:
-        messages.error(request,f'Error: {e}')
+# def comentarios_eliminar(request, id):
+#     try:
+#         q = Comentario.objects.get(pk = id)
+#         q.delete()
+#         messages.success(request, 'Comentario eliminado correctamente!!')
+#     except Exception as e:
+#         messages.error(request,f'Error: {e}')
 
-    return redirect('comentarios_listar')
+#     return redirect('comentarios_listar')
 
-def comentarios_form_editar(request, id):
-    q = Comentario.objects.get(pk = id)
-    c = Hotel.objects.all()
-    e = Usuario.objects.all()
-    contexto = {'data': q, 'hotel': c, 'usuario': e}
-    return render(request, 'planning_travel/comentarios/comentarios_form_editar.html', contexto)
+# def comentarios_form_editar(request, id):
+#     q = Comentario.objects.get(pk = id)
+#     c = Hotel.objects.all()
+#     e = Usuario.objects.all()
+#     contexto = {'data': q, 'hotel': c, 'usuario': e}
+#     return render(request, 'planning_travel/comentarios/comentarios_form_editar.html', contexto)
 
-def comentarios_actualizar(request):
+# def comentarios_actualizar(request):
     if request.method == 'POST':
         id = request.POST.get('id')
         id_hotel = Hotel.objects.get(pk=request.POST.get("id_hotel"))
@@ -1326,13 +1429,17 @@ class FavoritoViewSet(viewsets.ModelViewSet):
     queryset = Favorito.objects.all()
     serializer_class = FavoritoSeralizer
 
-class ComentarioViewSet(viewsets.ModelViewSet):
-    queryset = Comentario.objects.all()
-    serializer_class = ComentarioSerializer
+class OpinionViewSet(viewsets.ModelViewSet):
+    queryset = Opinion.objects.all()
+    serializer_class = OpinionSerializer
 
-class PuntuacionViewSet(viewsets.ModelViewSet):
-    queryset = Puntuacion.objects.all()
-    serializer_class = PuntuacionSerializer
+# class ComentarioViewSet(viewsets.ModelViewSet):
+#     queryset = Comentario.objects.all()
+#     serializer_class = ComentarioSerializer
+
+# class PuntuacionViewSet(viewsets.ModelViewSet):
+#     queryset = Puntuacion.objects.all()
+#     serializer_class = PuntuacionSerializer
 
 class FotoViewSet(viewsets.ModelViewSet):
     queryset = Foto.objects.all()

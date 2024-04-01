@@ -36,15 +36,19 @@ class FavoritoSeralizer(serializers.HyperlinkedModelSerializer):
         model = Favorito
         fields = ['id', 'id_hotel', 'id_usuario', 'fecha_agregado']
 
-class ComentarioSerializer(serializers.HyperlinkedModelSerializer):
+class OpinionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Comentario
-        fields = ['id', 'id_hotel', 'id_usuario', 'contenido', 'fecha']
+        model = Opinion
+        fields = ['id', 'id_hotel', 'id_usuario', 'contenido', 'puntuacion', 'fecha']
+# class ComentarioSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = Comentario
+#         fields = ['id', 'id_hotel', 'id_usuario', 'contenido', 'fecha']
 
-class PuntuacionSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Puntuacion
-        fields = ['id', 'id_comentario', 'valoracion']
+# class PuntuacionSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = Puntuacion
+#         fields = ['id', 'id_comentario', 'valoracion']
 
 class FotoSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

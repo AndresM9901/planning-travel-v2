@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class Categoria(models.Model):
@@ -32,6 +33,9 @@ class Hotel(models.Model):
     direccion = models.CharField(max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
     cantidad_habitaciones = models.IntegerField()
+    dueño = models.CharField(max_length=200)
+    ciudad = models.CharField(max_length=200)
+    precio = models.DecimalField(max_digits=250, decimal_places=2)
 
     def __str__(self):
         return f'{self.nombre}'
@@ -67,21 +71,36 @@ class Favorito(models.Model):
     def __str__(self):
         return f'{self.id_hotel}'
     
-class Comentario(models.Model):
+# class Comentario(models.Model):
+#     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
+#     id_usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+#     contenido = models.TextField()
+#     fecha = models.DateTimeField()
+
+#     def __str__(self):
+#         return f'{self.contenido}'
+    
+# """Agregar tabla de servicios"""
+    
+# class Puntuacion(models.Model):
+#     id_comentario = models.ForeignKey(Comentario, on_delete=models.DO_NOTHING)
+#     valoracion = models.IntegerField()
+
+#     def __str__(self):
+#         return f'{self.valoracion}'
+
+class Opinion(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
-    contenido = models.TextField()
-    fecha = models.DateTimeField()
+    contenido = models.TextField(max_length=300)
+    puntuacion = models.IntegerField(validators=[
+            MinValueValidator(1, message="La puntuación debe ser como mínimo 1."),
+            MaxValueValidator(5, message="La puntuación debe ser como máximo 5."),
+        ])
+    fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.contenido}'
-    
-class Puntuacion(models.Model):
-    id_comentario = models.ForeignKey(Comentario, on_delete=models.DO_NOTHING)
-    valoracion = models.IntegerField()
-
-    def __str__(self):
-        return f'{self.valoracion}'
+        return f'{self.id_hotel}'
     
 class Foto(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
@@ -99,9 +118,23 @@ class HotelComodidad(models.Model):
     def __str__(self):
         return f'{self.id_hotel}'
     
+class Servicio(models.Model):
+    nombre = models.CharField(max_length=254)
+    icono = models.FileField(upload_to='planning_travel/svg_services/')
+    
+    def __str__(self):
+        return f'{self.nombre}'
+
 class HotelCategoria(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
     id_categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
+
+    def __str__(self):
+        return f'{self.id_hotel}'
+
+class HotelServicio(models.Model):
+    id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
+    id_servicio = models.ForeignKey(Servicio, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return f'{self.id_hotel}'
@@ -112,8 +145,6 @@ class Habitacion(models.Model):
     ocupado = models.BooleanField()
     capacidad_huesped = models.IntegerField()
     tipo_habitacion = models.CharField(max_length=255)
-    foto = models.ForeignKey(Foto, on_delete=models.DO_NOTHING)
-    precio = models.DecimalField(max_digits=250, decimal_places=2)
 
     def __str__(self):
         return f'{self.num_habitacion}'
