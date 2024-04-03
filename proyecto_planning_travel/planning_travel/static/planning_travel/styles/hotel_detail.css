@@ -1,5 +1,14 @@
 .container-details {
-    padding: 10px 80px;
+    padding: 10px 200px;
+}
+
+.head-container {
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.container-info {
+    width: 50%;
 }
 
 .head {
@@ -9,6 +18,7 @@
 
 .hotel-title {
     font-size: 3rem;
+    margin: 0;
 }
 
 .botones-head {
@@ -19,6 +29,7 @@
     border: 1px solid var(--primary-color);
     color: var(--primary-color);
     transition: all 0.3s ease;
+    font-size: 16px;
 }
 
 .btn:hover {
@@ -28,7 +39,7 @@
 
 .container-gallery {
     flex-direction: column;
-    height: 500px;
+    max-height: 500px;
     border: 1px solid black;
     width: 50%;
     gap: 16px;
