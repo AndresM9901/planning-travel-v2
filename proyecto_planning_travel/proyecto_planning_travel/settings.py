@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-t6&w_7mxbitf5d7_ipav6*nf8#ya72d*p(+)^i1y56gu--&49h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -127,3 +127,14 @@ MEDIA_ROOT = BASE_DIR / 'planning_travel/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "andress9406@gmail.com"
+EMAIL_HOST_PASSWORD = "gqarbgkndukthpgl"
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'planning_travel.utils.custom_exception_handler'
+}
