@@ -50,7 +50,11 @@ def inicio(request):
 
 def detalle_hotel(request, id):
     hotel = Hotel.objects.get(pk=id)
-    servicios = HotelServicio.objects.filter(id_hotel=id)
+    servicios_hotel = HotelServicio.objects.filter(id_hotel=id)
+    servicios = []
+    for servicio in servicios_hotel:
+        sq = Servicio.objects.get(id=servicio.id_servicio.id)
+        servicios.append(sq)
     habitaciones = Habitacion.objects.filter(id_hotel=id)
     fotos = Foto.objects.filter(id_hotel=id)
     contexto = {

@@ -2,30 +2,6 @@
     padding: 10px 80px;
 }
 
-.head {
-    justify-content: space-between;
-    align-items: center;
-}
-
-.hotel-title {
-    font-size: 3rem;
-}
-
-.botones-head {
-    gap: 8px;
-}
-
-.btn {
-    border: 1px solid var(--primary-color);
-    color: var(--primary-color);
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
 .container-gallery {
     flex-direction: column;
     height: 500px;
@@ -95,4 +71,29 @@
 
 .next {
     right: 10px;
+}
+
+.head {
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hotel-title {
+    font-size: 3rem;
+}
+
+.botones-head {
+    gap: 8px;
+}
+
+.btn {
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--primary-color);
+    color: white;
 }
