@@ -27,19 +27,6 @@ class Producto(models.Model):
     def __str__(self):
         return f'{self.nombre}'
     
-class Hotel(models.Model):
-    nombre = models.CharField(max_length=200)
-    descripcion = models.TextField()
-    direccion = models.CharField(max_length=200)
-    categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
-    cantidad_habitaciones = models.IntegerField()
-    dueño = models.CharField(max_length=200)
-    ciudad = models.CharField(max_length=200)
-    precio = models.DecimalField(max_digits=250, decimal_places=2)
-
-    def __str__(self):
-        return f'{self.nombre}'
-    
 class Comodidad(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField(max_length=200)
@@ -59,6 +46,19 @@ class Usuario(models.Model):
     rol = models.IntegerField(choices=ROLES, default=3)
     foto = models.ImageField(upload_to="planning_travel/media/")
     # baneado = models.BooleanField()
+
+    def __str__(self):
+        return f'{self.nombre}'
+    
+class Hotel(models.Model):
+    nombre = models.CharField(max_length=200)
+    descripcion = models.TextField()
+    direccion = models.CharField(max_length=200)
+    categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
+    cantidad_habitaciones = models.IntegerField()
+    dueño = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+    ciudad = models.CharField(max_length=200)
+    precio = models.DecimalField(max_digits=250, decimal_places=2)
 
     def __str__(self):
         return f'{self.nombre}'
