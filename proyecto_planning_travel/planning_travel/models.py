@@ -29,7 +29,6 @@ class Producto(models.Model):
     
 class Comodidad(models.Model):
     nombre = models.CharField(max_length=200)
-    descripcion = models.TextField(max_length=200)
 
     def __str__(self):
         return f'{self.nombre}'
@@ -113,7 +112,7 @@ class Foto(models.Model):
 class HotelComodidad(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
     id_comodidad = models.ForeignKey(Comodidad, on_delete=models.DO_NOTHING)
-    dispone = models.BooleanField()
+    cantidad = models.IntegerField(default=1)
 
     def __str__(self):
         return f'{self.id_hotel}'
