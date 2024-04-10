@@ -11,8 +11,13 @@ def inicio(request):
     # Obtener todos los hoteles, fotos y servicios
     hoteles = Hotel.objects.all()
     fotos = Foto.objects.all()
-    servicios = Servicio.objects.all()
+    servicios = Servicio.objects.all().order_by('nombre')
     servicio_activo = None
+    
+    if 'nombre' in request.GET:
+        query_nombre = request.GET.get('nombre')
+        # query_cantidad = request.GET.get('cantidad')
+        hoteles = Hotel.objects.filter(nombre__icontains=query_nombre)
     
     # Filtrar hoteles por servicios seleccionados
     if 'servicio' in request.GET:
@@ -67,6 +72,7 @@ def detalle_hotel(request, id):
     valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
     promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
 
+    servicios.sort(key=lambda x: x.nombre)
     hotel.opiniones_count = opiniones_count
     hotel.promedio_valoracion = promedio_valoracion
     contexto = {

@@ -2,7 +2,7 @@
 .barra-servicios {
     padding: 0 80px;
     flex-direction: row;
-    gap: 8px;
+    gap: 16px;
     justify-content: flex-start;
     align-items: center;
     height: 80px;
@@ -10,8 +10,8 @@
 }
 
 .servicio-container {
+    width: fit-content;
     flex-direction: column;
-    width: 70px;
     justify-content: center;
     align-items: center;
     text-align: center;
