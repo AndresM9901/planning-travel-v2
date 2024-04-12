@@ -9,7 +9,7 @@
 />
 {% endblock %}
 {% block content %}
-    <main class="container-details">
+    <main class="container-details d-flex">
         <div class="head-container d-flex">
             <div class="container-gallery">
                 <div class="carrusel-container">
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="container-info d-flex">
-                <div class="head d-flex">
+                <div class="head-info d-flex">
                     <div class="d-flex flex-column">
                         <h1 class="hotel-title">{{ hotel.nombre }}</h1>
                         <p class="m-0">{{ hotel.ciudad }}</p>
@@ -45,7 +45,7 @@
                         <a href="" class="btn"><i class="bi bi-bookmark-heart"></i> Favoritos</a>
                     </div>
                 </div>
-                <div class="body d-flex">
+                <div class="body-info d-flex">
                     <ul class="comodidades d-flex">
                         {% for comodidad in comodidades %}
                             {% if comodidad.cantidad > 1 %}
@@ -98,7 +98,40 @@
                 </div>
             </div>
         </div>
-        
+        <div class="divisor"></div>
+        <div class="body d-flex">
+            <div class="descripcion">
+                <details>
+                    <summary>Descripcion</summary>
+                    <p>{{ hotel.descripcion }}</p>
+                </details>
+            </div>
+            <div class="divisor"></div>
+            <div class="comentarios">
+                <div class="card-comentario">
+                    <div class="comentario-header d-flex">
+                        <img class="comentario__imagen" src="{% static 'planning_travel/images/persona1-min.jpg' %}" alt="">
+                        <div class="info-usuario d-flex">
+                            <p class="info__nombre">Nombre</p>
+                            <p class="info__lugar">Ciudad donde vive</p>
+                        </div>
+                    </div>
+                    <div class="comentario-body">
+                        <div class="info-comentario d-flex">
+                            <div class="puntuacion">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <p class="m-0">24/01/2024</p>
+                        </div>
+                        <p class="m-0">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cumque aliquam eaque fuga temporibus reprehenderit atque ipsa non ipsam maxime omnis totam, obcaecati praesentium consequatur culpa natus voluptate! Quisquam, libero illo?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 {% endblock %}
 

@@ -1,4 +1,4 @@
-const btnDropdown = document.querySelector('.btn-dropdown');
+const btnDropdown = document.querySelector('.btn-profile');
 const dropdown = document.querySelector('.dropdown-user');
 
 btnDropdown.addEventListener('click', () => {
