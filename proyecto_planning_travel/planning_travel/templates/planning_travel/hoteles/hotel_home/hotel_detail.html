@@ -1,5 +1,6 @@
 {% extends 'planning_travel/hoteles/hotel_home/base_hotel_detail.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}{{ hotel.nombre }}{% endblock %}
 {% block estilos %}
@@ -66,7 +67,7 @@
                             <p class="m-0">Según los usuarios, uno de los hoteles más populares</p>
                         </div>
                         <div class="popular--puntuacion d-flex">
-                            <p class="m-0 popular__tamaño">{{ hotel.promedio_valoracion }}</p>
+                            <p class="m-0 popular__tamaño">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
                             <div class="popular__estrellas d-flex">
                                 <i class="bi bi-star-fill"></i>
                                 <i class="bi bi-star-fill"></i>
@@ -81,7 +82,7 @@
                     <div class="opiniones d-flex">
                         <div class="opiniones--puntuacion d-flex">
                             <i class="bi bi-star-fill"></i>
-                            <p class="m-0">{{ hotel.promedio_valoracion }}</p>
+                            <p class="m-0">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
                         </div>
                         <span class="separador">·</span>
                         <p class="m-0 opiniones--cantidad">{{ hotel.opiniones_count }} opiniones</p>
@@ -108,28 +109,28 @@
             </div>
             <div class="divisor"></div>
             <div class="comentarios">
+                {% for comentario in opiniones %}
                 <div class="card-comentario">
                     <div class="comentario-header d-flex">
                         <img class="comentario__imagen" src="{% static 'planning_travel/images/persona1-min.jpg' %}" alt="">
                         <div class="info-usuario d-flex">
-                            <p class="info__nombre">Nombre</p>
+                            <p class="info__nombre">{{ comentario.id_usuario.nombre }}</p>
                             <p class="info__lugar">Ciudad donde vive</p>
                         </div>
                     </div>
                     <div class="comentario-body">
                         <div class="info-comentario d-flex">
                             <div class="puntuacion">
+                                {% for i in comentario.puntuacion %}
                                 <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
+                                {% endfor %}
                             </div>
-                            <p class="m-0">24/01/2024</p>
+                            <p class="m-0">{{ comentario.fecha }}</p>
                         </div>
                         <p class="m-0">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cumque aliquam eaque fuga temporibus reprehenderit atque ipsa non ipsam maxime omnis totam, obcaecati praesentium consequatur culpa natus voluptate! Quisquam, libero illo?</p>
                     </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
     </main>

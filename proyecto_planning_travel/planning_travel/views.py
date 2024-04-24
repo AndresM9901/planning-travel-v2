@@ -57,14 +57,19 @@ def detalle_hotel(request, id):
     hotel = Hotel.objects.get(pk=id)
     servicios_hotel = HotelServicio.objects.filter(id_hotel=id)
     hotel_comodidades = HotelComodidad.objects.filter(id_hotel=id)
+    opiniones = Opinion.objects.filter(id_hotel=id)
     comodidades = []
     servicios = []
+    estrellas = []
     for servicio in servicios_hotel:
         sq = Servicio.objects.get(id=servicio.id_servicio.id)
         servicios.append(sq)
     for comodidad in hotel_comodidades:
         cq = Comodidad.objects.get(id=comodidad.id_comodidad.id)
         comodidades.append({"cantidad": comodidad.cantidad, "comodidad": cq})
+
+    for opinion in opiniones:
+        opinion.puntuacion = range(opinion.puntuacion)
     habitaciones = Habitacion.objects.filter(id_hotel=id)
     fotos = Foto.objects.filter(id_hotel=id)
     comodidades.sort(key=lambda x: x["comodidad"].nombre, reverse=True)
@@ -80,7 +85,8 @@ def detalle_hotel(request, id):
         'servicios': servicios,
         'habitaciones': habitaciones,
         'fotos': fotos,
-        'comodidades': comodidades
+        'comodidades': comodidades,
+        'opiniones': opiniones
     }
     return render(request, 'planning_travel/hoteles/hotel_home/hotel_detail.html', contexto)
 

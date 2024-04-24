@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'planning_travel',
     'rest_framework',
+	'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [
