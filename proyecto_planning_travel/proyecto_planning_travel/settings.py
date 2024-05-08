@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-t6&w_7mxbitf5d7_ipav6*nf8#ya72d*p(+)^i1y56gu--&49h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'planning_travel',
     'rest_framework',
-	'django.contrib.humanize'
+	'django.contrib.humanize',
+	'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -128,3 +129,14 @@ MEDIA_ROOT = BASE_DIR / 'planning_travel/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "planning_travel.Usuario"
+AUTH_PROFILE_MODULE = "planning_travel.Usuario"
+
+
+REST_FRAMEWORK = {
+	'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}

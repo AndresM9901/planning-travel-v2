@@ -6,16 +6,6 @@ class CategoriaSerializer(serializers.HyperlinkedModelSerializer):
         model = Categoria
         fields = ['id', 'nombre', 'descripcion']
 
-class RolSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Rol
-        fields = ['id','nombre', 'descripcion', 'permisos']
-
-class ProductoSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Producto
-        fields = ['id','nombre', 'precio', 'inventario', 'fecha_creacion', 'categoria']
-
 class HotelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Hotel
@@ -24,12 +14,12 @@ class HotelSerializer(serializers.HyperlinkedModelSerializer):
 class ComodidadSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Comodidad
-        fields = ['id', 'nombre','descripcion']
+        fields = ['id', 'nombre']
 
 class UsuarioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta: 
         model = Usuario
-        fields = ['id', 'nombre','correo','contrasena','rol','foto']
+        fields = ['id', 'nombre','correo','password','rol','foto']
 
 class FavoritoSeralizer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -58,7 +48,7 @@ class FotoSerializer(serializers.HyperlinkedModelSerializer):
 class HotelComodidadSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = HotelComodidad
-        fields = ['id', 'id_hotel', 'id_comodidad', 'dispone']
+        fields = ['id', 'id_hotel', 'id_comodidad']
 
 class HotelCategoriaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -68,7 +58,7 @@ class HotelCategoriaSerializer(serializers.HyperlinkedModelSerializer):
 class HabitacionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Habitacion
-        fields = ['id', 'num_habitacion', 'id_hotel','ocupado', 'capacidad_huesped', 'tipo_habitacion', 'foto', 'precio']
+        fields = ['id', 'num_habitacion', 'id_hotel','ocupado', 'capacidad_huesped', 'tipo_habitacion']
 
 class ReservaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

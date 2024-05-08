@@ -4,6 +4,7 @@ from .models import *
 from .serializers import *
 from rest_framework import viewsets
 from django.db.models import Min
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -225,9 +226,7 @@ def usuarios(request):
     return render(request, 'planning_travel/login/usuarios.html', contexto)
 
 def usuarios_form(request):
-    q = Rol.objects.all()
-    contexto = {'data': q}
-    return render(request, 'planning_travel/login/usuarios_form.html', contexto)
+    return render(request, 'planning_travel/login/usuarios_form.html')
 
 def usuarios_crear(request):
     if request.method == 'POST':
@@ -276,14 +275,12 @@ def usuarios_actualizar(request):
         nombre = request.POST.get('nombre')
         correo = request.POST.get('correo')
         contrasena = request.POST.get('contrasena')
-        rol = Rol.objects.get(pk=request.POST.get('rol'))
         foto = request.POST.get('foto')
         try:
             q = Usuario.objects.get(pk = id)
             q.nombre = nombre
             q.correo = correo
             q.contrasena = contrasena
-            q.rol = rol
             q.foto = foto
             q.save()
             messages.success(request, "Fue actualizado correctamente")
@@ -416,7 +413,7 @@ def hoteles_actualizar(request):
 #     return render(request, 'planning_travel/puntuaciones/puntuaciones_form_editar.html', contexto)
 
 # def puntuaciones_actualizar(request):
-    if request.method == 'POST':
+"""    if request.method == 'POST':
         id = request.POST.get('id')
         comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
         valoracion = request.POST.get('valoracion')
@@ -432,7 +429,7 @@ def hoteles_actualizar(request):
         messages.warning(request,'No se enviaron datos')
 
     return redirect('puntuaciones_listar')
-
+"""
 # Crud Comodidades
 
 def comodidades(request):
@@ -1265,6 +1262,7 @@ def perfil_usuarios_actualizar(request):
 #     return render(request, 'planning_travel/comentarios/comentarios_form_editar.html', contexto)
 
 # def comentarios_actualizar(request):
+'''
     if request.method == 'POST':
         id = request.POST.get('id')
         id_hotel = Hotel.objects.get(pk=request.POST.get("id_hotel"))
@@ -1287,7 +1285,8 @@ def perfil_usuarios_actualizar(request):
         messages.warning(request,'No se enviaron datos')
         
     return redirect('comentarios_listar')
-
+'''
+'''
 # Crud Roles
 def roles(request):
     consulta = Rol.objects.all()
@@ -1356,7 +1355,7 @@ def roles_actualizar(request):
     else:
             messages.warning(request,'No se enviaron datos')
     return redirect('roles_listar')
-
+'''
 # Crud favoritos
 def favoritos(request):
     consulta = Favorito.objects.all()
@@ -1431,34 +1430,32 @@ def favoritos_actualizar(request):
 
 # api base de datos
 class CategoriaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
 
-class RolViewSet(viewsets.ModelViewSet):
-    queryset = Rol.objects.all()
-    serializer_class = RolSerializer
-
-class ProductoViewSet(viewsets.ModelViewSet):
-    queryset = Producto.objects.all()
-    serializer_class = ProductoSerializer
-
 class HotelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
 class ComodidadViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Comodidad.objects.all()
     serializer_class = ComodidadSerializer
 
 class UsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
 
 class FavoritoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Favorito.objects.all()
     serializer_class = FavoritoSeralizer
 
 class OpinionViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Opinion.objects.all()
     serializer_class = OpinionSerializer
 
@@ -1471,41 +1468,51 @@ class OpinionViewSet(viewsets.ModelViewSet):
 #     serializer_class = PuntuacionSerializer
 
 class FotoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Foto.objects.all()
     serializer_class = FotoSerializer
 
 class HotelComodidadViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = HotelComodidad.objects.all()
     serializer_class = HotelComodidadSerializer
 
 class HotelCategoriaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = HotelCategoria.objects.all()
     serializer_class = HotelCategoriaSerializer
 
 class HabitacionViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Habitacion.objects.all()
     serializer_class = HabitacionSerializer
 
 class ReservaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
 
 class ReservaUsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = ReservaUsuario.objects.all()
     serializer_class = ReservaUsuarioSerializer
 
 class PerfilUsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = PerfilUsuario.objects.all()
     serializer_class = PerfilUsuarioSerializer
 
 class ClienteViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Cliente.objects.all()
     serializer_class = ClienteSerializer
 
 class ReporteViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Reporte.objects.all()
     serializer_class = ReporteSerializer
 
 class ReporteModeradorViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = ReporteModerador.objects.all()
     serializer_class = ReporteModeradorSerializer

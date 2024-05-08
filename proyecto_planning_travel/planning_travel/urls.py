@@ -1,11 +1,10 @@
 from django.urls import path, include
 from . import views
-from rest_framework import routers
+from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken import views as views_rest
 
-router = routers.DefaultRouter()
+router = DefaultRouter()
 router.register(r'categoria', views.CategoriaViewSet)
-router.register(r'rol', views.RolViewSet)
-router.register(r'producto', views.ProductoViewSet)
 router.register(r'hotel', views.HotelViewSet)
 router.register(r'comodidad', views.ComodidadViewSet)
 router.register(r'usuario', views.UsuarioViewSet)
@@ -27,6 +26,7 @@ router.register(r'reporte-moderador', views.ReporteModeradorViewSet)
 urlpatterns = [
     path('inicio/', views.inicio, name="inicio"),
     path('api/1.0/', include(router.urls)),
+    path('api/1.0/token-auth/', views_rest.obtain_auth_token),
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
     # path('', views.index, name="index"),
     
@@ -159,12 +159,13 @@ urlpatterns = [
     # path('comentarios_form_editar/<int:id>/', views.comentarios_form_editar, name="comentarios_form_editar"),
     
     # Crud de Roles
-    path('roles_listar/', views.roles, name="roles_listar"),
-    path('roles_form/', views.roles_form, name="roles_form"),
-    path('roles_crear/', views.roles_crear, name="roles_crear"),
-    path('roles_actualizar/', views.roles_actualizar, name="roles_actualizar"),
-    path('roles_eliminar/<int:id>/', views.roles_eliminar, name="roles_eliminar"),
-    path('roles_formulario_editar/<int:id>/', views.roles_formulario_editar, name="roles_formulario_editar"),
+
+    # path('roles_listar/', views.roles, name="roles_listar"),
+    # path('roles_form/', views.roles_form, name="roles_form"),
+    # path('roles_crear/', views.roles_crear, name="roles_crear"),
+    # path('roles_actualizar/', views.roles_actualizar, name="roles_actualizar"),
+    # path('roles_eliminar/<int:id>/', views.roles_eliminar, name="roles_eliminar"),
+    # path('roles_formulario_editar/<int:id>/', views.roles_formulario_editar, name="roles_formulario_editar"),
 
     # Crud de Favoritos
     path('favoritos_listar/', views.favoritos, name="favoritos_listar"),
@@ -174,3 +175,11 @@ urlpatterns = [
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
 ]
+
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
+from .models import Usuario
+
+for user in Usuario.objects.all():
+    Token.objects.get_or_create(user=user)
