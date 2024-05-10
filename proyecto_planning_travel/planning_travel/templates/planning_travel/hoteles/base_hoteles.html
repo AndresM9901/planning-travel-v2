@@ -59,15 +59,35 @@
                     <i class="bi bi-person-circle"></i>
                 </div>
             </div>
-            <ul class="dropdown-user">
-                <li class="dropdown-elemento"><a href="">Iniciar Sesion</a></li>
-                <li class="dropdown-elemento"><a href="">Registrarse</a></li>
-            </ul>
+            {% if request.session.logueo.rol == 1 %}
+            <a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a>
+            {% endif %}
+            {% if request.session.logueo %}
+                <ul class="dropdown-user">
+                    <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'favoritos_listar' %}">Ver favoritos</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                </ul>
+            {% else %}    
+                <ul class="dropdown-user">
+                    <li class="dropdown-elemento"><a href="{% url 'login_form' %}">Iniciar Sesion</a></li>
+                    <li class="dropdown-elemento"><a href="">Registrarse</a></li>
+                </ul>
+            {% endif %}
         </div>
     </nav>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags and message.tags != 'error' %}{{ message.tags }}{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
     <script src="{% static 'planning_travel/js/navbarHome.js' %}"></script>
+    <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>
     
 </body>
 </html>

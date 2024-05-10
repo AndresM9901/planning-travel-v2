@@ -57,7 +57,16 @@
             </div>
         </div>
     </nav>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags and message.tags != 'error' %}{{ message.tags }}{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
+    <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>

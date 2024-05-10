@@ -3,8 +3,13 @@ from django.contrib import messages
 from .models import *
 from .serializers import *
 from rest_framework import viewsets
-from django.db.models import Min
 from rest_framework.permissions import IsAuthenticated
+import re
+from django.core.mail import BadHeaderError, EmailMessage
+from django.contrib.auth.hashers import make_password
+from django.conf import settings
+from django.urls import reverse
+from .crypt import *
 
 # Create your views here.
 
@@ -215,8 +220,198 @@ def categorias_actualizar(request):
         
     return redirect('categorias_listar')
 
-def index(request):
+regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+def login_form(request):
     return render(request, 'planning_travel/login/login.html')
+
+def login(request):
+    if request.method == "POST":
+        user = request.POST.get("correo")
+        password = request.POST.get("clave")
+        # select * from Usuario where correo = "user" and clave = "passw"
+        if user == "" or password == "":
+            messages.error(request, "No se permiten campos vacios")
+        else:
+            if not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user):
+                messages.error(request, "El correo no es válido")
+            else:
+                try:
+                    q = Usuario.objects.get(correo=user)
+                    if verify_password(password, q.password):
+                        # Crear variable de sesión
+                        request.session["logueo"] = {
+                            "id": q.id,
+                            "nombre": q.nombre,
+                            "rol": q.rol,
+                            "nombre_rol": q.get_rol_display()
+                        }
+                        request.session["carrito"] = []
+                        request.session["items"] = 0
+                        messages.success(request, f"Bienvenido {q.nombre}!!")
+                        return redirect("inicio")
+                    else:
+                        messages.error(request, f"Usuario o contraseña incorrecto")
+                        return redirect("login_form")
+                except Exception as e:
+                    print(f'{user}, {password}')
+                    messages.error(request, "Error: Usuario o contraseña incorrectos...")
+
+    else:
+        return redirect("login_form")  # Redirige solo en caso de GET
+
+    # Renderiza la misma página de inicio de sesión con los mensajes de error
+    return render(request, "planning_travel/login/login.html")
+def registrar(request):
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        correo = request.POST.get("correo")
+        clave = request.POST.get("clave")
+        confirmar_clave = request.POST.get("confirmar_clave")
+        
+        if nombre == "" or correo == "" or clave == "" or confirmar_clave == "":
+            messages.error(request, "Todos los campos son obligatorios")
+        elif not re.match(r'^[a-zA-Z ]+$', nombre):
+            messages.error(request, "El nombre solo puede contener letras y espacios")
+        elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+            messages.error(request, "El correo no es válido")
+        elif clave != confirmar_clave:
+            messages.error(request, "Las contraseñas no coinciden")
+        else:
+            try:
+                q = Usuario(
+                    nombre=nombre,
+                    correo=correo,
+                    password=make_password(clave)
+                )
+                q.save()
+                messages.success(request, "Usuario registrado exitosamente")
+            except Exception as e:
+                messages.error(request, "El Usuario ya existe")
+
+    # Renderiza la misma página de registro con los mensajes de error
+    return render(request, "planning_travel/login/login.html")
+def logout(request):
+	try:
+		del request.session["logueo"]
+		messages.success(request, "Sesión cerrada correctamente!")
+		return redirect("inicio")
+	except Exception as e:
+		messages.warning(request, "No se pudo cerrar sesión...")
+		return redirect("inicio")
+def recuperar_clave(request):
+    if request.method == "POST":
+        correo = request.POST.get("correo")
+        if correo == "":
+            messages.error(request, "Todos los campos son obligatorios")
+            return redirect("login_form")
+        else:
+            try:
+                q = Usuario.objects.get(correo=correo)
+                from random import randint
+                import base64
+                token = base64.b64encode(str(randint(100000, 999999)).encode("ascii")).decode("ascii")
+                print(token)
+                q.token_recuperar = token
+                q.save()
+                # enviar correo de recuperación
+                destinatario = correo
+                mensaje = f"""
+                        <h1 style='color:#ff5c5c;'>Planning Travel</h1>
+                        <p>Usted ha solicitado recuperar su contraseña, haga clic en el link y digite el token.</p>
+                        <p>Token: <strong>{token}</strong></p>
+                        <p>Click Aquí:</p>
+                        <a href='http://127.0.0.1:8000/planning_travel/verificar_recuperar/?correo={correo}'>Recuperar Clave</a>
+                        """
+                try:
+                    msg = EmailMessage("Tienda ADSO", mensaje, settings.EMAIL_HOST_USER, [destinatario])
+                    msg.content_subtype = "html"  # Habilitar contenido html
+                    msg.send()
+                    messages.success(request, "Correo enviado!!")
+                except BadHeaderError:
+                    messages.error(request, "Encabezado no válido")
+                except Exception as e:
+                    messages.error(request, f"Error: {e}")
+                # fin -
+            except Usuario.DoesNotExist:
+                messages.error(request, "No existe el usuario....")
+            return redirect("recuperar_clave")
+    else:
+        return render(request, "planning_travel/login/login.html")
+from django.urls import reverse
+
+def verificar_recuperar(request):
+    if request.method == "POST":
+        if request.POST.get("check"):
+            # caso en el que el token es correcto
+            correo = request.POST.get("correo")
+            q = Usuario.objects.get(correo=correo)
+
+            c1 = request.POST.get("nueva1")
+            c2 = request.POST.get("nueva2")
+            if c1 == "" or c2 == "":
+                messages.info(request, "Campos vacios")
+                return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+            else:
+                if c1 == c2:
+                    # cambiar clave en DB
+                    q.clave = hash_password(c1)
+                    q.token_recuperar = ""
+                    q.save()
+                    messages.success(request, "Contraseña guardada correctamente!!")
+                    return redirect("login_form")
+                else:
+                    messages.info(request, "Las contraseñas nuevas no coinciden...")
+                    return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+        else:
+            # caso en el que se hace clic en el correo-e para digitar token
+            correo = request.POST.get("correo")
+            token = request.POST.get("token")
+            q = Usuario.objects.get(correo=correo)
+            if token == "":
+                messages.info(request, "Complete todos los espacios")
+                return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+            else:
+                if (q.token_recuperar == token) and q.token_recuperar != "":
+                    contexto = {"check": "ok", "correo":correo}
+                    return render(request, "planning_travel/login/verificar_recuperar.html", contexto)
+                else:
+                    messages.error(request, "Token incorrecto")
+                    return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+    else:
+        correo = request.GET.get("correo")
+        contexto = {"correo":correo}
+        return render(request, "planning_travel/login/verificar_recuperar.html", contexto)
+    
+def ver_perfil(request):
+	logueo = request.session.get("logueo", False)
+	# Consultamos en DB por el ID del usuario logueado....
+	q = Usuario.objects.get(pk=logueo["id"])
+	contexto = {"data": q}
+	return render(request, "planning_travel/login/perfil_usuario.html", contexto)
+
+def perfil_actualizar(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('correo')
+        try:
+            # Obtén el objeto Usuario por su ID
+            usuario = Usuario.objects.get(pk=id)
+            usuario.nombre = nombre
+            usuario.correo = correo
+            usuario.save()
+            messages.success(request, "Perfil actualizado correctamente")
+            return redirect('ver_perfil')  # Redirecciona a una página después de la actualización
+        except Usuario.DoesNotExist:
+            messages.error(request, "El usuario no existe")
+        except Exception as e:
+            messages.error(request, f'Error: {e}')
+    else:
+        messages.warning(request, 'No se enviaron datos')
+    return redirect('ver_perfil')  # Redirecciona en caso de un error o método GET
+
+def index(request):
+    return render(request, 'planning_travel/inicio.html')
 
 # Crud de Usuarios
 

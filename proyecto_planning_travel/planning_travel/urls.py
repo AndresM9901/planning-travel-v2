@@ -28,7 +28,18 @@ urlpatterns = [
     path('api/1.0/', include(router.urls)),
     path('api/1.0/token-auth/', views_rest.obtain_auth_token),
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
-    # path('', views.index, name="index"),
+    path('admin/', views.index, name="admin"),
+
+    # Login
+
+    path('login/', views.login, name="login"),
+    path('login_form/', views.login_form, name="login_form"),
+    path('logout/', views.logout, name="logout"),
+    path('registrar/', views.registrar, name="registrar"),
+    path('perfil_actualizar/', views.perfil_actualizar, name="perfil_actualizar"),
+    path("ver_perfil/", views.ver_perfil, name="ver_perfil"),
+    path("recuperar_clave/", views.recuperar_clave, name="recuperar_clave"),
+	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),
     
     # Crud de Categorias
     path('categorias_listar/', views.categorias, name="categorias_listar"),
