@@ -354,7 +354,7 @@ def verificar_recuperar(request):
             else:
                 if c1 == c2:
                     # cambiar clave en DB
-                    q.clave = make_password(c1)
+                    q.password = make_password(c1)
                     q.token_recuperar = ""
                     q.save()
                     messages.success(request, "Contraseña guardada correctamente!!")
