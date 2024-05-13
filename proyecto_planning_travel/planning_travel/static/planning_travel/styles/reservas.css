@@ -1,0 +1,61 @@
+.form-reserva {
+    padding: 16px 8px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}
+
+.titulo {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.hotel {
+    gap: 8px;
+    flex-direction: column-reverse;
+    border: 1px solid aqua;
+    width: fit-content;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+}
+
+.pisos {
+    gap: 8px;
+}
+
+.habitaciones {
+    border: 1px solid black;
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+
+.habitacion-ocupada {
+    border: 1px solid red !important;
+}
+
+.habitacion-disponible {
+    border: 1px solid green;
+}
+
+.i-ocupado {
+    color: red;
+}
+
+.i-disponible {
+    color: green;
+}
+
+.datos {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.grupo-fechas {
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+}

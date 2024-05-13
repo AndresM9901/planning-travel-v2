@@ -10,6 +10,10 @@ from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from django.urls import reverse
 from .crypt import *
+from django.db.models import Min
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from datetime import datetime
 
 # Create your views here.
 
@@ -20,6 +24,7 @@ def inicio(request):
     servicios = Servicio.objects.all().order_by('nombre')
     servicio_activo = None
     
+    habitaciones_total = []
     if 'nombre' in request.GET:
         query_nombre = request.GET.get('nombre')
         # query_cantidad = request.GET.get('cantidad')
@@ -45,6 +50,13 @@ def inicio(request):
         hotel.opiniones_count = opiniones_count
         hotel.promedio_valoracion = promedio_valoracion
     
+    for hotel in hoteles:
+        # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
+        precio_minimo = Habitacion.objects.filter(id_piso_hotel__id_hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
+    
+        # Actualizar el precio mínimo en el objeto del hotel
+        hotel.precio_minimo = precio_minimo
+    
     # Crear un diccionario para agrupar las fotos por ID de hotel
     fotos_por_hotel = {}
     for foto in fotos:
@@ -64,9 +76,11 @@ def detalle_hotel(request, id):
     servicios_hotel = HotelServicio.objects.filter(id_hotel=id)
     hotel_comodidades = HotelComodidad.objects.filter(id_hotel=id)
     opiniones = Opinion.objects.filter(id_hotel=id)
+    pisos_hotel = PisosHotel.objects.filter(id_hotel=id)
     comodidades = []
     servicios = []
     estrellas = []
+    habitaciones_total = []
     for servicio in servicios_hotel:
         sq = Servicio.objects.get(id=servicio.id_servicio.id)
         servicios.append(sq)
@@ -76,7 +90,9 @@ def detalle_hotel(request, id):
 
     for opinion in opiniones:
         opinion.puntuacion = range(opinion.puntuacion)
-    habitaciones = Habitacion.objects.filter(id_hotel=id)
+    for piso in pisos_hotel:
+        habitaciones = Habitacion.objects.filter(id_piso_hotel=piso.id)
+        habitaciones_total.append(habitaciones)
     fotos = Foto.objects.filter(id_hotel=id)
     comodidades.sort(key=lambda x: x["comodidad"].nombre, reverse=True)
     opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
@@ -89,72 +105,106 @@ def detalle_hotel(request, id):
     contexto = {
         'hotel': hotel,
         'servicios': servicios,
-        'habitaciones': habitaciones,
+        'habitaciones': habitaciones_total,
         'fotos': fotos,
         'comodidades': comodidades,
         'opiniones': opiniones
     }
     return render(request, 'planning_travel/hoteles/hotel_home/hotel_detail.html', contexto)
 
-
-# def inicio(request):
-#     hoteles = Hotel.objects.all()
-#     fotos = Foto.objects.all()
-#     servicios = Servicio.objects.all()
-    
-#     servicio_id = request.GET.get('servicio')
-#     if servicio_id:
-#         # hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
-#         # print(hoteles_servicio)
-#         # hoteles = [hotel for hotel in hoteles if hotel.id in hoteles_servicio]
-#         # print(hoteles)
-#         hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
-#         hoteles_ids = [hs.id_hotel_id for hs in hoteles_servicio]
-#         hoteles = hoteles.filter(id__in=hoteles_ids)
-
-#     for hotel in hoteles:
-#         # Obtener la cantidad de opiniones
-#         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
-#         # Obtener el promedio de valoración
-#         valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
-#         promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
-
-#         hotel.opiniones_count = opiniones_count
-#         hotel.promedio_valoracion = promedio_valoracion
-    
-#     fotos_por_hotel = {}
-#     for foto in fotos:
-#         fotos_por_hotel.setdefault(foto.id_hotel, []).append(foto)
-
-#     hoteles_con_fotos = [(hotel, fotos_por_hotel.get(hotel.id, [])) for hotel in hoteles]
-
-#     context = {'hoteles': hoteles_con_fotos, 'servicios': servicios}
-#     return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', context)
-
-# def inicio(request):
-#     hoteles = Hotel.objects.all()
-#     fotos = Foto.objects.all()
-#     servicios = Servicio.objects.all()
-    
-#     for hotel in hoteles:
-#         # Obtener la cantidad de opiniones
-#         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
-#         # Obtener el promedio de valoración
-#         valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
-#         promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
-
-#         hotel.opiniones_count = opiniones_count
-#         hotel.promedio_valoracion = promedio_valoracion
-#     # Crea un diccionario para agrupar las fotos por ID de hotel
-#     fotos_por_hotel = {}
-#     for foto in fotos:
-#         if foto.id_hotel not in fotos_por_hotel:
-#             fotos_por_hotel[foto.id_hotel] = []
-#         fotos_por_hotel[foto.id_hotel].append(foto)
+def reserva(request, id):
+    hotel = Hotel.objects.get(pk=id)
+    pisos = PisosHotel.objects.filter(id_hotel=id)
+    num_habitaciones_piso = []
+    habitaciones = []
+    for piso in pisos:
+        habitacion_hotel = Habitacion.objects.filter(id_piso_hotel=piso.id)
+        habitaciones.append(habitacion_hotel)
+        num_habitaciones_piso.append({'piso': piso, 'habitaciones': habitacion_hotel})
         
-#     hoteles_con_fotos = [(hotel, fotos_por_hotel.get(hotel, [])) for hotel in hoteles]
-#     # Envía los datos a la plantilla 'hoteles': hoteles, 'fotos_por_hotel': fotos_por_hotel
-#     return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'hoteles': hoteles_con_fotos, 'servicios': servicios})
+    habitaciones_disponibles = []
+    if request.method == 'POST':
+        fecha_llegada = request.POST.get('fecha_llegada')
+        fecha_salida = request.POST.get('fecha_salida')
+        
+        response = request.post('verificar_disponibilidad/', data={
+            'fecha_llegada': fecha_llegada,
+            'fecha_salida': fecha_salida
+        })
+        
+        if response.status.code == 200:
+            data = response.json()
+            habitaciones_disponibles = data.get('habitaciones_disponibles', [])
+    
+    contexto = {
+        'habitaciones': habitaciones,
+        'num_habitaciones_piso': num_habitaciones_piso,
+        'habitaciones_disponibles': habitaciones_disponibles
+    }
+    return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
+
+
+def verificar_disponibilidad(request):
+    fecha_llegada_str = request.POST.get('fecha_llegada')
+    fecha_salida_str = request.POST.get('fecha_salida')
+    
+    if fecha_llegada_str is None or fecha_salida_str is None:
+        return JsonResponse({'error': 'Las fechas de llegada y salida son necesarias'}, status=400)
+    
+    fecha_llegada = datetime.strptime(fecha_llegada_str, '%Y-%m-%d')
+    fecha_salida = datetime.strptime(fecha_salida_str, '%Y-%m-%d')
+
+    habitaciones_ocupadas = Habitacion.objects.filter(
+        reserva__fecha_llegada__lte=fecha_salida,
+        reserva__fecha_salida__gte=fecha_llegada
+    ).values_list('num_habitacion', flat=True)
+
+    habitaciones_disponibles = Habitacion.objects.exclude(
+        reserva__fecha_llegada__lte=fecha_salida,
+        reserva__fecha_salida__gte=fecha_llegada
+    ).values_list('num_habitacion', flat=True)
+    
+    return JsonResponse({
+        'habitaciones_ocupadas': list(habitaciones_ocupadas),
+        'habitaciones_disponibles': list(habitaciones_disponibles)
+    })
+    
+def separar_reserva(request):
+    if request.method == 'POST':
+        habitacion = request.POST.get('habitacion')
+        fecha_llegada = request.POST.get('fecha_llegada')
+        fecha_salida = request.POST.get('fecha_salida')
+        num_huespedes = request.POST.get('num_personas')
+        try:
+            qh = Habitacion.objects.get(pk=habitacion)
+            reserva = Reserva(
+                habitacion=qh,
+                fecha_llegada=fecha_llegada,
+                fecha_salida=fecha_salida,
+                cantidad_personas=num_huespedes,
+                total=qh.precio
+            )
+            reserva.save()
+            messages.success(request, "Fue reservado correctamente")
+        except Exception as e:
+            messages.error(request,f'Error: {e}')
+    else:
+        hotel = Hotel.objects.get(pk=PisosHotel.objects.get(pk=Habitacion.objects.get(pk=habitacion.id)))
+        url = reverse('reserva', kwargs={'id': hotel.id})
+        messages.warning(request, 'No se pudo hacer la reserva')
+        return redirect(url)
+    return redirect('inicio')
+
+def obtener_precio(request):
+    habitacion_seleccionada = request.GET.get('habitacion')
+    
+    precio = 0
+    
+    if habitacion_seleccionada:
+        habitacion = Habitacion.objects.get(pk=habitacion_seleccionada)
+        precio = habitacion.precio
+        
+    return JsonResponse({'precio': precio})
 
 # Crud de Categorias
 def categorias(request):
@@ -182,7 +232,7 @@ def categorias_crear(request):
 
         return redirect('categorias_listar')
     else:
-        messages.warning(request,'No se enviaron datos')
+        messages.warning(request, 'No se enviaron datos')
         return redirect('categorias_listar')
 
 def categorias_eliminar(request, id):
@@ -562,69 +612,6 @@ def hoteles_actualizar(request):
     else:
         messages.warning(request,'No se enviaron datos')
 
-# Crud de puntuacion
-
-# def puntuaciones(request):
-#     q = Puntuacion.objects.all()
-#     contexto = {'data': q}
-#     return render(request, 'planning_travel/puntuaciones/puntuaciones.html', contexto)
-
-# def puntuaciones_form(request):
-#     q = Comentario.objects.all()
-#     contexto = {'data': q}
-#     return render(request, 'planning_travel/puntuaciones/puntuaciones_form.html', contexto)
-
-# def puntuaciones_crear(request):
-#     if request.method == 'POST':
-#         comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
-#         valoracion = request.POST.get('valoracion')
-#         try:
-#             q = Puntuacion(
-#                 comentario=comentario,
-#                 valoracion=valoracion,
-#             )
-#             q.save()
-#             messages.success(request, "Fue actualizado correctamente")
-#         except Exception as e:
-#             messages.error(request,f'Error: {e}')
-
-#         return redirect('puntuaciones_listar')
-#     else:
-#         messages.warning(request,'No se enviaron datos')
-#         return redirect('puntuaciones_listar')
-    
-# def puntuaciones_eliminar(request, id):
-#     try:
-#         q = Puntuacion.objects.get(pk = id)
-#         q.delete()
-#         messages.success(request, 'Puntuacion eliminada correctamente!!')
-#     except Exception as e:
-#         messages.error(request,f'Error: {e}')
-        
-# def puntuaciones_form_editar(request, id):
-#     q = Puntuacion.objects.get(pk = id)
-#     c = Comentario.objects.all()
-#     contexto = {'data': q, 'comentario': c}
-#     return render(request, 'planning_travel/puntuaciones/puntuaciones_form_editar.html', contexto)
-
-# def puntuaciones_actualizar(request):
-"""    if request.method == 'POST':
-        id = request.POST.get('id')
-        comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
-        valoracion = request.POST.get('valoracion')
-        try:
-            q = Usuario.objects.get(pk = id)
-            q.comentario = comentario
-            q.valoracion = valoracion
-            q.save()
-            messages.success(request, "Fue actualizado correctamente")
-        except Exception as e:
-            messages.error(request,f'Error: {e}')
-    else:
-        messages.warning(request,'No se enviaron datos')
-
-    return redirect('puntuaciones_listar')
-"""
 # Crud Comodidades
 
 def comodidades(request):
@@ -1152,7 +1139,7 @@ def reportes_crear(request):
 
 def reportes_actualizar(request):
     if request.method == 'POST':
-        id= request.POST.get('id')
+        id = request.POST.get('id')
         id_usuario =Usuario.objects.get(pk = request.POST.get('id_usuario'))
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')

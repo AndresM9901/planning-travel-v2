@@ -10,8 +10,6 @@ router.register(r'comodidad', views.ComodidadViewSet)
 router.register(r'usuario', views.UsuarioViewSet)
 router.register(r'favorito', views.FavoritoViewSet)
 router.register(r'opinion', views.OpinionViewSet)
-# router.register(r'comentario', views.ComentarioViewSet)
-# router.register(r'puntucion', views.PuntuacionViewSet)
 router.register(r'foto', views.FotoViewSet)
 router.register(r'hotel-comodidad', views.HotelComodidadViewSet)
 router.register(r'hotel-categoria', views.HotelCategoriaViewSet)
@@ -30,6 +28,12 @@ urlpatterns = [
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
     path('admin/', views.index, name="admin"),
 
+    # Reservas
+    path('reserva/<int:id>/', views.reserva, name="reserva"),
+    path('verificar_disponibilidad/', views.verificar_disponibilidad, name="verificar_disponibilidad"),
+    path('separar_reserva/', views.separar_reserva, name="separar_reserva"),
+    path('obtener_precio/', views.obtener_precio, name="obtener_precio"),
+    
     # Login
 
     path('login/', views.login, name="login"),

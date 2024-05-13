@@ -31,21 +31,23 @@
             </a>
         </div>
         <div class="search-bar d-flex">
-            <input
+            <form action="{% url 'inicio' %}">
+                <input
                 class="input-search"
                 placeholder="¿Donde quieres ir?"
                 type="text"
+                name="nombre"
             />
-            <!-- <div class="divider"></div> -->
-            <!-- <div class="divider"></div> -->
             <input
                 type="text"
                 class="input-search"
+                name="cantidad"
                 placeholder="¿Cuantas Personas?"
             />
             <button class="btn-search"><i class="bi bi-search"></i></button>
+            </form>
         </div>
-        <div class="nav-bar-btns d-flex">
+        <div class="nav-bar-btns btn-dropdown d-flex">
             <button class="btn-publicar">Hazte anfitrión</button>
             <div class="btn-profile d-flex">
                 <div>
@@ -55,6 +57,21 @@
                     <i class="bi bi-person-circle"></i>
                 </div>
             </div>
+            {% if request.session.logueo.rol == 1 %}
+            <a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a>
+            {% endif %}
+            {% if request.session.logueo %}
+                <ul class="dropdown-user">
+                    <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'favoritos_listar' %}">Ver favoritos</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                </ul>
+            {% else %}    
+                <ul class="dropdown-user">
+                    <li class="dropdown-elemento"><a href="{% url 'login_form' %}">Iniciar Sesion</a></li>
+                    <li class="dropdown-elemento"><a href="">Registrarse</a></li>
+                </ul>
+            {% endif %}
         </div>
     </nav>
     {% if messages %}
@@ -68,5 +85,6 @@
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
     <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'planning_travel/js/navbarHome.js' %}"></script>
 </body>
 </html>

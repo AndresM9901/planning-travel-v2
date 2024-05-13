@@ -24,8 +24,9 @@ class Usuario(AbstractUser):
     password = models.CharField(max_length=100)
     ROLES = (
         (1, "Administrador"),
-        (2, "Despachador"),
+        (2, "Anfitrion"),
         (3, "Cliente"),
+        (4, "Moderador")
     )
     rol = models.IntegerField(choices=ROLES, default=3)
     foto = models.ImageField(upload_to="planning_travel/media/", default='planning_travel/media/batman.png')
@@ -43,10 +44,9 @@ class Hotel(models.Model):
     descripcion = models.TextField()
     direccion = models.CharField(max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
-    cantidad_habitaciones = models.IntegerField()
-    dueño = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+    propietario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     ciudad = models.CharField(max_length=200)
-    precio = models.DecimalField(max_digits=250, decimal_places=2)
+    
 
     def __str__(self):
         return f'{self.nombre}'
@@ -58,6 +58,14 @@ class Favorito(models.Model):
 
     def __str__(self):
         return f'{self.id_hotel}'
+    
+class PisosHotel(models.Model):
+    id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
+    num_piso = models.IntegerField()
+    cantidad_habitaciones = models.IntegerField()
+    
+    def __str__(self):
+        return f'{self.num_piso}'
     
 # class Comentario(models.Model):
 #     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
@@ -129,10 +137,11 @@ class HotelServicio(models.Model):
     
 class Habitacion(models.Model):
     num_habitacion = models.IntegerField()
-    id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
+    id_piso_hotel = models.ForeignKey(PisosHotel, on_delete=models.DO_NOTHING)
     ocupado = models.BooleanField()
     capacidad_huesped = models.IntegerField()
     tipo_habitacion = models.CharField(max_length=255)
+    precio = models.DecimalField(max_digits=250, decimal_places=2)
 
     def __str__(self):
         return f'{self.num_habitacion}'
@@ -141,7 +150,13 @@ class Reserva(models.Model):
     habitacion = models.ForeignKey(Habitacion, on_delete=models.DO_NOTHING)
     fecha_llegada = models.DateField()
     fecha_salida = models.DateField()
+    # PAGO = (
+    #         (1, ''),
+    #         ()
+    #     )
+    # metodo_pago = models.IntegerField(choices=PAGO, default=1)
     cantidad_personas = models.IntegerField()
+    total = models.DecimalField(max_digits=250, decimal_places=2)
 
     def __str__(self):
         return f'{self.habitacion}'

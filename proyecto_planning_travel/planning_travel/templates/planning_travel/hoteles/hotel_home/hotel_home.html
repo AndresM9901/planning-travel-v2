@@ -47,7 +47,7 @@
                     <div class="carrusel-item">
                         <img
                             src="{{ foto.url_foto.url }}"
-                            alt="Image 1"
+                            alt=""
                         />
                     </div>
                     {% endfor %}
@@ -82,7 +82,7 @@
                     </div>
                     <div class="hotel-price-container d-flex">
                         <p class="text">Desde</p>
-                        <a class="hotel-price" onclick="detallesDelHotel(`{% url 'detalle_hotel' hotel.id %}`)">$ {{ hotel.precio | floatformat:0 }}</a>
+                        <a class="hotel-price" onclick="detallesDelHotel(`{% url 'detalle_hotel' hotel.id %}`)">$ {{ hotel.precio_minimo | floatformat:0 }}</a>
                     </div>
                 </div>
             </div>

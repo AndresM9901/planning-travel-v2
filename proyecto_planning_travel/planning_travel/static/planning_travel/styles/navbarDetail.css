@@ -48,6 +48,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    position: relative;
     border: none;
 }
 
@@ -80,4 +81,38 @@
 
 .btn-profile:hover {
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
+}
+
+.dropdown-user {
+    display: none;
+    position: absolute;
+    top: 100%;
+    list-style: none;
+    background-color: #d3d3d3;
+    margin: 10px 0 0 0;
+    width: 200px;
+    padding: 0;
+    padding: 2px 4px;
+    border-radius: 10px;
+}
+
+.dropdown-user.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: center;
+    border: none;
+    gap: 8px;
+}
+
+.dropdown-elemento a {
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    color: #000;
+}
+
+.dropdown-elemento:hover a {
+    color: var(--primary-color);
 }

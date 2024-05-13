@@ -36,6 +36,7 @@ class UsuarioAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Cliente)
+admin.site.register(PisosHotel)
 admin.site.register(Opinion)
 admin.site.register(Servicio)
 admin.site.register(HotelServicio)

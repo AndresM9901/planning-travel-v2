@@ -19,7 +19,7 @@
                         <div class="carrusel-item">
                             <img
                                 src="{{ foto.url_foto.url }}"
-                                alt="Image 1"
+                                alt=""
                             />
                         </div>
                         {% endfor %}
@@ -44,6 +44,7 @@
                     <div class="botones-head d-flex">
                         <a href="" class="btn"><i class="bi bi-arrow-left-right btn-icon"></i> Comparar</a>
                         <a href="" class="btn"><i class="bi bi-bookmark-heart"></i> Favoritos</a>
+                        <a href="{% url 'reserva' hotel.id %}" class="btn btn-primary">Reserva ya</a>
                     </div>
                 </div>
                 <div class="body-info d-flex">
@@ -112,7 +113,7 @@
                 {% for comentario in opiniones %}
                 <div class="card-comentario">
                     <div class="comentario-header d-flex">
-                        <img class="comentario__imagen" src="{% static 'planning_travel/images/persona1-min.jpg' %}" alt="">
+                        <img class="comentario__imagen" src="{{ comentario.id_usuario.foto.url }}" alt="">
                         <div class="info-usuario d-flex">
                             <p class="info__nombre">{{ comentario.id_usuario.nombre }}</p>
                             <p class="info__lugar">Ciudad donde vive</p>
@@ -127,7 +128,7 @@
                             </div>
                             <p class="m-0">{{ comentario.fecha }}</p>
                         </div>
-                        <p class="m-0">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cumque aliquam eaque fuga temporibus reprehenderit atque ipsa non ipsam maxime omnis totam, obcaecati praesentium consequatur culpa natus voluptate! Quisquam, libero illo?</p>
+                        <p class="m-0">{{ comentario.contenido }}</p>
                     </div>
                 </div>
                 {% endfor %}
@@ -138,4 +139,5 @@
 
 {% block scripts %}
 <script src="{% static 'planning_travel/js/hotel_detail.js' %}"></script>
+
 {% endblock %}
