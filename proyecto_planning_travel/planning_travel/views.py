@@ -185,6 +185,18 @@ def separar_reserva(request):
                 total=qh.precio
             )
             reserva.save()
+            if request.session['logueo']:
+                usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
+                reserva_usuario = ReservaUsuario(
+                    usuario=usuario,
+                    reserva=reserva
+                )
+                reserva_usuario.save()
+            else:
+                messages.success(request, "Fue reservado correctamente")
+                hotel = Hotel.objects.get(pk=PisosHotel.objects.get(pk=Habitacion.objects.get(pk=habitacion.id)))
+                url = reverse('reserva', kwargs={'id': hotel.id})
+                return redirect(url)
             messages.success(request, "Fue reservado correctamente")
         except Exception as e:
             messages.error(request,f'Error: {e}')
@@ -308,16 +320,16 @@ def login(request):
 
     else:
         return redirect("login_form")  # Redirige solo en caso de GET
-
     # Renderiza la misma página de inicio de sesión con los mensajes de error
     return render(request, "planning_travel/login/login.html")
+
 def registrar(request):
     if request.method == "POST":
         nombre = request.POST.get("nombre")
         correo = request.POST.get("correo")
         clave = request.POST.get("clave")
         confirmar_clave = request.POST.get("confirmar_clave")
-        
+        username = correo.split('@')[0]
         if nombre == "" or correo == "" or clave == "" or confirmar_clave == "":
             messages.error(request, "Todos los campos son obligatorios")
         elif not re.match(r'^[a-zA-Z ]+$', nombre):
@@ -331,7 +343,8 @@ def registrar(request):
                 q = Usuario(
                     nombre=nombre,
                     correo=correo,
-                    password=make_password(clave)
+                    password=make_password(clave),
+                    username=username
                 )
                 q.save()
                 messages.success(request, "Usuario registrado exitosamente")

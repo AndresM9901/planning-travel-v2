@@ -164,8 +164,13 @@ class Reserva(models.Model):
 class ReservaUsuario(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     reserva = models.ForeignKey(Reserva, on_delete=models.DO_NOTHING)
-    estado_reserva = models.CharField(max_length=255)
-    fecha_realizacion = models.DateTimeField()
+    ESTADO_RESERVA = (
+        (1, 'reservada'),
+        (2, 'libre'),
+        (3, 'cancelada')
+    )
+    estado_reserva = models.IntegerField(choices=ESTADO_RESERVA, default=1)
+    fecha_realizacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.fecha_realizacion}'
