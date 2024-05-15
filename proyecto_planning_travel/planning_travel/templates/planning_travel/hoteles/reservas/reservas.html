@@ -42,6 +42,19 @@
             <button type="button" onclick="verificarDisponibilidad(`{% url 'verificar_disponibilidad' %}`)" id="btn-verificar" class="btn btn-secondario">Verificar disponibilidad</button>
         </div>
         <div>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="categoria" name="categoria" required>
+                    <option value="">Seleccionar Categoria</option>
+                    {% for c in metodo_pago %}
+                        <option value="{{ c.0 }}">{{ c.1 }}</option>
+                    {% endfor %}
+                </select>
+                <label for="categoria"
+                    >Paga con:</label>
+            </div>
+            <button>Añadir metodo de pago</button>
+        </div>
+        <div>
             <div class="form-floating mb-3">
                 <input class="form-control" type="number" name="num_personas" id="num_personas" placeholder="Huespedes">
                 <label for="num_personas">Huespedes</label>
@@ -54,4 +67,7 @@
 {% block scripts %}
 <script src="{% static 'planning_travel/js/jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'planning_travel/js/reserva.js' %}"></script>
+<!--<script src="https://www.mercadopago.com.ar/integrations/v1/web-payment-checkout.js"
+data-preference-id="1273324264-f92cada3-65b7-4a53-a55b-af7cfb015eb6" data-source="button">
+</script>-->
 {% endblock %}

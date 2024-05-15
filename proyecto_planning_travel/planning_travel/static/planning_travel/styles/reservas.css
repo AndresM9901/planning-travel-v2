@@ -14,7 +14,7 @@
 .hotel {
     gap: 8px;
     flex-direction: column-reverse;
-    border: 1px solid aqua;
+    border: 1px solid var(--secondary-color);
     width: fit-content;
     justify-content: center;
     align-items: center;

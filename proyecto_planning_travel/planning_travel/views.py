@@ -117,6 +117,14 @@ def reserva(request, id):
     pisos = PisosHotel.objects.filter(id_hotel=id)
     num_habitaciones_piso = []
     habitaciones = []
+    if request.session['logueo']:
+        usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
+        metodo_usuario = tuple((m.id, m.get_tipo_pago_display()) for m in MetodoPago.objects.filter(id_usuario=usuario.id))
+        if metodo_usuario:
+            print(tuple(metodo_usuario))
+        else:
+            metodo = MetodoPago()
+            metodo_usuario = metodo.TIPO_PAGO
     for piso in pisos:
         habitacion_hotel = Habitacion.objects.filter(id_piso_hotel=piso.id)
         habitaciones.append(habitacion_hotel)
@@ -139,7 +147,8 @@ def reserva(request, id):
     contexto = {
         'habitaciones': habitaciones,
         'num_habitaciones_piso': num_habitaciones_piso,
-        'habitaciones_disponibles': habitaciones_disponibles
+        'habitaciones_disponibles': habitaciones_disponibles,
+        'metodo_pago': metodo_usuario
     }
     return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
 

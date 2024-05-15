@@ -145,6 +145,21 @@ class Habitacion(models.Model):
 
     def __str__(self):
         return f'{self.num_habitacion}'
+    
+class MetodoPago(models.Model):
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+    TIPO_PAGO = (
+        (1, 'Tarjeta de credito'),
+        (2, 'Tarjeta debito'),
+        (3, 'Efectivo')
+    )
+    tipo_pago = models.IntegerField(choices=TIPO_PAGO)
+    numero_tarjeta = models.CharField(max_length=30, null=True , blank=True)
+    caducidad = models.CharField(max_length=6, null=True, blank=True)
+    codigo_cvv = models.CharField(max_length=5, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.tipo_pago}'
 
 class Reserva(models.Model):
     habitacion = models.ForeignKey(Habitacion, on_delete=models.DO_NOTHING)
