@@ -228,6 +228,23 @@ def hoteles_actualizar(request):
     else:
         messages.warning(request,'No se enviaron datos')
 
+# dueño hotel 
+
+def dueno_hotel(request): 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html') 
+
+def dueno_hoy(request): 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html') 
+
+def dueno_calendario(request): 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
+
+def dueno_anuncio(request): 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
+
+def dueno_mensaje(request): 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_mensaje.html') 
+
 # Crud de puntuacion
 
 def puntuaciones(request):

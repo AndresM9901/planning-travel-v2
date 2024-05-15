@@ -52,6 +52,13 @@ urlpatterns = [
     path('hoteles_eliminar/<int:id>', views.hoteles_eliminar, name='hoteles_eliminar'),
     path('hoteles_form_editar/<int:id>', views.hoteles_form_editar, name='hoteles_form_editar'),
     
+    #dueño hotel
+    path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
+    path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
+    path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
+    path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
+    path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 
+
     # Crud de puntuaciones
     path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
     path('puntuaciones_form/', views.puntuaciones_form, name='puntuaciones_form'),
