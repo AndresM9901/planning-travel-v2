@@ -59,3 +59,9 @@
     align-items: center;
     gap: 16px;
 }
+
+.pago {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

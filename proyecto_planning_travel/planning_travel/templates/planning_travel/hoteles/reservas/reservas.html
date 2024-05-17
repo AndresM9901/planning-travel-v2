@@ -36,15 +36,13 @@
                 </div>
                 <div class="contenedor-fehcas">
                     <label for="fecha_salida">Fecha de salida</label>
-                    <input type="date" class="form-control" name="fecha_salida" id="fecha_salida">
+                    <input type="date" class="form-control" name="fecha_salida" id="fecha_salida" disabled onchange="verificarDisponibilidad(`{% url 'verificar_disponibilidad' %}`)">
                 </div>
             </div>
-            <button type="button" onclick="verificarDisponibilidad(`{% url 'verificar_disponibilidad' %}`)" id="btn-verificar" class="btn btn-secondario">Verificar disponibilidad</button>
         </div>
-        <div>
+        <div class="pago d-flex">
             <div class="form-floating mb-3 col-12 p-1">
                 <select class="form-select" id="categoria" name="categoria" required>
-                    <option value="">Seleccionar Categoria</option>
                     {% for c in metodo_pago %}
                         <option value="{{ c.0 }}">{{ c.1 }}</option>
                     {% endfor %}
@@ -52,7 +50,8 @@
                 <label for="categoria"
                     >Paga con:</label>
             </div>
-            <button>Añadir metodo de pago</button>
+            <p>O</p>
+            <button class="btn btn-secondario">Añadir metodo de pago</button>
         </div>
         <div>
             <div class="form-floating mb-3">

@@ -1,9 +1,15 @@
+const fechaLlegada = document.querySelector('#fecha_llegada');
+const fechaSalida = document.querySelector('#fecha_salida');
+fechaLlegada.addEventListener('change', () => {
+    console.log(fechaLlegada !== '');
+    if(fechaLlegada !== '') {
+        $(fechaSalida).prop('disabled', false);
+    }
+});
+
 function verificarDisponibilidad(url) {
-    console.log(url);
-    const fechaLlegada = document.querySelector('#fecha_llegada').value;
-    const fechaSalida = document.querySelector('#fecha_salida').value;
     const csrftoken = getCookie('csrftoken');
-    console.log(fechaLlegada);
+
 
     $.ajax({
         url,
@@ -13,8 +19,8 @@ function verificarDisponibilidad(url) {
         },
         ContentType: 'application/json',
         data: {
-            'fecha_llegada': fechaLlegada,
-            'fecha_salida': fechaSalida
+            'fecha_llegada': fechaLlegada.value,
+            'fecha_salida': fechaSalida.value
         }
     })
     .done(function(data) {
@@ -25,13 +31,7 @@ function verificarDisponibilidad(url) {
             $(`#habitacion-${numHabitacion}`).parent().addClass('habitacion-ocupada');
             $(`#habitacion-${numHabitacion}`).parent().removeClass('habitacion-disponible');
             $(`#habitacion-${numHabitacion}`).prop('disabled', true);
-            if($(`#habitacion-${numHabitacion}`).parent().hasClass('habitacion-ocupada')) {
-                $(`#habitacion-${numHabitacion}`).parent().append('<i class="bi bi-house-dash-fill i-ocupado"></i>');
-            }
         });
-        habitacionesDisponibles.forEach(numHabitacion => {
-            $(`#habitacion-${numHabitacion}`).parent().append('<i class="bi bi-house-check-fill i-disponible"></i>');
-        })
     })
     .fail(function(xhr, textStatus, errorThrown) { // Cambiar error por xhr, textStatus, errorThrown
         console.error(`Error al verificar disponibilidad ${errorThrown}`);

@@ -1,19 +1,23 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import *
-from .serializers import *
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-import re
 from django.core.mail import BadHeaderError, EmailMessage
 from django.contrib.auth.hashers import make_password
 from django.conf import settings
-from django.urls import reverse
-from .crypt import *
 from django.db.models import Min
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+from django.urls import reverse
+from rest_framework.decorators import api_view
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
 from datetime import datetime
+import re
+from .serializers import *
+from .models import *
+from .crypt import *
 
 # Create your views here.
 
@@ -226,6 +230,43 @@ def obtener_precio(request):
         precio = habitacion.precio
         
     return JsonResponse({'precio': precio})
+
+def agregar_pago(request):
+    return redirect('ver_perfil')
+
+class CrearReservaAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = ReservaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class VerificarDisponibilidadAPIView(APIView):
+    def get(self, request):
+        fecha_llegada_str = request.GET.get('fecha_llegada')
+        fecha_salida_str = request.GET.get('fecha_salida')
+
+        if fecha_llegada_str is None or fecha_salida_str is None:
+            return Response({'error': 'Las fechas de llegada y salida son necesarias'}, status=status.HTTP_400_BAD_REQUEST)
+
+        fecha_llegada = datetime.strptime(fecha_llegada_str, '%Y-%m-%d')
+        fecha_salida = datetime.strptime(fecha_salida_str, '%Y-%m-%d')
+
+        habitaciones_ocupadas = Habitacion.objects.filter(
+            reserva__fecha_llegada__lte=fecha_salida,
+            reserva__fecha_salida__gte=fecha_llegada
+        ).values_list('num_habitacion', flat=True)
+
+        habitaciones_disponibles = Habitacion.objects.exclude(
+            reserva__fecha_llegada__lte=fecha_salida,
+            reserva__fecha_salida__gte=fecha_llegada
+        ).values_list('num_habitacion', flat=True)
+
+        return Response({
+            'habitaciones_ocupadas': list(habitaciones_ocupadas),
+            'habitaciones_disponibles': list(habitaciones_disponibles)
+        })
 
 # Crud de Categorias
 def categorias(request):

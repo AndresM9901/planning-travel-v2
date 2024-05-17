@@ -165,11 +165,6 @@ class Reserva(models.Model):
     habitacion = models.ForeignKey(Habitacion, on_delete=models.DO_NOTHING)
     fecha_llegada = models.DateField()
     fecha_salida = models.DateField()
-    # PAGO = (
-    #         (1, ''),
-    #         ()
-    #     )
-    # metodo_pago = models.IntegerField(choices=PAGO, default=1)
     cantidad_personas = models.IntegerField()
     total = models.DecimalField(max_digits=250, decimal_places=2)
 

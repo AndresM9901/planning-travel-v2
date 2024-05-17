@@ -61,9 +61,10 @@ class HabitacionSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'num_habitacion', 'id_hotel','ocupado', 'capacidad_huesped', 'tipo_habitacion']
 
 class ReservaSerializer(serializers.HyperlinkedModelSerializer):
+    habitacion = serializers.PrimaryKeyRelatedField(queryset=Habitacion.objects.all())
     class Meta:
         model = Reserva
-        fields = ['id','habitacion', 'fecha_llegada','fecha_salida','cantidad_personas']
+        fields = ['id', 'habitacion', 'fecha_llegada', 'fecha_salida', 'cantidad_personas', 'total']
 
 class ReservaUsuarioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
