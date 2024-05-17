@@ -2,13 +2,28 @@
 {% load static %} 
 {% block title %}Anuncios{% endblock %} 
 {% block estilos %} 
+<link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_anuncio.css' %}">
 {% endblock %}
-<div> 
-    <p>tu anincio</p> 
-    <div> 
-        <button><i class= "fa-solid fa-magnifying-glass"></i></button> 
-        <button><i class="fa-solid fa-bars"></i></i></button> 
-        <button><i class="fa-solid fa-plus"></i></button> 
+{% block contenedor %}
+<div id="contenedor">
+    <div class="secciones"> 
+        <p id="anuncio">Tu anuncio</p> 
+        <div> 
+            <button class="botones-1"><i class="bi bi-search"></i></i></button> 
+            <button class="botones-1"><i class="bi bi-list"></i></i></button> 
+            <button class="botones-1"><i class="bi bi-plus-lg"></i></button> 
+        </div> 
     </div> 
-</div> 
+    <div class="secciones">
+        <div class="carta">
+            <div class="imagen-card">
+                <img class="imagen" src="..." >    
+            </div>
+            <div class="card-body">
+                <p class="contenido-card">La publicación del anuncio para tu Casa empieza el xx de marzo de xxxx</p>
+                <p class="ubicacion"> Itagüi, Antioquia</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %} 

@@ -1,5 +1,49 @@
 {% extends 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html' %}
 {% load static %} 
-{% block titulo %}Hoy{% endblock %}
+{% block estilos %}
+<link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_mensaje.css' %}">
+{% endblock %} 
+{% block titulo %}mensaje{% endblock %}
 {% block contenedor %}
+<div id="contenedor">
+    <div id="lado1">
+        <div id="seccion">
+            <div id="seccion1">
+                <p id="titulo">Mensajes</p>
+                <div id="botones">
+                    <a class="boton1"><i class="bi bi-search"></i></a>
+                    <a class="boton1"><i class="bi bi-toggles"></i></a>
+                </div>
+            </div>
+            <div id="seccion2">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle boton-todo" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                    Todos
+                    </button>
+                    <ul class="dropdown-menu boton-todos" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item item-todos" href="#"><i class="bi bi-chat-square"></i> Todos</a></li>
+                    <li><a class="dropdown-item item-todos" href="#"><i class="bi bi-house"></i> Anfitrión</a></li>
+                    <li><a class="dropdown-item item-todos" href="#"><i class="bi bi-luggage-fill"></i> Modo Viajero</a></li>
+                    <li><a class="dropdown-item item-todos" href="#"><i class="bi bi-globe-americas"></i> Asistencia</a></li>
+                    </ul> 
+                </div>
+                <a class="boton-no-leido">No leído</a>
+            </div>
+        </div>
+        <div id="contenedor-parrafo">
+            <i class="bi bi-chat-square-text icono-parrafo"></i>
+            <p id="parrafo1">No encontramos ningún mensaje</p>
+            <p id="parrafo2">Intenta eliminar o ajustar los filtros</p>
+            <button id="parrafo-boton">Eliminar los filtros</button>
+        </div>
+    </div>
+    <div id="lado2">
+        <div id="barra-icono">
+            <i class="bi bi-caret-right"></i>
+        </div>
+        <div>
+            <p class="mensaje">hola</p>
+        </div>
+    </div>
+</div>
 {% endblock %}
