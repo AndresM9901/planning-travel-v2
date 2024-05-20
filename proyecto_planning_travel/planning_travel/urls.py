@@ -1,6 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework import routers
+from rest_framework.authtoken import views as especial
 
 router = routers.DefaultRouter()
 router.register(r'categoria', views.CategoriaViewSet)
@@ -10,8 +11,9 @@ router.register(r'hotel', views.HotelViewSet)
 router.register(r'comodidad', views.ComodidadViewSet)
 router.register(r'usuario', views.UsuarioViewSet)
 router.register(r'favorito', views.FavoritoViewSet)
-router.register(r'comentario', views.ComentarioViewSet)
-router.register(r'puntucion', views.PuntuacionViewSet)
+router.register(r'opinion', views.OpinionViewSet)
+# router.register(r'comentario', views.ComentarioViewSet)
+# router.register(r'puntucion', views.PuntuacionViewSet)
 router.register(r'foto', views.FotoViewSet)
 router.register(r'hotel-comodidad', views.HotelComodidadViewSet)
 router.register(r'hotel-categoria', views.HotelCategoriaViewSet)
@@ -26,6 +28,8 @@ router.register(r'reporte-moderador', views.ReporteModeradorViewSet)
 urlpatterns = [
     path('inicio/', views.inicio, name="inicio"),
     path('api/1.0/', include(router.urls)),
+    path('api/1.0/token-auth/', especial.obtain_auth_token),
+    path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
     # path('', views.index, name="index"),
     
     # Crud de Categorias
@@ -52,13 +56,13 @@ urlpatterns = [
     path('hoteles_eliminar/<int:id>', views.hoteles_eliminar, name='hoteles_eliminar'),
     path('hoteles_form_editar/<int:id>', views.hoteles_form_editar, name='hoteles_form_editar'),
     
-    # Crud de puntuaciones
-    path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
-    path('puntuaciones_form/', views.puntuaciones_form, name='puntuaciones_form'),
-    path('puntuaciones_crear/', views.puntuaciones_crear, name='puntuaciones_crear'),
-    path('puntuaciones_actualizar/', views.puntuaciones_actualizar, name='puntuaciones_actualizar'),
-    path('puntuaciones_eliminar/<int:id>', views.puntuaciones_eliminar, name='puntuaciones_eliminar'),
-    path('puntuaciones_form_editar/<int:id>', views.puntuaciones_form_editar, name='puntuaciones_form_editar'),
+    # # Crud de puntuaciones
+    # path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
+    # path('puntuaciones_form/', views.puntuaciones_form, name='puntuaciones_form'),
+    # path('puntuaciones_crear/', views.puntuaciones_crear, name='puntuaciones_crear'),
+    # path('puntuaciones_actualizar/', views.puntuaciones_actualizar, name='puntuaciones_actualizar'),
+    # path('puntuaciones_eliminar/<int:id>', views.puntuaciones_eliminar, name='puntuaciones_eliminar'),
+    # path('puntuaciones_form_editar/<int:id>', views.puntuaciones_form_editar, name='puntuaciones_form_editar'),
     
     # Crud de Fotos
     path('fotos_listar/', views.fotos, name='fotos_listar'),
@@ -148,13 +152,13 @@ urlpatterns = [
     path('hoteles_categorias_form_editar/<int:id>', views.hoteles_categorias_form_editar, name='hoteles_categorias_form_editar'),
     path('hoteles_categorias_actualizar/', views.hoteles_categorias_actualizar, name='hoteles_categorias_actualizar'),
     
-    # Crud de Comentarios
-    path('comentarios_listar/', views.comentarios, name="comentarios_listar"),
-    path('comentarios_form/', views.comentarios_form, name="comentarios_form"),
-    path('comentarios_crear/', views.comentarios_crear, name="comentarios_crear"),
-    path('comentarios_actualizar/', views.comentarios_actualizar, name="comentarios_actualizar"),
-    path('comentarios_eliminar/<int:id>/', views.comentarios_eliminar, name="comentarios_eliminar"),
-    path('comentarios_form_editar/<int:id>/', views.comentarios_form_editar, name="comentarios_form_editar"),
+    # # Crud de Comentarios
+    # path('comentarios_listar/', views.comentarios, name="comentarios_listar"),
+    # path('comentarios_form/', views.comentarios_form, name="comentarios_form"),
+    # path('comentarios_crear/', views.comentarios_crear, name="comentarios_crear"),
+    # path('comentarios_actualizar/', views.comentarios_actualizar, name="comentarios_actualizar"),
+    # path('comentarios_eliminar/<int:id>/', views.comentarios_eliminar, name="comentarios_eliminar"),
+    # path('comentarios_form_editar/<int:id>/', views.comentarios_form_editar, name="comentarios_form_editar"),
     
     # Crud de Roles
     path('roles_listar/', views.roles, name="roles_listar"),
@@ -171,4 +175,8 @@ urlpatterns = [
     path('favoritos_actualizar/', views.favoritos_actualizar, name="favoritos_actualizar"),
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
+
+    # Favoritos vista usuario
+    path('favoritos_user/', views.favoritos_user, name="favoritos_user")
+
 ]

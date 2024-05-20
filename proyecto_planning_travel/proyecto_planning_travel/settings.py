@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'planning_travel',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -128,7 +129,12 @@ MEDIA_ROOT = BASE_DIR / 'planning_travel/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = "planning_travel.Usuario"
+AUTH_PROFILE_MODULE = "planning_travel.Usuario"
+
 REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'planning_travel.utils.custom_exception_handler'
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ]
 }
-    
