@@ -21,14 +21,6 @@
                 <td>{{ r.id_usuario }}</td>
                 <td>{{ r.fecha_agregado }}</td>
                 <td>
-                    <button
-                        type="button"
-                        class="btn btn-info"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modalVer-1"
-                    >
-                        <i class="bi bi-eye-fill"></i>
-                    </button>
                     <a
                         class="btn btn-warning"
                         href="{% url 'favoritos_formulario_editar' r.id %}"
