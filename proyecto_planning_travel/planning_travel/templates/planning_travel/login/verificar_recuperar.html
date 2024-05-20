@@ -1,0 +1,48 @@
+{% extends 'planning_travel/base2.html' %}
+{% load static %}
+
+{% block titulo %}Login{% endblock %}
+
+{% block contenedor %}
+    {% if check %}
+
+<div style="display: flex; justify-content: center; ">
+    <div class="formulario" style="width: 400px;display: flex; justify-content: center;align-items: center;" >
+    <form action="{% url 'verificar_recuperar' %}" method="post" class="mb-3 mt-5 w-100 h-100 ml-0 mr-0 mx-auto" style="max-width: 540px; padding: 10px; ">
+        <h3 style="text-align: center;">Recuperar contraseña</h3>
+        {% csrf_token %}
+        <input type="hidden" name="check" value="{{ check }}"/>
+        <input type="hidden" name="correo" class="form-control" placeholder="Correo" required="" value="{{correo}}"><br>
+        <label style="color: black;">Contraseña nueva</label>
+        <input type="password" name="nueva1" required="" class="form-control"><br>
+        <label style="color: black;">Repetir Contraseña</label>
+        <input type="password" name="nueva2" required="" class="form-control"><br>
+        <div class="" style="display: flex; justify-content: center;">
+            <button type="submit" class="btn btn-info">Guardar</button>
+        </div>
+    </form>
+    
+    </div>
+</div>
+    {% else %}
+    <div >
+        <div>
+            <form action="{% url 'verificar_recuperar' %}" method="post" class="col-3 m-auto mt-5">
+            <h3>Ingrese el token enviado al correo</h3>
+            {% csrf_token %}
+            <input type="hidden" name="correo" class="form-control" placeholder="Correo" required="" value="{{correo}}"><br>
+            <input type="text" name="token" class="form-control" placeholder="Token" required=""><br>
+            <button type="submit" class="btn btn-info">Verificar...</button>
+        </form>
+    </div>
+        
+    </div>
+    {% endif %}
+
+  
+{% endblock %}
+
+
+
+</body>
+</html>

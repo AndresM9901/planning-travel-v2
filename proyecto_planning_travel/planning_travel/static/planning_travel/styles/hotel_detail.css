@@ -1,0 +1,265 @@
+.container-details {
+    padding: 10px 200px;
+    gap: 8px;
+    flex-direction: column;
+}
+
+.head-container {
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.container-gallery {
+    width: 40%;
+    max-height: 500px;
+}
+
+.carrusel-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.carrusel {
+    display: flex;
+    transition: all 0.3s ease-in-out;
+    align-items: center;
+}
+
+.carrusel-item {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+.carrusel-item img {
+    width: 100%;
+    object-fit: cover;
+    z-index: 9999;
+}
+
+.carrusel-indicators {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+}
+
+.carrusel-indicator {
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.carrusel-indicator.active {
+    background-color: var(--primary-color);
+}
+
+.carrusel-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    color: var(--primary-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.carrusel-control {
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
+
+.container-info {
+    flex-direction: column;
+    width: 60%;
+    gap: 12px;
+}
+
+.head-info {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hotel-title {
+    font-size: 1.95rem;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+    font-weight: bold;
+}
+
+.botones-head {
+    gap: 8px;
+}
+
+.btn {
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+    font-size: 14px;
+    max-width: 200px;
+}
+
+.btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.body-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.comodidades {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+}
+
+.popular {
+    border: 1px dashed gray;
+    padding: 4px 8px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    font-weight: bold;
+    width: 100%;
+}
+
+.popular--texto {
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    gap: 8px;
+}
+
+.popular--texto i {
+    color: var(--primary-color);
+    font-size: 2rem;
+}
+
+.popular--puntuacion {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.popular__tamaño {
+    font-size: 1.225rem;
+}
+
+.popular__estrellas {
+    color: var(--secodary-color);
+}
+
+.opiniones {
+    flex-direction: row;
+    font-weight: bold;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.servicios {
+    justify-content: flex-start;
+    
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 16px;
+    text-wrap: wrap;
+}
+
+.servicio {
+    flex-direction: column;
+    width: fit-content;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.servicio--icono {
+    width: 24px;
+    height: 24px;
+}
+
+.servicio--texto {
+    margin: 0;
+}
+
+.divisor {
+    width: 100%;
+    border: 1px solid #d1d1d1;
+}
+
+.body {
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comentarios {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.card-comentario {
+    padding: 4px 8px;
+}
+
+.comentario-header {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+}
+
+.comentario__imagen {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+}
+
+.info-usuario {
+    flex-direction: column;
+}
+
+.info__nombre {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.info__lugar {
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.info-usuario p {
+    margin: 0;
+}
+
+.info-comentario {
+    align-items: center;
+    gap: 8px;
+}
+
+.puntuacion {
+    font-size: 12px;
+}
