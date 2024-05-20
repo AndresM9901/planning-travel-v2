@@ -31,16 +31,23 @@
                 <i class="bi bi-arrow-left-right btn-icon"></i>
                 <span class="compare-title">Comparar</span>
             </button>
-            <button class="btn-favorite btns-card">
-                <i class="bi bi-bookmark-heart"></i>
-            </button>
+            {% if request.session.logueo %}
+                {% csrf_token %}
+                    <a class="btn-favorite btns-card">
+                        <i class="bi bi-bookmark-heart"></i>
+                    </a>               
+            {% else %}  
+                <a href="{% url 'login_form' %}" class="btn-favorite btns-card">
+                    <i class="bi bi-bookmark-heart"></i>
+                </a>            
+            {% endif %}
             <div class="carrusel-container">
                 <div class="carrusel">
                     {% for foto in fotos %}
                     <div class="carrusel-item">
                         <img
                             src="{{ foto.url_foto.url }}"
-                            alt="Image 1"
+                            alt=""
                         />
                     </div>
                     {% endfor %}
@@ -75,7 +82,7 @@
                     </div>
                     <div class="hotel-price-container d-flex">
                         <p class="text">Desde</p>
-                        <a class="hotel-price" onclick="detallesDelHotel(`{% url 'detalle_hotel' hotel.id %}`)">$ {{ hotel.precio | floatformat:0 }}</a>
+                        <a class="hotel-price" onclick="detallesDelHotel(`{% url 'detalle_hotel' hotel.id %}`)">$ {{ hotel.precio_minimo | floatformat:0 }}</a>
                     </div>
                 </div>
             </div>

@@ -20,7 +20,7 @@
         rel="stylesheet"
         href="{% static 'planning_travel/styles/estilos.css' %}"
     />
-    <link rel="stylesheet" href="{% static 'planning_travel/styles/navbarHome.css' %}">
+    <link rel="stylesheet" href="{% static 'planning_travel/styles/navbarDetail.css' %}">
     {% block estilos %}{% endblock %}
 </head>
 <body>
@@ -49,14 +49,12 @@
         </div>
         <div class="nav-bar-btns btn-dropdown d-flex">
             <button class="btn-publicar">Hazte anfitrión</button>
-            <div class="btn-profile d-flex dropdown">
-                
+            <div class="btn-profile d-flex">
                 <div>
                     <i class="bi bi-list"></i>
                 </div>
                 <div>
                     <i class="bi bi-person-circle"></i>
-                    
                 </div>
             </div>
             {% if request.session.logueo.rol == 1 %}
@@ -75,7 +73,6 @@
                 </ul>
             {% endif %}
         </div>
-        
     </nav>
     {% if messages %}
         {% for message in messages %}
@@ -87,9 +84,7 @@
     {% endif %}
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
-    <script src="{% static 'planning_travel/js/base_hoteles.js' %}"></script>
-    <script src="{% static 'planning_travel/js/navbarHome.js' %}"></script>
     <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>
-    
+    <script src="{% static 'planning_travel/js/navbarHome.js' %}"></script>
 </body>
 </html>

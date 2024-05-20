@@ -1,19 +1,20 @@
 from django.urls import path, include
 from . import views
+<<<<<<< HEAD
 from rest_framework import routers
 from rest_framework.authtoken import views as especial
+=======
+from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken import views as views_rest
+>>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0
 
-router = routers.DefaultRouter()
+router = DefaultRouter()
 router.register(r'categoria', views.CategoriaViewSet)
-router.register(r'rol', views.RolViewSet)
-router.register(r'producto', views.ProductoViewSet)
 router.register(r'hotel', views.HotelViewSet)
 router.register(r'comodidad', views.ComodidadViewSet)
 router.register(r'usuario', views.UsuarioViewSet)
 router.register(r'favorito', views.FavoritoViewSet)
 router.register(r'opinion', views.OpinionViewSet)
-# router.register(r'comentario', views.ComentarioViewSet)
-# router.register(r'puntucion', views.PuntuacionViewSet)
 router.register(r'foto', views.FotoViewSet)
 router.register(r'hotel-comodidad', views.HotelComodidadViewSet)
 router.register(r'hotel-categoria', views.HotelCategoriaViewSet)
@@ -28,9 +29,32 @@ router.register(r'reporte-moderador', views.ReporteModeradorViewSet)
 urlpatterns = [
     path('inicio/', views.inicio, name="inicio"),
     path('api/1.0/', include(router.urls)),
+<<<<<<< HEAD
     path('api/1.0/token-auth/', especial.obtain_auth_token),
+=======
+    path('api/1.0/token-auth/', views_rest.obtain_auth_token),
+>>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
-    # path('', views.index, name="index"),
+    path('admin/', views.index, name="admin"),
+
+    # Reservas
+    path('reserva/<int:id>/', views.reserva, name="reserva"),
+    path('verificar_disponibilidad/', views.verificar_disponibilidad, name="verificar_disponibilidad"),
+    path('separar_reserva/', views.separar_reserva, name="separar_reserva"),
+    path('obtener_precio/', views.obtener_precio, name="obtener_precio"),
+    path('api/1.0/crear_reserva/', views.CrearReservaAPIView.as_view(), name='crear_reserva'),
+    path('api/1.0/verificar_disponibilidad/', views.VerificarDisponibilidadAPIView.as_view(), name='verificar_disponibilidad'),
+    
+    # Login
+
+    path('login/', views.login, name="login"),
+    path('login_form/', views.login_form, name="login_form"),
+    path('logout/', views.logout, name="logout"),
+    path('registrar/', views.registrar, name="registrar"),
+    path('perfil_actualizar/', views.perfil_actualizar, name="perfil_actualizar"),
+    path("ver_perfil/", views.ver_perfil, name="ver_perfil"),
+    path("recuperar_clave/", views.recuperar_clave, name="recuperar_clave"),
+	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),
     
     # Crud de Categorias
     path('categorias_listar/', views.categorias, name="categorias_listar"),
@@ -161,12 +185,13 @@ urlpatterns = [
     # path('comentarios_form_editar/<int:id>/', views.comentarios_form_editar, name="comentarios_form_editar"),
     
     # Crud de Roles
-    path('roles_listar/', views.roles, name="roles_listar"),
-    path('roles_form/', views.roles_form, name="roles_form"),
-    path('roles_crear/', views.roles_crear, name="roles_crear"),
-    path('roles_actualizar/', views.roles_actualizar, name="roles_actualizar"),
-    path('roles_eliminar/<int:id>/', views.roles_eliminar, name="roles_eliminar"),
-    path('roles_formulario_editar/<int:id>/', views.roles_formulario_editar, name="roles_formulario_editar"),
+
+    # path('roles_listar/', views.roles, name="roles_listar"),
+    # path('roles_form/', views.roles_form, name="roles_form"),
+    # path('roles_crear/', views.roles_crear, name="roles_crear"),
+    # path('roles_actualizar/', views.roles_actualizar, name="roles_actualizar"),
+    # path('roles_eliminar/<int:id>/', views.roles_eliminar, name="roles_eliminar"),
+    # path('roles_formulario_editar/<int:id>/', views.roles_formulario_editar, name="roles_formulario_editar"),
 
     # Crud de Favoritos
     path('favoritos_listar/', views.favoritos, name="favoritos_listar"),
@@ -175,8 +200,20 @@ urlpatterns = [
     path('favoritos_actualizar/', views.favoritos_actualizar, name="favoritos_actualizar"),
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
+<<<<<<< HEAD
 
     # Favoritos vista usuario
     path('favoritos_user/', views.favoritos_user, name="favoritos_user")
 
 ]
+=======
+]
+
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
+
+from .models import Usuario
+
+for user in Usuario.objects.all():
+    Token.objects.get_or_create(user=user)
+>>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0

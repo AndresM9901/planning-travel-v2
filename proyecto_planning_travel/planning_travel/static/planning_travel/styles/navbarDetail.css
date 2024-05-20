@@ -1,7 +1,7 @@
 .nav-bar {
     display: flex;
     height: 80px;
-    padding: 0 80px;
+    padding: 0 200px;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #d1d1d1;
@@ -48,8 +48,8 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    border: none;
     position: relative;
+    border: none;
 }
 
 .btn-publicar {
@@ -83,8 +83,6 @@
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
-<<<<<<< HEAD
-=======
 .dropdown-user {
     display: none;
     position: absolute;
@@ -118,4 +116,3 @@
 .dropdown-elemento:hover a {
     color: var(--primary-color);
 }
->>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0

@@ -21,19 +21,13 @@ class ReporteModeradorAdmin(admin.ModelAdmin):
 class PerfilUsuarioAdmin(admin.ModelAdmin):
     list_display = ['id_hotel', 'id_usuario', 'nombre', 'numero_contacto']
 
-@admin.register(Producto)
-class ProductoAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nombre', 'precio', 'inventario', 'fecha_creacion', 'categoria']
-    search_fields = ['nombre']
-    list_filter = ['categoria', 'fecha_creacion']
-    list_editable = ['nombre', 'precio', 'inventario']
 
 class HotelAdmin(admin.ModelAdmin):
     list_display = ['id', 'nombre', 'descripcion', 'direccion', 'capacidad_huesped', 'precio']
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nombre', 'nombre_en_plural', 'correo', 'password', 'rol','foto']
+    list_display = ['id', 'nombre', 'username', 'correo', 'password', 'rol','foto', 'last_login']
 
     def nombre_en_plural(self, obj):
         return mark_safe(
@@ -42,8 +36,10 @@ class UsuarioAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Cliente)
+admin.site.register(PisosHotel)
 admin.site.register(Opinion)
 admin.site.register(Servicio)
+admin.site.register(MetodoPago)
 admin.site.register(HotelServicio)
 # admin.site.register(Comentario)
 admin.site.register(Comodidad)
@@ -56,4 +52,3 @@ admin.site.register(HotelComodidad)
 # admin.site.register(Puntuacion)
 admin.site.register(Reserva)
 admin.site.register(ReservaUsuario)
-admin.site.register(Rol)

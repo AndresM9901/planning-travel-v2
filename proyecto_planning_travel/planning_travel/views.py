@@ -1,19 +1,38 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import *
-from .serializers import *
-from rest_framework import viewsets
+from django.core.mail import BadHeaderError, EmailMessage
+from django.contrib.auth.hashers import make_password
+from django.conf import settings
 from django.db.models import Min
-from .crypt import *
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.urls import reverse
+from rest_framework.decorators import api_view
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from datetime import datetime
 import re
+from .serializers import *
+from .models import *
+from .crypt import *
+
 # Create your views here.
 
 def inicio(request):
     # Obtener todos los hoteles, fotos y servicios
     hoteles = Hotel.objects.all()
     fotos = Foto.objects.all()
-    servicios = Servicio.objects.all()
+    servicios = Servicio.objects.all().order_by('nombre')
     servicio_activo = None
+    
+    habitaciones_total = []
+    if 'nombre' in request.GET:
+        query_nombre = request.GET.get('nombre')
+        # query_cantidad = request.GET.get('cantidad')
+        hoteles = Hotel.objects.filter(nombre__icontains=query_nombre)
     
     # Filtrar hoteles por servicios seleccionados
     if 'servicio' in request.GET:
@@ -35,6 +54,13 @@ def inicio(request):
         hotel.opiniones_count = opiniones_count
         hotel.promedio_valoracion = promedio_valoracion
     
+    for hotel in hoteles:
+        # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
+        precio_minimo = Habitacion.objects.filter(id_piso_hotel__id_hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
+    
+        # Actualizar el precio mínimo en el objeto del hotel
+        hotel.precio_minimo = precio_minimo
+    
     # Crear un diccionario para agrupar las fotos por ID de hotel
     fotos_por_hotel = {}
     for foto in fotos:
@@ -51,76 +77,196 @@ def inicio(request):
 
 def detalle_hotel(request, id):
     hotel = Hotel.objects.get(pk=id)
-    servicios = HotelServicio.objects.filter(id_hotel=id)
-    habitaciones = Habitacion.objects.filter(id_hotel=id)
+    servicios_hotel = HotelServicio.objects.filter(id_hotel=id)
+    hotel_comodidades = HotelComodidad.objects.filter(id_hotel=id)
+    opiniones = Opinion.objects.filter(id_hotel=id)
+    pisos_hotel = PisosHotel.objects.filter(id_hotel=id)
+    comodidades = []
+    servicios = []
+    estrellas = []
+    habitaciones_total = []
+    for servicio in servicios_hotel:
+        sq = Servicio.objects.get(id=servicio.id_servicio.id)
+        servicios.append(sq)
+    for comodidad in hotel_comodidades:
+        cq = Comodidad.objects.get(id=comodidad.id_comodidad.id)
+        comodidades.append({"cantidad": comodidad.cantidad, "comodidad": cq})
+
+    for opinion in opiniones:
+        opinion.puntuacion = range(opinion.puntuacion)
+    for piso in pisos_hotel:
+        habitaciones = Habitacion.objects.filter(id_piso_hotel=piso.id)
+        habitaciones_total.append(habitaciones)
     fotos = Foto.objects.filter(id_hotel=id)
+    comodidades.sort(key=lambda x: x["comodidad"].nombre, reverse=True)
+    opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
+    valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
+    promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
+
+    servicios.sort(key=lambda x: x.nombre)
+    hotel.opiniones_count = opiniones_count
+    hotel.promedio_valoracion = promedio_valoracion
     contexto = {
         'hotel': hotel,
         'servicios': servicios,
-        'habitaciones': habitaciones,
-        'fotos': fotos
+        'habitaciones': habitaciones_total,
+        'fotos': fotos,
+        'comodidades': comodidades,
+        'opiniones': opiniones
     }
     return render(request, 'planning_travel/hoteles/hotel_home/hotel_detail.html', contexto)
 
-
-# def inicio(request):
-#     hoteles = Hotel.objects.all()
-#     fotos = Foto.objects.all()
-#     servicios = Servicio.objects.all()
-    
-#     servicio_id = request.GET.get('servicio')
-#     if servicio_id:
-#         # hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
-#         # print(hoteles_servicio)
-#         # hoteles = [hotel for hotel in hoteles if hotel.id in hoteles_servicio]
-#         # print(hoteles)
-#         hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
-#         hoteles_ids = [hs.id_hotel_id for hs in hoteles_servicio]
-#         hoteles = hoteles.filter(id__in=hoteles_ids)
-
-#     for hotel in hoteles:
-#         # Obtener la cantidad de opiniones
-#         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
-#         # Obtener el promedio de valoración
-#         valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
-#         promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
-
-#         hotel.opiniones_count = opiniones_count
-#         hotel.promedio_valoracion = promedio_valoracion
-    
-#     fotos_por_hotel = {}
-#     for foto in fotos:
-#         fotos_por_hotel.setdefault(foto.id_hotel, []).append(foto)
-
-#     hoteles_con_fotos = [(hotel, fotos_por_hotel.get(hotel.id, [])) for hotel in hoteles]
-
-#     context = {'hoteles': hoteles_con_fotos, 'servicios': servicios}
-#     return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', context)
-
-# def inicio(request):
-#     hoteles = Hotel.objects.all()
-#     fotos = Foto.objects.all()
-#     servicios = Servicio.objects.all()
-    
-#     for hotel in hoteles:
-#         # Obtener la cantidad de opiniones
-#         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
-#         # Obtener el promedio de valoración
-#         valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
-#         promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
-
-#         hotel.opiniones_count = opiniones_count
-#         hotel.promedio_valoracion = promedio_valoracion
-#     # Crea un diccionario para agrupar las fotos por ID de hotel
-#     fotos_por_hotel = {}
-#     for foto in fotos:
-#         if foto.id_hotel not in fotos_por_hotel:
-#             fotos_por_hotel[foto.id_hotel] = []
-#         fotos_por_hotel[foto.id_hotel].append(foto)
+def reserva(request, id):
+    hotel = Hotel.objects.get(pk=id)
+    pisos = PisosHotel.objects.filter(id_hotel=id)
+    num_habitaciones_piso = []
+    habitaciones = []
+    if request.session['logueo']:
+        usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
+        metodo_usuario = tuple((m.id, m.get_tipo_pago_display()) for m in MetodoPago.objects.filter(id_usuario=usuario.id))
+        if metodo_usuario:
+            print(tuple(metodo_usuario))
+        else:
+            metodo = MetodoPago()
+            metodo_usuario = metodo.TIPO_PAGO
+    for piso in pisos:
+        habitacion_hotel = Habitacion.objects.filter(id_piso_hotel=piso.id)
+        habitaciones.append(habitacion_hotel)
+        num_habitaciones_piso.append({'piso': piso, 'habitaciones': habitacion_hotel})
         
-#     hoteles_con_fotos = [(hotel, fotos_por_hotel.get(hotel, [])) for hotel in hoteles]
-#     # Envía los datos a la plantilla 'hoteles': hoteles, 'fotos_por_hotel': fotos_por_hotel
-#     return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'hoteles': hoteles_con_fotos, 'servicios': servicios})
+    habitaciones_disponibles = []
+    if request.method == 'POST':
+        fecha_llegada = request.POST.get('fecha_llegada')
+        fecha_salida = request.POST.get('fecha_salida')
+        
+        response = request.post('verificar_disponibilidad/', data={
+            'fecha_llegada': fecha_llegada,
+            'fecha_salida': fecha_salida
+        })
+        
+        if response.status.code == 200:
+            data = response.json()
+            habitaciones_disponibles = data.get('habitaciones_disponibles', [])
+    
+    contexto = {
+        'habitaciones': habitaciones,
+        'num_habitaciones_piso': num_habitaciones_piso,
+        'habitaciones_disponibles': habitaciones_disponibles,
+        'metodo_pago': metodo_usuario
+    }
+    return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
+
+
+def verificar_disponibilidad(request):
+    fecha_llegada_str = request.POST.get('fecha_llegada')
+    fecha_salida_str = request.POST.get('fecha_salida')
+    
+    if fecha_llegada_str is None or fecha_salida_str is None:
+        return JsonResponse({'error': 'Las fechas de llegada y salida son necesarias'}, status=400)
+    
+    fecha_llegada = datetime.strptime(fecha_llegada_str, '%Y-%m-%d')
+    fecha_salida = datetime.strptime(fecha_salida_str, '%Y-%m-%d')
+
+    habitaciones_ocupadas = Habitacion.objects.filter(
+        reserva__fecha_llegada__lte=fecha_salida,
+        reserva__fecha_salida__gte=fecha_llegada
+    ).values_list('num_habitacion', flat=True)
+
+    habitaciones_disponibles = Habitacion.objects.exclude(
+        reserva__fecha_llegada__lte=fecha_salida,
+        reserva__fecha_salida__gte=fecha_llegada
+    ).values_list('num_habitacion', flat=True)
+    
+    return JsonResponse({
+        'habitaciones_ocupadas': list(habitaciones_ocupadas),
+        'habitaciones_disponibles': list(habitaciones_disponibles)
+    })
+    
+def separar_reserva(request):
+    if request.method == 'POST':
+        habitacion = request.POST.get('habitacion')
+        fecha_llegada = request.POST.get('fecha_llegada')
+        fecha_salida = request.POST.get('fecha_salida')
+        num_huespedes = request.POST.get('num_personas')
+        try:
+            qh = Habitacion.objects.get(pk=habitacion)
+            reserva = Reserva(
+                habitacion=qh,
+                fecha_llegada=fecha_llegada,
+                fecha_salida=fecha_salida,
+                cantidad_personas=num_huespedes,
+                total=qh.precio
+            )
+            reserva.save()
+            if request.session['logueo']:
+                usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
+                reserva_usuario = ReservaUsuario(
+                    usuario=usuario,
+                    reserva=reserva
+                )
+                reserva_usuario.save()
+            else:
+                messages.success(request, "Fue reservado correctamente")
+                hotel = Hotel.objects.get(pk=PisosHotel.objects.get(pk=Habitacion.objects.get(pk=habitacion.id)))
+                url = reverse('reserva', kwargs={'id': hotel.id})
+                return redirect(url)
+            messages.success(request, "Fue reservado correctamente")
+        except Exception as e:
+            messages.error(request,f'Error: {e}')
+    else:
+        hotel = Hotel.objects.get(pk=PisosHotel.objects.get(pk=Habitacion.objects.get(pk=habitacion.id)))
+        url = reverse('reserva', kwargs={'id': hotel.id})
+        messages.warning(request, 'No se pudo hacer la reserva')
+        return redirect(url)
+    return redirect('inicio')
+
+def obtener_precio(request):
+    habitacion_seleccionada = request.GET.get('habitacion')
+    
+    precio = 0
+    
+    if habitacion_seleccionada:
+        habitacion = Habitacion.objects.get(pk=habitacion_seleccionada)
+        precio = habitacion.precio
+        
+    return JsonResponse({'precio': precio})
+
+def agregar_pago(request):
+    return redirect('ver_perfil')
+
+class CrearReservaAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = ReservaSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class VerificarDisponibilidadAPIView(APIView):
+    def get(self, request):
+        fecha_llegada_str = request.GET.get('fecha_llegada')
+        fecha_salida_str = request.GET.get('fecha_salida')
+
+        if fecha_llegada_str is None or fecha_salida_str is None:
+            return Response({'error': 'Las fechas de llegada y salida son necesarias'}, status=status.HTTP_400_BAD_REQUEST)
+
+        fecha_llegada = datetime.strptime(fecha_llegada_str, '%Y-%m-%d')
+        fecha_salida = datetime.strptime(fecha_salida_str, '%Y-%m-%d')
+
+        habitaciones_ocupadas = Habitacion.objects.filter(
+            reserva__fecha_llegada__lte=fecha_salida,
+            reserva__fecha_salida__gte=fecha_llegada
+        ).values_list('num_habitacion', flat=True)
+
+        habitaciones_disponibles = Habitacion.objects.exclude(
+            reserva__fecha_llegada__lte=fecha_salida,
+            reserva__fecha_salida__gte=fecha_llegada
+        ).values_list('num_habitacion', flat=True)
+
+        return Response({
+            'habitaciones_ocupadas': list(habitaciones_ocupadas),
+            'habitaciones_disponibles': list(habitaciones_disponibles)
+        })
 
 # Crud de Categorias
 def categorias(request):
@@ -158,7 +304,6 @@ def categorias_crear(request):
                 messages.warning(request,'Los campos no deben contener números ni carácteres especiales!')
                 return redirect('categorias_form')
 
-
 def categorias_eliminar(request, id):
     try:
         q = Categoria.objects.get(pk = id)
@@ -194,8 +339,199 @@ def categorias_actualizar(request):
         
     return redirect('categorias_listar')
 
-def index(request):
+regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+def login_form(request):
     return render(request, 'planning_travel/login/login.html')
+
+def login(request):
+    if request.method == "POST":
+        user = request.POST.get("correo")
+        password = request.POST.get("clave")
+        # select * from Usuario where correo = "user" and clave = "passw"
+        if user == "" or password == "":
+            messages.error(request, "No se permiten campos vacios")
+        else:
+            if not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', user):
+                messages.error(request, "El correo no es válido")
+            else:
+                try:
+                    q = Usuario.objects.get(correo=user)
+                    if verify_password(password, q.password):
+                        # Crear variable de sesión
+                        request.session["logueo"] = {
+                            "id": q.id,
+                            "nombre": q.nombre,
+                            "rol": q.rol,
+                            "nombre_rol": q.get_rol_display()
+                        }
+                        request.session["carrito"] = []
+                        request.session["items"] = 0
+                        messages.success(request, f"Bienvenido {q.nombre}!!")
+                        return redirect("inicio")
+                    else:
+                        messages.error(request, f"Usuario o contraseña incorrecto")
+                        return redirect("login_form")
+                except Exception as e:
+                    print(f'{user}, {password}')
+                    messages.error(request, "Error: Usuario o contraseña incorrectos...")
+
+    else:
+        return redirect("login_form")  # Redirige solo en caso de GET
+    # Renderiza la misma página de inicio de sesión con los mensajes de error
+    return render(request, "planning_travel/login/login.html")
+
+def registrar(request):
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        correo = request.POST.get("correo")
+        clave = request.POST.get("clave")
+        confirmar_clave = request.POST.get("confirmar_clave")
+        username = correo.split('@')[0]
+        if nombre == "" or correo == "" or clave == "" or confirmar_clave == "":
+            messages.error(request, "Todos los campos son obligatorios")
+        elif not re.match(r'^[a-zA-Z ]+$', nombre):
+            messages.error(request, "El nombre solo puede contener letras y espacios")
+        elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+            messages.error(request, "El correo no es válido")
+        elif clave != confirmar_clave:
+            messages.error(request, "Las contraseñas no coinciden")
+        else:
+            try:
+                q = Usuario(
+                    nombre=nombre,
+                    correo=correo,
+                    password=make_password(clave),
+                    username=username
+                )
+                q.save()
+                messages.success(request, "Usuario registrado exitosamente")
+            except Exception as e:
+                messages.error(request, "El Usuario ya existe")
+
+    # Renderiza la misma página de registro con los mensajes de error
+    return render(request, "planning_travel/login/login.html")
+def logout(request):
+	try:
+		del request.session["logueo"]
+		messages.success(request, "Sesión cerrada correctamente!")
+		return redirect("inicio")
+	except Exception as e:
+		messages.warning(request, "No se pudo cerrar sesión...")
+		return redirect("inicio")
+def recuperar_clave(request):
+    if request.method == "POST":
+        correo = request.POST.get("correo")
+        if correo == "":
+            messages.error(request, "Todos los campos son obligatorios")
+            return redirect("login_form")
+        else:
+            try:
+                q = Usuario.objects.get(correo=correo)
+                from random import randint
+                import base64
+                token = base64.b64encode(str(randint(100000, 999999)).encode("ascii")).decode("ascii")
+                print(token)
+                q.token_recuperar = token
+                q.save()
+                # enviar correo de recuperación
+                destinatario = correo
+                mensaje = f"""
+                        <h1 style='color:#ff5c5c;'>Planning Travel</h1>
+                        <p>Usted ha solicitado recuperar su contraseña, haga clic en el link y digite el token.</p>
+                        <p>Token: <strong>{token}</strong></p>
+                        <p>Click Aquí:</p>
+                        <a href='http://127.0.0.1:8000/planning_travel/verificar_recuperar/?correo={correo}'>Recuperar Clave</a>
+                        """
+                try:
+                    msg = EmailMessage("Tienda ADSO", mensaje, settings.EMAIL_HOST_USER, [destinatario])
+                    msg.content_subtype = "html"  # Habilitar contenido html
+                    msg.send()
+                    messages.success(request, "Correo enviado!!")
+                except BadHeaderError:
+                    messages.error(request, "Encabezado no válido")
+                except Exception as e:
+                    messages.error(request, f"Error: {e}")
+                # fin -
+            except Usuario.DoesNotExist:
+                messages.error(request, "No existe el usuario....")
+            return redirect("recuperar_clave")
+    else:
+        return render(request, "planning_travel/login/login.html")
+from django.urls import reverse
+
+def verificar_recuperar(request):
+    if request.method == "POST":
+        if request.POST.get("check"):
+            # caso en el que el token es correcto
+            correo = request.POST.get("correo")
+            q = Usuario.objects.get(correo=correo)
+
+            c1 = request.POST.get("nueva1")
+            c2 = request.POST.get("nueva2")
+            if c1 == "" or c2 == "":
+                messages.info(request, "Campos vacios")
+                return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+            else:
+                if c1 == c2:
+                    # cambiar clave en DB
+                    q.password = make_password(c1)
+                    q.token_recuperar = ""
+                    q.save()
+                    messages.success(request, "Contraseña guardada correctamente!!")
+                    return redirect("login_form")
+                else:
+                    messages.info(request, "Las contraseñas nuevas no coinciden...")
+                    return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+        else:
+            # caso en el que se hace clic en el correo-e para digitar token
+            correo = request.POST.get("correo")
+            token = request.POST.get("token")
+            q = Usuario.objects.get(correo=correo)
+            if token == "":
+                messages.info(request, "Complete todos los espacios")
+                return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+            else:
+                if (q.token_recuperar == token) and q.token_recuperar != "":
+                    contexto = {"check": "ok", "correo":correo}
+                    return render(request, "planning_travel/login/verificar_recuperar.html", contexto)
+                else:
+                    messages.error(request, "Token incorrecto")
+                    return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
+    else:
+        correo = request.GET.get("correo")
+        contexto = {"correo":correo}
+        return render(request, "planning_travel/login/verificar_recuperar.html", contexto)
+    
+def ver_perfil(request):
+	logueo = request.session.get("logueo", False)
+	# Consultamos en DB por el ID del usuario logueado....
+	q = Usuario.objects.get(pk=logueo["id"])
+	contexto = {"data": q}
+	return render(request, "planning_travel/login/perfil_usuario.html", contexto)
+
+def perfil_actualizar(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nombre = request.POST.get('nombre')
+        correo = request.POST.get('correo')
+        try:
+            # Obtén el objeto Usuario por su ID
+            usuario = Usuario.objects.get(pk=id)
+            usuario.nombre = nombre
+            usuario.correo = correo
+            usuario.save()
+            messages.success(request, "Perfil actualizado correctamente")
+            return redirect('ver_perfil')  # Redirecciona a una página después de la actualización
+        except Usuario.DoesNotExist:
+            messages.error(request, "El usuario no existe")
+        except Exception as e:
+            messages.error(request, f'Error: {e}')
+    else:
+        messages.warning(request, 'No se enviaron datos')
+    return redirect('ver_perfil')  # Redirecciona en caso de un error o método GET
+
+def index(request):
+    return render(request, 'planning_travel/inicio.html')
 
 # Crud de Usuarios
 
@@ -205,9 +541,7 @@ def usuarios(request):
     return render(request, 'planning_travel/login/usuarios.html', contexto)
 
 def usuarios_form(request):
-    q = Rol.objects.all()
-    contexto = {'data': q}
-    return render(request, 'planning_travel/login/usuarios_form.html', contexto)
+    return render(request, 'planning_travel/login/usuarios_form.html')
 
 def usuarios_crear(request):
     if request.method == 'POST':
@@ -225,7 +559,7 @@ def usuarios_crear(request):
                 foto=foto,
             )
             q.save()
-            messages.success(request, "Fue creado correctamente")
+            messages.success(request, "Fue actualizado correctamente")
         except Exception as e:
             messages.error(request,f'Error: {e}')
 
@@ -256,14 +590,12 @@ def usuarios_actualizar(request):
         nombre = request.POST.get('nombre')
         correo = request.POST.get('correo')
         contrasena = request.POST.get('contrasena')
-        rol = Rol.objects.get(pk=request.POST.get('rol'))
         foto = request.POST.get('foto')
         try:
             q = Usuario.objects.get(pk = id)
             q.nombre = nombre
             q.correo = correo
             q.contrasena = contrasena
-            q.rol = rol
             q.foto = foto
             q.save()
             messages.success(request, "Fue actualizado correctamente")
@@ -292,20 +624,14 @@ def hoteles_crear(request):
         descripcion = request.POST.get('descripcion')
         direccion = request.POST.get('direccion')
         categoria = Categoria.objects.get(pk=request.POST.get('categoria'))
-        cantidad_habitacion = request.POST.get('cantidad_habitaciones')
-        propietario = request.POST.get('propietario')
-        ciudad = request.POST.get('ciudad')
-        precio = request.POST.get('precio')
+        cantidad_habitacion = request.POST.get('cantidad_habitacion')
         try:
             q = Hotel(
                 nombre=nombre,
                 descripcion=descripcion,
                 direccion=direccion,
                 categoria=categoria,
-                cantidad_habitaciones=cantidad_habitacion,
-                propietario=propietario,
-                ciudad=ciudad,
-                precio=precio
+                cantidad_habitacion=cantidad_habitacion,
             )
             q.save()
             messages.success(request, "Fue actualizado correctamente")
@@ -355,69 +681,6 @@ def hoteles_actualizar(request):
             messages.error(request,f'Error: {e}')
     else:
         messages.warning(request,'No se enviaron datos')
-
-# Crud de puntuacion
-
-# def puntuaciones(request):
-#     q = Puntuacion.objects.all()
-#     contexto = {'data': q}
-#     return render(request, 'planning_travel/puntuaciones/puntuaciones.html', contexto)
-
-# def puntuaciones_form(request):
-#     q = Comentario.objects.all()
-#     contexto = {'data': q}
-#     return render(request, 'planning_travel/puntuaciones/puntuaciones_form.html', contexto)
-
-# def puntuaciones_crear(request):
-#     if request.method == 'POST':
-#         comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
-#         valoracion = request.POST.get('valoracion')
-#         try:
-#             q = Puntuacion(
-#                 comentario=comentario,
-#                 valoracion=valoracion,
-#             )
-#             q.save()
-#             messages.success(request, "Fue actualizado correctamente")
-#         except Exception as e:
-#             messages.error(request,f'Error: {e}')
-
-#         return redirect('puntuaciones_listar')
-#     else:
-#         messages.warning(request,'No se enviaron datos')
-#         return redirect('puntuaciones_listar')
-    
-# def puntuaciones_eliminar(request, id):
-#     try:
-#         q = Puntuacion.objects.get(pk = id)
-#         q.delete()
-#         messages.success(request, 'Puntuacion eliminada correctamente!!')
-#     except Exception as e:
-#         messages.error(request,f'Error: {e}')
-        
-# def puntuaciones_form_editar(request, id):
-#     q = Puntuacion.objects.get(pk = id)
-#     c = Comentario.objects.all()
-#     contexto = {'data': q, 'comentario': c}
-#     return render(request, 'planning_travel/puntuaciones/puntuaciones_form_editar.html', contexto)
-
-# def puntuaciones_actualizar(request):
-   # if request.method == 'POST':
-      #  id = request.POST.get('id')
-    #    comentario = Comentario.objects.get(pk=request.POST.get('comentario'))
-   #     valoracion = request.POST.get('valoracion')
-  #      try:
- #           q = Usuario.objects.get(pk = id)
-  #          q.comentario = comentario
-  #          q.valoracion = valoracion
-    #        q.save()
-     #       messages.success(request, "Fue actualizado correctamente")
-    #    except Exception as e:
-   #         messages.error(request,f'Error: {e}')
-  #  else:
-  #      messages.warning(request,'No se enviaron datos')
-
-  #  return redirect('puntuaciones_listar')
 
 # Crud Comodidades
 
@@ -946,7 +1209,7 @@ def reportes_crear(request):
 
 def reportes_actualizar(request):
     if request.method == 'POST':
-        id= request.POST.get('id')
+        id = request.POST.get('id')
         id_usuario =Usuario.objects.get(pk = request.POST.get('id_usuario'))
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
@@ -1251,6 +1514,7 @@ def perfil_usuarios_actualizar(request):
 #     return render(request, 'planning_travel/comentarios/comentarios_form_editar.html', contexto)
 
 # def comentarios_actualizar(request):
+'''
     if request.method == 'POST':
         id = request.POST.get('id')
         id_hotel = Hotel.objects.get(pk=request.POST.get("id_hotel"))
@@ -1273,7 +1537,8 @@ def perfil_usuarios_actualizar(request):
         messages.warning(request,'No se enviaron datos')
         
     return redirect('comentarios_listar')
-
+'''
+'''
 # Crud Roles
 def roles(request):
     consulta = Rol.objects.all()
@@ -1342,7 +1607,7 @@ def roles_actualizar(request):
     else:
             messages.warning(request,'No se enviaron datos')
     return redirect('roles_listar')
-
+'''
 # Crud favoritos
 def favoritos(request):
     consulta = Favorito.objects.all()
@@ -1415,47 +1680,34 @@ def favoritos_actualizar(request):
         
     return redirect('favoritos_listar')
 
-# favoritos vista del usuario
-
-def favoritos_user(request):
-    favoritos = Favorito.objects.all()
-    hotel = Hotel.objects.all()
-    fotos = Foto.objects.all()
-    context = {'fav': favoritos, 'hotel': hotel, 'fotos': fotos }
-    return render(request, 'planning_travel/favoritos/favoritos_user/favoritos_user.html', context)
-
-
 # api base de datos
 class CategoriaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
 
-class RolViewSet(viewsets.ModelViewSet):
-    queryset = Rol.objects.all()
-    serializer_class = RolSerializer
-
-class ProductoViewSet(viewsets.ModelViewSet):
-    queryset = Producto.objects.all()
-    serializer_class = ProductoSerializer
-
 class HotelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
 class ComodidadViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Comodidad.objects.all()
     serializer_class = ComodidadSerializer
 
-""" class UsuarioViewSet(viewsets.ModelViewSet):
+class UsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializer
-"""
 
 class FavoritoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Favorito.objects.all()
     serializer_class = FavoritoSeralizer
 
 class OpinionViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Opinion.objects.all()
     serializer_class = OpinionSerializer
 
@@ -1468,59 +1720,51 @@ class OpinionViewSet(viewsets.ModelViewSet):
 #     serializer_class = PuntuacionSerializer
 
 class FotoViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Foto.objects.all()
     serializer_class = FotoSerializer
 
 class HotelComodidadViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = HotelComodidad.objects.all()
     serializer_class = HotelComodidadSerializer
 
 class HotelCategoriaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = HotelCategoria.objects.all()
     serializer_class = HotelCategoriaSerializer
 
 class HabitacionViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Habitacion.objects.all()
     serializer_class = HabitacionSerializer
 
 class ReservaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Reserva.objects.all()
     serializer_class = ReservaSerializer
 
 class ReservaUsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = ReservaUsuario.objects.all()
     serializer_class = ReservaUsuarioSerializer
 
 class PerfilUsuarioViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = PerfilUsuario.objects.all()
     serializer_class = PerfilUsuarioSerializer
 
 class ClienteViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Cliente.objects.all()
     serializer_class = ClienteSerializer
 
 class ReporteViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Reporte.objects.all()
     serializer_class = ReporteSerializer
 
 class ReporteModeradorViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = ReporteModerador.objects.all()
     serializer_class = ReporteModeradorSerializer
-
-
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-
-class CategoriaViewSet(viewsets.ModelViewSet):
-    # authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = Categoria.objects.all()
-    serializer_class = CategoriaSerializer
-
-
-class UsuarioViewSet(viewsets.ModelViewSet):
-	# authentication_classes = [TokenAuthentication, SessionAuthentication]
-	# authentication_classes = [TokenAuthentication]
-	permission_classes = [IsAuthenticated]
-	queryset = Usuario.objects.all()
-	serializer_class = UsuarioSerializer

@@ -25,5 +25,3 @@ def verify_password(password, password_hash):
     assert algorithm == ALGORITHM
     compare_hash = hash_password(password, salt, iterations)
     return secrets.compare_digest(password_hash, compare_hash)
-
-
