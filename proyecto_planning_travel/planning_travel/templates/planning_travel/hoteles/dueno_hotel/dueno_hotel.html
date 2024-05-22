@@ -22,17 +22,17 @@
                 </a> 
             </div> 
             <div class='nav-bar'> 
-                <li><a class="navbar_item" href="{% url 'dueno_hoy' %}" class="">Hoy</a></li>
+                <li><a class="navbar_item" href="{% url 'dueno_hoy' %}">Hoy</a></li>
                 <li><a class="navbar_item" href="{% url 'dueno_calendario' %}">Calendario</a> </li>
                 <li><a class="navbar_item" href="{% url 'dueno_anuncio' %}">Anuncios</a> </li>
                 <li><a class="navbar_item" href="{% url 'dueno_mensaje' %}">Mensaje</a> </li>
                 <li class="nav-item dropdown"> 
                     <a class="navbar_item dropdown-togglem " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" >Menú <i class="bi bi-caret-down-fill"></i></a> 
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"> 
-                        <li><a class="dropdown-item" href="#">Reservaciones</a></li> 
-                        <li><a class="dropdown-item" href="#">Ingresos</a></li> 
-                        <li><a class="dropdown-item" href="#">Crea un nuevo anuncio</a></li> 
-                        <li><a class="dropdown-item" href="#">Info</a></li> 
+                        <li><a class="dropdown-item" href="{% url 'dueno_info' %}">Info</a></li> 
+                        <li><a class="dropdown-item" href="{% url 'dueno_ingresos' %}">Ingresos</a></li> 
+                        <li><a class="dropdown-item" href="{% url 'dueno_nuevo_anuncio' %}">Crea un nuevo anuncio</a></li> 
+                        <li><a class="dropdown-item" href="{% url 'dueno_reservaciones' %}">Reservaciones</a></li> 
                     </ul> 
                 </li> 
             </div> 

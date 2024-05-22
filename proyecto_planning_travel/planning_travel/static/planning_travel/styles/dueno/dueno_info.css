@@ -1,0 +1,31 @@
+#nav{
+    border-bottom: solid 1px rgb(235, 235, 235);
+    width: 800px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+#todo{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+.contenedor { 
+    display: flex; 
+    text-decoration: none; 
+    list-style: none;
+    align-items: center;
+} 
+.navbarItem{ 
+    color: rgb(106, 106, 106); 
+    text-decoration: none; 
+    padding: 15px; 
+    margin:10px ;
+} 
+.navbarItem:hover{ 
+    background: #f1f1f1; 
+    border-radius: 100px; 
+    width: 50%; 
+    height: 50%; 
+} 

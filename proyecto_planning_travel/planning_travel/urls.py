@@ -77,6 +77,11 @@ urlpatterns = [
     path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
     path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
     path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 
+    path('dueno_info/', views.dueno_info, name='dueno_info'), 
+    path('dueno_ingresos/', views.dueno_ingresos, name='dueno_ingresos'), 
+    path('dueno_nuevo_anuncio/', views.dueno_nuevo_anuncio, name='dueno_nuevo_anuncio'), 
+    path('dueno_reservaciones/', views.dueno_reservaciones, name='dueno_reservaciones'), 
+
 
     # # Crud de puntuaciones
     # path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
@@ -199,11 +204,11 @@ urlpatterns = [
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
 ]
-
+"""
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 from .models import Usuario
 
 for user in Usuario.objects.all():
-    Token.objects.get_or_create(user=user)
+    Token.objects.get_or_create(user=user)"""
