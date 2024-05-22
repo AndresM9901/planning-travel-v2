@@ -615,7 +615,8 @@ def hoteles(request):
 
 def hoteles_form(request):
     q = Categoria.objects.all()
-    contexto = {'data': q}
+    d = Usuario.objects.all()
+    contexto = {'data': q, 'dueno': d}
     return render(request, 'planning_travel/hoteles/hoteles_form.html', contexto)
 
 def hoteles_crear(request):
@@ -624,14 +625,16 @@ def hoteles_crear(request):
         descripcion = request.POST.get('descripcion')
         direccion = request.POST.get('direccion')
         categoria = Categoria.objects.get(pk=request.POST.get('categoria'))
-        cantidad_habitacion = request.POST.get('cantidad_habitacion')
+        propietario = Usuario.objects.get(pk=request.POST.get('propietario'))
+        ciudad = request.POST.get('ciudad')
         try:
             q = Hotel(
                 nombre=nombre,
                 descripcion=descripcion,
                 direccion=direccion,
                 categoria=categoria,
-                cantidad_habitacion=cantidad_habitacion,
+                propietario=propietario,
+                ciudad=ciudad
             )
             q.save()
             messages.success(request, "Fue actualizado correctamente")

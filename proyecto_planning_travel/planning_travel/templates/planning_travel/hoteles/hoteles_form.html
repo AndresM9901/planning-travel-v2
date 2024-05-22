@@ -30,9 +30,19 @@
                 <label for="categoria"
                     >Categoria</label>
             </div>
-            <div class="form-floating mb-3">
-                <input type="number" class="form-control" id="cantidad_habitaciones" placeholder="Cantidad de Habitaciones" name="cantidad_habitaciones">
-                <label for="cantidad_habitaciones">Cantidad de Habitaciones</label>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="propietario" name="propietario" required>
+                    <option value="">Seleccionar Dueño</option>
+                    {% for c in dueno %}
+                        <option value="{{ c.id }}">{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="propietario"
+                    >Propietario</label>
+            </div>
+            <div class="form-floating">
+                <input type="number" class="form-control" id="ciudad" placeholder="Ciudad" name="ciudad">
+                <label for="ciudad">Ciudad</label>
             </div>
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="propietario" placeholder="Propietario" name="propietario">
