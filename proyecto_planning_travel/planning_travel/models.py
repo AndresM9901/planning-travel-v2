@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+from .authentication import CustomUserManager
+from django.contrib.auth.models import AbstractUser 
 # Create your models here.
 class Categoria(models.Model):
     nombre = models.CharField(max_length=254, )
@@ -31,7 +32,7 @@ class Usuario(AbstractUser):
     token_recuperar = models.CharField(max_length=254, default="", blank=True, null=True)
     # baneado = models.BooleanField()
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['correo', 'password']
+    REQUIRED_FIELDS = ['correo','password']
     objects = CustomUserManager()
 
     def __str__(self):
