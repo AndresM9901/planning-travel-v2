@@ -37,7 +37,6 @@ urlpatterns = [
     path('api/1.0/verificar_disponibilidad/', views.VerificarDisponibilidadAPIView.as_view(), name='verificar_disponibilidad'),
     
     # Login
-
     path('login/', views.login, name="login"),
     path('login_form/', views.login_form, name="login_form"),
     path('logout/', views.logout, name="logout"),

@@ -156,7 +156,6 @@ def reserva(request, id):
     }
     return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
 
-
 def verificar_disponibilidad(request):
     fecha_llegada_str = request.POST.get('fecha_llegada')
     fecha_salida_str = request.POST.get('fecha_salida')
@@ -403,6 +402,7 @@ def registrar(request):
 
     # Renderiza la misma página de registro con los mensajes de error
     return render(request, "planning_travel/login/login.html")
+
 def logout(request):
 	try:
 		del request.session["logueo"]
@@ -411,6 +411,7 @@ def logout(request):
 	except Exception as e:
 		messages.warning(request, "No se pudo cerrar sesión...")
 		return redirect("inicio")
+
 def recuperar_clave(request):
     if request.method == "POST":
         correo = request.POST.get("correo")
