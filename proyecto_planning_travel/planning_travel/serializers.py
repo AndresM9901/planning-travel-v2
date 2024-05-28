@@ -9,7 +9,7 @@ class CategoriaSerializer(serializers.HyperlinkedModelSerializer):
 class HotelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Hotel
-        fields = ['id','nombre','descripcion','direccion','categoria','cantidad_habitaciones']
+        fields = ['id','nombre','descripcion','direccion','categoria', 'propietario', 'ciudad']
 
 class ComodidadSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -19,7 +19,7 @@ class ComodidadSerializer(serializers.HyperlinkedModelSerializer):
 class UsuarioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta: 
         model = Usuario
-        fields = ['id', 'nombre','correo','password','rol','foto']
+        fields = ['id', 'nombre', 'apellido', 'nick', 'email', 'password', 'rol', 'foto']
 
 class FavoritoSeralizer(serializers.HyperlinkedModelSerializer):
     class Meta:

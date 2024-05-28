@@ -19,8 +19,10 @@ class Comodidad(models.Model):
     
 class Usuario(AbstractUser):
     nombre = models.CharField(max_length=254)
-    correo = models.EmailField(max_length=254, unique=True)
-    username = models.CharField(max_length=250, unique=True)
+    apellido = models.CharField(max_length=254, default='', null=True)
+    email = models.EmailField(max_length=254, unique=True)
+    username = None
+    nick = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
     ROLES = (
         (1, "Administrador"),
@@ -32,12 +34,12 @@ class Usuario(AbstractUser):
     foto = models.ImageField(upload_to="planning_travel/media/", default='planning_travel/media/batman.png')
     token_recuperar = models.CharField(max_length=254, default="", blank=True, null=True)
     # baneado = models.BooleanField()
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['correo', 'password']
     objects = CustomUserManager()
+    USERNAME_FIELD = 'nick'
+    REQUIRED_FIELDS = ['nombre', 'apellido', 'email']
 
     def __str__(self):
-        return f'{self.username}'
+        return f'{self.nombre}'
     
 class Hotel(models.Model):
     nombre = models.CharField(max_length=200)
@@ -46,7 +48,6 @@ class Hotel(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
     propietario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     ciudad = models.CharField(max_length=200)
-    
 
     def __str__(self):
         return f'{self.nombre}'
