@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+		'django.template.context_processors.csrf',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -147,8 +148,8 @@ AUTH_PROFILE_MODULE = "planning_travel.Usuario"
 
 
 REST_FRAMEWORK = {
-	# 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.SessionAuthentication',
-    #     'rest_framework.authentication.TokenAuthentication',
-    # ]
+	'DEFAULT_AUTHENTICATION_CLASSES': [
+        	'rest_framework.authentication.SessionAuthentication',
+		'rest_framework.authentication.TokenAuthentication',
+    ]
 }
