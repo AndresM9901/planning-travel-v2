@@ -32,6 +32,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_COOKIE_SECURE = True
+
+CSRF_TRUSTED_ORIGINS = ['planning-travel-v2.onrender.com/']
 
 # Application definition
 
