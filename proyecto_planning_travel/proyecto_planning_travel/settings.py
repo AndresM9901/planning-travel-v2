@@ -29,7 +29,7 @@ DATABASES = {
 SECRET_KEY = 'django-insecure-t6&w_7mxbitf5d7_ipav6*nf8#ya72d*p(+)^i1y56gu--&49h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -131,7 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-if DEBUG:
+if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
