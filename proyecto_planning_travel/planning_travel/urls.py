@@ -41,6 +41,7 @@ urlpatterns = [
     path('api/1.0/hacer_reserva/', views.HacerReserva.as_view(), name='hacer_reserva'),
     path('api/1.0/registrar_usuario/', views.RegistrarUsuario.as_view(), name='registrar_usuario'),
     
+    path('ver_terminos_condiciones/', views.ver_terminos_condiciones, name="ver_terminos_condiciones"),
     
     # Login
 

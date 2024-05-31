@@ -754,6 +754,9 @@ def perfil_actualizar(request):
 def index(request):
     return render(request, 'planning_travel/inicio.html')
 
+def ver_terminos_condiciones(request):
+    render(request, 'planning_travel/terminos/terminos.html')
+
 # Crud de Usuarios
 
 def usuarios(request):
