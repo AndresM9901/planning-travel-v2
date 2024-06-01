@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tienda - {% block titulo %}{% endblock %}</title>
+    <title>Planning Travel - {% block titulo %}{% endblock %}</title>
 
     <!-- iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
@@ -13,6 +13,8 @@
     <link href="{% static 'planning_travel/styles/bootstrap.min.css' %}" rel="stylesheet" />
     <!-- estilos css -->
     <link rel="stylesheet" href="{% static 'planning_travel/styles/estilos.css' %}" />
+    {% block estilos %}
+    {% endblock %}
 </head>
 
 <body>
