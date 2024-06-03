@@ -15,8 +15,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from rest_framework import status
-from rest_framework import viewsets
+from rest_framework import status, viewsets, generics, permissions
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view
@@ -491,6 +491,34 @@ class VerReservaUsuario(APIView):
             'reservas': reservas
         }
         return Response(contexto)
+    
+def terminos_condiciones(request):
+    return render(request, 'planning_travel/terminos/terminos.html')
+
+class DeleteUserView(generics.DestroyAPIView):
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            # Obtiene el usuario que se va a eliminar
+            user = self.get_object()
+            
+            # Obtiene el usuario autenticado
+            authenticated_user = request.user
+            
+            # Comprueba si el usuario autenticado es el mismo que el usuario a eliminar
+            if authenticated_user != user:
+                return Response({'error': 'No tienes permisos para eliminar este usuario'}, status=status.HTTP_403_FORBIDDEN)
+            
+            # Elimina el usuario
+            user.delete()
+            
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Usuario.DoesNotExist:
+            return Response({'error': 'El usuario especificado no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 # Crud de Categorias
 def categorias(request):

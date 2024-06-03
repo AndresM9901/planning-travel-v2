@@ -40,7 +40,9 @@ urlpatterns = [
     path('api/1.0/ver_reserva_usuario/<int:id>/', views.VerReservaUsuario.as_view(), name='ver_reserva_usuario'),
     path('api/1.0/hacer_reserva/', views.HacerReserva.as_view(), name='hacer_reserva'),
     path('api/1.0/registrar_usuario/', views.RegistrarUsuario.as_view(), name='registrar_usuario'),
+    path('api/1.0/borrar_usuario/<int:pk>/', views.DeleteUserView.as_view(), name='borrar_usuario'),
     
+    path('terminos_condiciones/', views.terminos_condiciones, name='terminos_condiciones'),
     
     # Login
 
