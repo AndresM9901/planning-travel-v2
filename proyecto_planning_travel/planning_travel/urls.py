@@ -76,6 +76,13 @@ urlpatterns = [
     path('hoteles_actualizar/', views.hoteles_actualizar, name='hoteles_actualizar'),
     path('hoteles_eliminar/<int:id>', views.hoteles_eliminar, name='hoteles_eliminar'),
     path('hoteles_form_editar/<int:id>', views.hoteles_form_editar, name='hoteles_form_editar'),
+
+    # Form Hotel como anfitrion
+    path('hoteles_form_anfitrion/', views.hoteles_form_anfitrion, name='hoteles_form_anfitrion'),
+    path('paso_dos_form/', views.paso_dos_form, name='paso_dos_form'),
+    path('paso_tres_form/', views.paso_tres_form, name='paso_tres_form'),
+    path('paso_cuatro_form/', views.paso_cuatro_form, name='paso_cuatro_form'),
+    path('paso_cinco_form/', views.paso_cinco_form, name='paso_cinco_form'),
     
     # # Crud de puntuaciones
     # path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),

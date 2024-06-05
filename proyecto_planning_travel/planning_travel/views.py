@@ -572,7 +572,7 @@ def login(request):
                 messages.error(request, "El correo no es válido")
             else:
                 try:
-                    q = Usuario.objects.get(correo=user)
+                    q = Usuario.objects.get(email=user)
                     if verify_password(password, q.password):
                         # Crear variable de sesión
                         request.session["logueo"] = {
@@ -906,6 +906,123 @@ def hoteles_actualizar(request):
     else:
         messages.warning(request,'No se enviaron datos')
 
+# hoteles anfitrion form   --  Paso 1
+
+def hoteles_form_anfitrion(request):
+    q = Categoria.objects.all()
+    contexto = {'data': q}
+    u = Usuario.objects.get(pk=request.session['logueo']['id'])
+   
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        descripcion = request.POST.get('descripcion')
+        direccion = request.POST.get('direccion')
+        categoria = Categoria.objects.get(pk=request.POST.get('categoria'))
+        ciudad = request.POST.get('ciudad')
+
+        hotel = Hotel(
+            nombre=nombre,
+            descripcion=descripcion,
+            direccion=direccion,
+            categoria=categoria,
+            propietario=u,
+            ciudad=ciudad
+        )
+        hotel.save()
+
+        request.session['hotel_id'] = hotel.id
+
+        return redirect('paso_dos_form')  
+    else:
+        return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
+
+# paso 2
+
+def paso_dos_form(request):
+ 
+    q = Comodidad.objects.all()
+    d = Servicio.objects.all()
+    contexto = {'ser': d}
+
+    if request.method == 'POST':
+        hotel_id = request.session.get('hotel_id')
+        hotel = Hotel.objects.get(pk=hotel_id)
+        nombre = Comodidad.objects.get(pk=request.POST.get('comodidad'))
+
+        c = HotelComodidad(
+            id_hotel=hotel,
+            id_comodidad=nombre,
+        )
+        c.save()
+
+        
+
+        return redirect('paso_tres_form') 
+
+    return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_dos_form.html', contexto)
+
+
+from .models import PisosHotel
+
+# paso 3 form
+
+def paso_tres_form(request):
+    if request.method == 'POST':
+        num_pisos = int(request.POST.get('num_pisos'))
+        cantidad_habitaciones = request.POST.get('cantidad_habitaciones')
+
+        hotel_id = request.session.get('hotel_id')
+        hotel = Hotel.objects.get(pk=hotel_id)
+
+        for piso in range(1, num_pisos + 1):
+            PisosHotel.objects.create(
+                id_hotel=hotel, 
+                num_piso=piso, 
+                cantidad_habitaciones=cantidad_habitaciones
+            )
+
+        return redirect('paso_cuatro_form')
+
+    return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_tres_form.html')
+
+
+
+ # paso 4 form 
+
+def paso_cuatro_form(request):
+
+    hotel_id = request.session.get('hotel_id')
+    hotel = Hotel.objects.get(pk=hotel_id)
+    pisos = PisosHotel.objects.filter(id_hotel=hotel)
+    contexto = {'pisos': pisos}
+
+    if request.method == 'POST':
+        num_habitacion = request.POST.get('num_habitacion')
+        id_piso_hotel = PisosHotel.objects.get(pk=request.POST.get('id_piso_hotel'))
+        ocupado = request.POST.get('ocupado') == 'True'
+        capacidad_huesped = request.POST.get('capacidad_huesped')
+        tipo_habitacion = request.POST.get('tipo_habitacion')
+        precio = request.POST.get('precio')
+
+        habitacion = Habitacion(
+            num_habitacion=num_habitacion,
+            id_piso_hotel=id_piso_hotel,
+            ocupado=ocupado,
+            capacidad_huesped=capacidad_huesped,
+            tipo_habitacion=tipo_habitacion,
+            precio=precio
+        )
+        habitacion.save()
+        return redirect('paso_cinco_form')  
+
+    return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_cuatro_form.html', contexto)
+
+# paso 5 form 
+def paso_cinco_form(request):
+
+    return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_cinco_form.html')
+
+
 # Crud Comodidades
 
 def comodidades(request):
@@ -918,7 +1035,7 @@ def comodidades_form(request):
 
 def comodidades_crear(request):
     if request.method == 'POST':
-        nombre = request.POST.get('nombre')
+        nombre = request.POST.get('nombre') 
         descripcion = request.POST.get('descripcion')
         try:
             q = Comodidad(
@@ -990,7 +1107,7 @@ def habitaciones_crear(request):
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipoHabitacion')
         try:
-            q = Habitacion(
+            q = Habitacion( 
                 num_habitacion = num_habitacion,
                 id_hotel = hotel,
                 ocupado = ocupado,
