@@ -197,6 +197,15 @@ urlpatterns = [
     path('favoritos_actualizar/', views.favoritos_actualizar, name="favoritos_actualizar"),
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
+	
+
+
+    path('favoritos_crearUser/<int:id_hotel>/', views.favoritos_crearUser, name="favoritos_crearUser"),
+    path('favoritos_crearUser2/<int:id_hotel>/', views.favoritos_crearUser2, name="favoritos_crearUser2"),
+    path('favoritos_crearUser3/<int:id_hotel>/', views.favoritos_crearUser3, name="favoritos_crearUser3"),
+    path('favoritos_mostrar/', views.favoritos_mostrar, name="favoritos_mostrar"),
+    path('reservas_mostrar/', views.reservas_mostrar, name="reservas_mostrar"),
+    path('registrar_form/', views.registrar_form, name="registrar_form"),
 ]
 
 # from django.contrib.auth.models import User

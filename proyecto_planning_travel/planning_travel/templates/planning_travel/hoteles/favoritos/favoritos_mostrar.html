@@ -1,0 +1,62 @@
+{% extends 'planning_travel/hoteles/base_hoteles.html' %}
+{% load static %}
+
+{% block title %}Favoritos{% endblock %}
+{% block estilos %}
+<link
+    rel="stylesheet"
+    href="{% static 'planning_travel/styles/favoritos.css' %}"
+/>
+{% endblock %}
+
+
+{% block content %}
+<main>
+    <div class="barra_perfil">
+        <h5 class="texto"><strong>Favoritos</strong></h5>
+    </div>
+    <section class="container-fluid py-2 d-flex flex-row w-100 flex-wrap gap-5 justify-content-center">
+        {% if data %}
+            {% for hotel_info in data %}
+                <!-- Accede a la primera foto del hotel -->
+                {% with foto=hotel_info.foto %}
+                    <div class="card-hotel d-flex">
+                        <a href="{% url 'favoritos_crearUser2' hotel_info.hotel.id %}" class="btn-favorite btns-card">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                        <div class="carrusel-container" onclick="detallesDelHotel('{% url 'detalle_hotel' hotel_info.hotel.id %}')">
+                            <div class="carrusel">
+                                <!-- Muestra la foto del hotel -->
+                                <div class="carrusel-item">
+                                    <img src="{{ foto.url_foto.url }}" alt="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hotel-info d-flex">
+                            <div class="hotel-info-left">
+                                <!-- Muestra el nombre del hotel -->
+                                <h1 class="hotel-title">{{ hotel_info.hotel.nombre }}</h1>
+                            </div>
+                            <div class="hotel-info-right d-flex">
+                                <div class="hotel-rating-container d-flex">
+                                    <p class="hotel-rating">
+                                        <i class="bi bi-heart-fill"></i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endwith %}
+            {% endfor %}
+        {% else %}
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <p style="color: gray;">No hay hoteles favoritos para mostrar.</p>
+        </div>
+        {% endif %}
+    </section>
+</main>
+
+{% endblock %}    
+{% block scripts %}
+<script src="{% static 'planning_travel/js/hotel_home.js' %}"></script>
+{% endblock %}

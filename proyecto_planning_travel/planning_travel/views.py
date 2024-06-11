@@ -34,6 +34,13 @@ def inicio(request):
     servicios = Servicio.objects.all().order_by('nombre')
     servicio_activo = None
     
+    if 'logueo' in request.session and 'id' in request.session['logueo']:
+        id_usuario = request.session['logueo']['id']
+        favoritos = Favorito.objects.filter(id_usuario=id_usuario).values_list('id_hotel_id', flat=True)
+    else:
+        favoritos = []
+        
+
     habitaciones_total = []
     if 'nombre' in request.GET:
         query_nombre = request.GET.get('nombre')
@@ -78,7 +85,7 @@ def inicio(request):
     if servicio_activo:
         servicio_activo = int(servicio_activo)
     # Enviar los datos a la plantilla
-    return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'hoteles': hoteles_con_fotos, 'servicios': servicios, 'servicio_activo': servicio_activo})
+    return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'favoritos':favoritos,'hoteles': hoteles_con_fotos, 'servicios': servicios, 'servicio_activo': servicio_activo})
 
 def detalle_hotel(request, id):
     hotel = Hotel.objects.get(pk=id)
@@ -89,6 +96,11 @@ def detalle_hotel(request, id):
     comodidades = []
     servicios = []
     estrellas = []
+    if 'logueo' in request.session and 'id' in request.session['logueo']:
+        id_usuario = request.session['logueo']['id']
+        favoritos = Favorito.objects.filter(id_usuario=id_usuario).values_list('id_hotel_id', flat=True)
+    else:
+        favoritos = []
     habitaciones_total = []
     for servicio in servicios_hotel:
         sq = Servicio.objects.get(id=servicio.id_servicio.id)
@@ -117,7 +129,8 @@ def detalle_hotel(request, id):
         'habitaciones': habitaciones_total,
         'fotos': fotos,
         'comodidades': comodidades,
-        'opiniones': opiniones
+        'opiniones': opiniones,
+        'favoritos':favoritos,
     }
     return render(request, 'planning_travel/hoteles/hotel_home/hotel_detail.html', contexto)
 
@@ -572,7 +585,7 @@ def login(request):
                 messages.error(request, "El correo no es válido")
             else:
                 try:
-                    q = Usuario.objects.get(correo=user)
+                    q = Usuario.objects.get(email=user)
                     if verify_password(password, q.password):
                         # Crear variable de sesión
                         request.session["logueo"] = {
@@ -754,8 +767,140 @@ def perfil_actualizar(request):
 def index(request):
     return render(request, 'planning_travel/inicio.html')
 
-# Crud de Usuarios
+#andres
+def reservas_mostrar(request):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        usuario_id = request.session["logueo"]["id"]
+        reservas_usuario = ReservaUsuario.objects.filter(usuario=usuario_id)
+        return render(request, 'planning_travel/hoteles/reservas/reservas_mostrar.html', {'reservas_usuario': reservas_usuario})
+    else:
+        return redirect('login_form')
+        
+def favoritos_mostrar(request):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        favoritos_usuario = Favorito.objects.filter(id_usuario=request.session["logueo"]["id"])    
+        hoteles_con_fotos = []
+        for favorito in favoritos_usuario:
+            hotel = favorito.id_hotel
+            # Obtener la primera foto de cada hotel
+            primera_foto = Foto.objects.filter(id_hotel=hotel).first()
+            hoteles_con_fotos.append({'hotel': hotel, 'foto': primera_foto})
+        print(hoteles_con_fotos)
+        return render(request, 'planning_travel/hoteles/favoritos/favoritos_mostrar.html', {'data': hoteles_con_fotos, 'favorito': favoritos_usuario})
+    else:
+        return redirect('login_form')
+def favoritos_crearUser(request, id_hotel):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        qh = Hotel.objects.get(pk=id_hotel)
+        qu = Usuario.objects.get(pk=request.session["logueo"]["id"])
 
+        if Favorito.objects.filter(id_hotel=qh, id_usuario=qu).exists():
+            favorito = Favorito.objects.get(id_hotel=qh, id_usuario=qu)
+            favorito.delete()
+            messages.warning(request, 'Hotel favorito eliminado correctamente!!')
+            return redirect('inicio')
+        else:
+            favorito = Favorito(
+                id_hotel = qh,
+                id_usuario = qu,
+            )    
+            favorito.save()
+            messages.success(request, 'Hotel favorito agregado correctamente!!')
+            return redirect('inicio')
+    else:
+        return redirect('login_form')
+    
+def favoritos_crearUser2(request, id_hotel):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        qh = Hotel.objects.get(pk=id_hotel)
+        qu = Usuario.objects.get(pk=request.session["logueo"]["id"])
+
+        if Favorito.objects.filter(id_hotel=qh, id_usuario=qu).exists():
+            favorito = Favorito.objects.get(id_hotel=qh, id_usuario=qu)
+            favorito.delete()
+            messages.warning(request, 'Hotel favorito eliminado correctamente!!')
+            return redirect('favoritos_mostrar')
+        else:
+            favorito = Favorito(
+                id_hotel = qh,
+                id_usuario = qu,
+
+            )    
+            favorito.save()
+            messages.success(request, 'Hotel favorito agregado correctamente!!')
+            return redirect('favoritos_mostrar')
+    else:
+        return redirect('login_form')
+def favoritos_crearUser3(request, id_hotel):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        qh = Hotel.objects.get(pk=id_hotel)
+        qu = Usuario.objects.get(pk=request.session["logueo"]["id"])
+
+        if Favorito.objects.filter(id_hotel=qh, id_usuario=qu).exists():
+            favorito = Favorito.objects.get(id_hotel=qh, id_usuario=qu)
+            favorito.delete()
+            messages.warning(request, 'Hotel favorito eliminado correctamente!!')
+            return redirect('detalle_hotel', id_hotel)
+        else:
+            favorito = Favorito(
+                id_hotel = qh,
+                id_usuario = qu,
+
+            )    
+            favorito.save()
+            messages.success(request, 'Hotel favorito agregado correctamente!!')
+            return redirect('detalle_hotel', id_hotel)
+    else:
+        return redirect('login_form')  
+def registrar_form(request):
+    return render(request, 'planning_travel/login/registrar.html')
+        
+def registrar(request):
+    if request.method == "POST":
+        nombre = request.POST.get("nombre")
+        correo = request.POST.get("correo")
+        clave = request.POST.get("clave")
+        confirmar_clave = request.POST.get("confirmar_clave")
+        username = correo.split('@')[0]
+        if nombre == "" or correo == "" or clave == "" or confirmar_clave == "":
+            messages.error(request, "Todos los campos son obligatorios")
+        elif not re.match(r'^[a-zA-Z ]+$', nombre):
+            messages.error(request, "El nombre solo puede contener letras y espacios")
+        elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+            messages.error(request, "El correo no es válido")
+        elif clave != confirmar_clave:
+            messages.error(request, "Las contraseñas no coinciden")
+        else:
+            try:
+                q = Usuario(
+                    nombre=nombre,
+                    correo=correo,
+                    password=make_password(clave),
+                    username=username
+                )
+                q.save()
+                messages.success(request, "Usuario registrado exitosamente")
+            except Exception as e:
+                messages.error(request, "El Usuario ya existe")
+
+    # Renderiza la misma página de registro con los mensajes de error
+    return render(request, "planning_travel/login/login.html")
+
+
+
+
+
+
+
+
+
+
+# Crud de Usuarios
 def usuarios(request):
     q = Usuario.objects.all()
     contexto = {'data': q}

@@ -53,24 +53,38 @@
                 <div>
                     <i class="bi bi-list"></i>
                 </div>
+                {% if request.session.logueo %}
+                    {% with request.session.logueo.nombre as nm %}
+                        {% if nm %}
+                            {% with nm|first as initial %}
+                                <div style="width: 35px; height: 35px; border-radius: 50%; background-color: black; color: white; display: flex; justify-content: center; align-items: center;">
+                                    <p style="margin: 0;font-size: 14px;">{{ initial|upper }}</p>
+                                </div>
+                            {% endwith %}
+                        {% endif %}
+                    {% endwith %}
+                {% else %}
                 <div>
                     <i class="bi bi-person-circle"></i>
-                </div>
+                </div>      
+                {% endif %}
             </div>
             {% if request.session.logueo.rol == 1 %}
             <a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a>
             {% endif %}
+            
             {% if request.session.logueo %}
-                <ul class="dropdown-user">
-                    <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
-                    <li class="dropdown-elemento"><a href="{% url 'favoritos_listar' %}">Ver favoritos</a></li>
-                    <li class="dropdown-elemento"><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
-                </ul>
+            <ul class="dropdown-user">
+                <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
+                <li class="dropdown-elemento"><a href="{% url 'favoritos_mostrar' %}">Ver favoritos</a></li>
+                <li class="dropdown-elemento"><a href="{% url 'reservas_mostrar' %}">Ver reservas</a></li>
+                <li class="dropdown-elemento"><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
+            </ul>
             {% else %}    
-                <ul class="dropdown-user">
-                    <li class="dropdown-elemento"><a href="{% url 'login_form' %}">Iniciar Sesion</a></li>
-                    <li class="dropdown-elemento"><a href="">Registrarse</a></li>
-                </ul>
+            <ul class="dropdown-user">
+                <li class="dropdown-elemento"><a href="{% url 'login_form' %}">Iniciar Sesion</a></li>
+                <li class="dropdown-elemento"><a href="">Registrarse</a></li>
+            </ul>
             {% endif %}
         </div>
     </nav>
