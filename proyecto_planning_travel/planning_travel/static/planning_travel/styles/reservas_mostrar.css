@@ -8,9 +8,7 @@
     width: 70%;
   
 }
-.card:hover {
-    transform: translateY(-5px);
-}
+
 .card-content {
     padding: 20px;
 }

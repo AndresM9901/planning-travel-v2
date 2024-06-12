@@ -139,7 +139,8 @@ def reserva(request, id):
     pisos = PisosHotel.objects.filter(id_hotel=id)
     num_habitaciones_piso = []
     habitaciones = []
-    if request.session['logueo']:
+    logueo = request.session.get("logueo", False)
+    if  logueo:
         usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
         metodo_usuario = tuple((m.id, m.get_tipo_pago_display()) for m in MetodoPago.objects.filter(id_usuario=usuario.id))
         if metodo_usuario:
@@ -147,32 +148,36 @@ def reserva(request, id):
         else:
             metodo = MetodoPago()
             metodo_usuario = metodo.TIPO_PAGO
-    for piso in pisos:
-        habitacion_hotel = Habitacion.objects.filter(id_piso_hotel=piso.id)
-        habitaciones.append(habitacion_hotel)
-        num_habitaciones_piso.append({'piso': piso, 'habitaciones': habitacion_hotel})
-        
-    habitaciones_disponibles = []
-    if request.method == 'POST':
-        fecha_llegada = request.POST.get('fecha_llegada')
-        fecha_salida = request.POST.get('fecha_salida')
-        
-        response = request.post('verificar_disponibilidad/', data={
-            'fecha_llegada': fecha_llegada,
-            'fecha_salida': fecha_salida
-        })
-        
-        if response.status.code == 200:
-            data = response.json()
-            habitaciones_disponibles = data.get('habitaciones_disponibles', [])
+
     
-    contexto = {
-        'habitaciones': habitaciones,
-        'num_habitaciones_piso': num_habitaciones_piso,
-        'habitaciones_disponibles': habitaciones_disponibles,
-        'metodo_pago': metodo_usuario
-    }
-    return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
+        for piso in pisos:
+            habitacion_hotel = Habitacion.objects.filter(id_piso_hotel=piso.id)
+            habitaciones.append(habitacion_hotel)
+            num_habitaciones_piso.append({'piso': piso, 'habitaciones': habitacion_hotel})
+            
+        habitaciones_disponibles = []
+        if request.method == 'POST':
+            fecha_llegada = request.POST.get('fecha_llegada')
+            fecha_salida = request.POST.get('fecha_salida')
+            
+            response = request.post('verificar_disponibilidad/', data={
+                'fecha_llegada': fecha_llegada,
+                'fecha_salida': fecha_salida
+            })
+            
+            if response.status.code == 200:
+                data = response.json()
+                habitaciones_disponibles = data.get('habitaciones_disponibles', [])
+        
+        contexto = {
+            'habitaciones': habitaciones,
+            'num_habitaciones_piso': num_habitaciones_piso,
+            'habitaciones_disponibles': habitaciones_disponibles,
+            'metodo_pago': metodo_usuario
+        }
+        return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
+    else:
+        return redirect('login_form')
 
 
 def verificar_disponibilidad(request):
@@ -194,7 +199,7 @@ def verificar_disponibilidad(request):
         reserva__fecha_llegada__lte=fecha_salida,
         reserva__fecha_salida__gte=fecha_llegada
     ).values_list('num_habitacion', flat=True)
-    
+    print(f'{fecha_llegada}, {fecha_salida}')
     return JsonResponse({
         'habitaciones_ocupadas': list(habitaciones_ocupadas),
         'habitaciones_disponibles': list(habitaciones_disponibles)
@@ -666,7 +671,7 @@ def registrar(request):
                 q.save()
                 messages.success(request, "Usuario registrado exitosamente")
             except Exception as e:
-                messages.error(request, "El Usuario ya existe")
+                messages.error(request, f"El Usuario ya existe {e}")
 
     # Renderiza la misma página de registro con los mensajes de error
     return render(request, "planning_travel/login/login.html")
@@ -688,7 +693,7 @@ def recuperar_clave(request):
             return redirect("login_form")
         else:
             try:
-                q = Usuario.objects.get(correo=correo)
+                q = Usuario.objects.get(email=correo)
                 from random import randint
                 import base64
                 token = base64.b64encode(str(randint(100000, 999999)).encode("ascii")).decode("ascii")
@@ -726,7 +731,7 @@ def verificar_recuperar(request):
         if request.POST.get("check"):
             # caso en el que el token es correcto
             correo = request.POST.get("correo")
-            q = Usuario.objects.get(correo=correo)
+            q = Usuario.objects.get(email=correo)
 
             c1 = request.POST.get("nueva1")
             c2 = request.POST.get("nueva2")
@@ -748,7 +753,7 @@ def verificar_recuperar(request):
             # caso en el que se hace clic en el correo-e para digitar token
             correo = request.POST.get("correo")
             token = request.POST.get("token")
-            q = Usuario.objects.get(correo=correo)
+            q = Usuario.objects.get(email=correo)
             if token == "":
                 messages.info(request, "Complete todos los espacios")
                 return redirect(reverse('verificar_recuperar') + f"?correo={correo}")
@@ -887,46 +892,6 @@ def favoritos_crearUser3(request, id_hotel):
         return redirect('login_form')  
 def registrar_form(request):
     return render(request, 'planning_travel/login/registrar.html')
-        
-def registrar(request):
-    if request.method == "POST":
-        nombre = request.POST.get("nombre")
-        correo = request.POST.get("correo")
-        clave = request.POST.get("clave")
-        confirmar_clave = request.POST.get("confirmar_clave")
-        username = correo.split('@')[0]
-        if nombre == "" or correo == "" or clave == "" or confirmar_clave == "":
-            messages.error(request, "Todos los campos son obligatorios")
-        elif not re.match(r'^[a-zA-Z ]+$', nombre):
-            messages.error(request, "El nombre solo puede contener letras y espacios")
-        elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
-            messages.error(request, "El correo no es válido")
-        elif clave != confirmar_clave:
-            messages.error(request, "Las contraseñas no coinciden")
-        else:
-            try:
-                q = Usuario(
-                    nombre=nombre,
-                    correo=correo,
-                    password=make_password(clave),
-                    username=username
-                )
-                q.save()
-                messages.success(request, "Usuario registrado exitosamente")
-            except Exception as e:
-                messages.error(request, "El Usuario ya existe")
-
-    # Renderiza la misma página de registro con los mensajes de error
-    return render(request, "planning_travel/login/login.html")
-
-
-
-
-
-
-
-
-
 
 # Crud de Usuarios
 def usuarios(request):

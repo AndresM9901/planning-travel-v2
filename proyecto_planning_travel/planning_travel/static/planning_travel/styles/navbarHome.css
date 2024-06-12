@@ -94,6 +94,7 @@
     padding: 0;
     padding: 2px 4px;
     border-radius: 10px;
+    z-index: 99;
 }
 
 .dropdown-user.active {
