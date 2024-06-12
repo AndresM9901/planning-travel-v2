@@ -20,12 +20,11 @@ router.register(r'perfil-usuario', views.PerfilUsuarioViewSet)
 router.register(r'cliente', views.ClienteViewSet)
 router.register(r'reporte', views.ReporteViewSet)
 router.register(r'reporte-moderador', views.ReporteModeradorViewSet)
-router.register(r'pisos-hotel', views.PisoHotelViewSet)
 
 urlpatterns = [
     path('inicio/', views.inicio, name="inicio"),
     path('api/1.0/', include(router.urls)),
-    path('api/1.0/token-auth/', views_rest.obtain_auth_token),
+    path('api/1.0/token-auth/', views.CustomAuthToken.as_view()),
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
     path('admin/', views.index, name="admin"),
 
@@ -36,6 +35,12 @@ urlpatterns = [
     path('obtener_precio/', views.obtener_precio, name="obtener_precio"),
     path('api/1.0/crear_reserva/', views.CrearReservaAPIView.as_view(), name='crear_reserva'),
     path('api/1.0/verificar_disponibilidad/', views.VerificarDisponibilidadAPIView.as_view(), name='verificar_disponibilidad'),
+    path('api/1.0/iniciohoteles/', views.InicioHoteles.as_view(), name='iniciohoteles'),
+    path('api/1.0/detallehotel/<int:id>/', views.DetalleHotel.as_view(), name='detallehotel'),
+    path('api/1.0/ver_reserva_usuario/<int:id>/', views.VerReservaUsuario.as_view(), name='ver_reserva_usuario'),
+    path('api/1.0/hacer_reserva/', views.HacerReserva.as_view(), name='hacer_reserva'),
+    path('api/1.0/registrar_usuario/', views.RegistrarUsuario.as_view(), name='registrar_usuario'),
+    
     
     # Login
 
@@ -71,6 +76,13 @@ urlpatterns = [
     path('hoteles_actualizar/', views.hoteles_actualizar, name='hoteles_actualizar'),
     path('hoteles_eliminar/<int:id>', views.hoteles_eliminar, name='hoteles_eliminar'),
     path('hoteles_form_editar/<int:id>', views.hoteles_form_editar, name='hoteles_form_editar'),
+
+    # Form Hotel como anfitrion
+    path('hoteles_form_anfitrion/', views.hoteles_form_anfitrion, name='hoteles_form_anfitrion'),
+    path('paso_dos_form/', views.paso_dos_form, name='paso_dos_form'),
+    path('paso_tres_form/', views.paso_tres_form, name='paso_tres_form'),
+    path('paso_cuatro_form/', views.paso_cuatro_form, name='paso_cuatro_form'),
+    path('paso_cinco_form/', views.paso_cinco_form, name='paso_cinco_form'),
     
     # # Crud de puntuaciones
     # path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
@@ -192,16 +204,12 @@ urlpatterns = [
     path('favoritos_actualizar/', views.favoritos_actualizar, name="favoritos_actualizar"),
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
-
-
 ]
 
-"""
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+# from django.contrib.auth.models import User
+# from rest_framework.authtoken.models import Token
 
-from .models import Usuario
+# from .models import Usuario
 
-for user in Usuario.objects.all():
-    Token.objects.get_or_create(user=user)
-"""
+# for user in Usuario.objects.all():
+#     Token.objects.get_or_create(user=user)

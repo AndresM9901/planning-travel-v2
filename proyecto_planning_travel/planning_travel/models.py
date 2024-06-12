@@ -1,10 +1,11 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .authentication import CustomUserManager
-from django.contrib.auth.models import AbstractUser 
+from django.contrib.auth.models import AbstractUser
+
 # Create your models here.
 class Categoria(models.Model):
-    nombre = models.CharField(max_length=254, )
+    nombre = models.CharField(max_length=254)
     descripcion = models.TextField()
 
     def __str__(self):
@@ -18,8 +19,10 @@ class Comodidad(models.Model):
     
 class Usuario(AbstractUser):
     nombre = models.CharField(max_length=254)
-    correo = models.EmailField(max_length=254, unique=True)
-    username = models.CharField(max_length=250, unique=True)
+    apellido = models.CharField(max_length=254, default='', null=True)
+    email = models.EmailField(max_length=254, unique=True)
+    username = None
+    nick = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
     ROLES = (
         (1, "Administrador"),
@@ -31,32 +34,23 @@ class Usuario(AbstractUser):
     foto = models.ImageField(upload_to="planning_travel/media/", default='planning_travel/media/batman.png')
     token_recuperar = models.CharField(max_length=254, default="", blank=True, null=True)
     # baneado = models.BooleanField()
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['correo', 'password']
     objects = CustomUserManager()
+    USERNAME_FIELD = 'nick'
+    REQUIRED_FIELDS = ['nombre', 'apellido', 'email']
 
     def __str__(self):
-        return f'{self.username}'
+        return f'{self.nombre}'
     
 class Hotel(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
     direccion = models.CharField(max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
-    propietario = models.CharField(max_length=200)
+    propietario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
     ciudad = models.CharField(max_length=200)
-    precio = models.DecimalField(max_digits=250, decimal_places=2)
 
     def __str__(self):
         return f'{self.nombre}'
-    
-class Comodidad(models.Model):
-    nombre = models.CharField(max_length=200)
-    descripcion = models.TextField(max_length=200)
-
-    def __str__(self):
-        return f'{self.nombre}'
-    
     
 class Favorito(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
