@@ -1,12 +1,7 @@
 from django.urls import path, include
 from . import views
-<<<<<<< HEAD
-from rest_framework import routers
-from rest_framework.authtoken import views as especial
-=======
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as views_rest
->>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0
 
 router = DefaultRouter()
 router.register(r'categoria', views.CategoriaViewSet)
@@ -25,15 +20,12 @@ router.register(r'perfil-usuario', views.PerfilUsuarioViewSet)
 router.register(r'cliente', views.ClienteViewSet)
 router.register(r'reporte', views.ReporteViewSet)
 router.register(r'reporte-moderador', views.ReporteModeradorViewSet)
+router.register(r'pisos-hotel', views.PisoHotelViewSet)
 
 urlpatterns = [
     path('inicio/', views.inicio, name="inicio"),
     path('api/1.0/', include(router.urls)),
-<<<<<<< HEAD
-    path('api/1.0/token-auth/', especial.obtain_auth_token),
-=======
     path('api/1.0/token-auth/', views_rest.obtain_auth_token),
->>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
     path('admin/', views.index, name="admin"),
 
@@ -200,15 +192,11 @@ urlpatterns = [
     path('favoritos_actualizar/', views.favoritos_actualizar, name="favoritos_actualizar"),
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
-<<<<<<< HEAD
 
-    # Favoritos vista usuario
-    path('favoritos_user/', views.favoritos_user, name="favoritos_user")
 
 ]
-=======
-]
 
+"""
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
@@ -216,4 +204,4 @@ from .models import Usuario
 
 for user in Usuario.objects.all():
     Token.objects.get_or_create(user=user)
->>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0
+"""

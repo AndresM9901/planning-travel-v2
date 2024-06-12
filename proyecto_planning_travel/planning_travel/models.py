@@ -32,7 +32,7 @@ class Usuario(AbstractUser):
     token_recuperar = models.CharField(max_length=254, default="", blank=True, null=True)
     # baneado = models.BooleanField()
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['correo','password']
+    REQUIRED_FIELDS = ['correo', 'password']
     objects = CustomUserManager()
 
     def __str__(self):
@@ -43,8 +43,7 @@ class Hotel(models.Model):
     descripcion = models.TextField()
     direccion = models.CharField(max_length=200)
     categoria = models.ForeignKey(Categoria, on_delete=models.DO_NOTHING)
-    cantidad_habitaciones = models.IntegerField()
-    dueño = models.CharField(max_length=200)
+    propietario = models.CharField(max_length=200)
     ciudad = models.CharField(max_length=200)
     precio = models.DecimalField(max_digits=250, decimal_places=2)
 
@@ -58,21 +57,6 @@ class Comodidad(models.Model):
     def __str__(self):
         return f'{self.nombre}'
     
-class Usuario(models.Model):
-    nombre = models.CharField(max_length=254)
-    correo = models.EmailField(max_length=254, unique=True)
-    contrasena = models.CharField(max_length=100)
-    ROLES = (
-        (1, "Administrador"),
-        (2, "Despachador"),
-        (3, "Cliente"),
-    )
-    rol = models.IntegerField(choices=ROLES, default=3)
-    foto = models.ImageField(upload_to="planning_travel/media/")
-    # baneado = models.BooleanField()
-
-    def __str__(self):
-        return f'{self.nombre}'
     
 class Favorito(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)

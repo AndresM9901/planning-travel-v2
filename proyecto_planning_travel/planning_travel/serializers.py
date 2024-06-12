@@ -9,12 +9,17 @@ class CategoriaSerializer(serializers.HyperlinkedModelSerializer):
 class HotelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Hotel
-        fields = ['id','nombre','descripcion','direccion','categoria','cantidad_habitaciones','propietario','ciudad','precio']
+        fields = ['id','nombre','descripcion','direccion','categoria','propietario','ciudad','precio']
 
 class ComodidadSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Comodidad
         fields = ['id', 'nombre']
+
+class PisosHotelSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PisosHotel
+        fields = ['id', 'id_hotel', 'num_piso','cantidad_habitaciones']
 
 class UsuarioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta: 
@@ -58,7 +63,7 @@ class HotelCategoriaSerializer(serializers.HyperlinkedModelSerializer):
 class HabitacionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Habitacion
-        fields = ['id', 'num_habitacion', 'id_hotel','ocupado', 'capacidad_huesped', 'tipo_habitacion']
+        fields = ['id', 'num_habitacion','id_piso_hotel' ,'ocupado', 'capacidad_huesped', 'tipo_habitacion','precio']
 
 class ReservaSerializer(serializers.HyperlinkedModelSerializer):
     habitacion = serializers.PrimaryKeyRelatedField(queryset=Habitacion.objects.all())

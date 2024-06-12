@@ -83,8 +83,6 @@
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.75);
 }
 
-<<<<<<< HEAD
-=======
 .dropdown-user {
     display: none;
     position: absolute;
@@ -118,4 +116,3 @@
 .dropdown-elemento:hover a {
     color: var(--primary-color);
 }
->>>>>>> 6f2dc40f9f1de98d0a9dd377cdabf40e8f5f31c0

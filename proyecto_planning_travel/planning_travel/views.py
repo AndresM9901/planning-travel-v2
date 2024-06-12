@@ -1690,7 +1690,7 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     serializer_class = CategoriaSerializer
 
 class HotelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
@@ -1698,6 +1698,11 @@ class ComodidadViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Comodidad.objects.all()
     serializer_class = ComodidadSerializer
+
+class PisoHotelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = PisosHotel.objects.all()
+    serializer_class = PisosHotelSerializer
 
 class UsuarioViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -1723,7 +1728,7 @@ class OpinionViewSet(viewsets.ModelViewSet):
 #     serializer_class = PuntuacionSerializer
 
 class FotoViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Foto.objects.all()
     serializer_class = FotoSerializer
 
