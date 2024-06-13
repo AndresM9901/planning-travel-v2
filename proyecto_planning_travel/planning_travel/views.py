@@ -24,7 +24,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import re
-
+from django.db import transaction
 # Create your views here.
 
 def inicio(request):
@@ -908,6 +908,7 @@ def hoteles_actualizar(request):
 
 # hoteles anfitrion form   --  Paso 1
 
+
 def hoteles_form_anfitrion(request):
     q = Categoria.objects.all()
     contexto = {'data': q}
@@ -939,25 +940,25 @@ def hoteles_form_anfitrion(request):
 # paso 2
 
 def paso_dos_form(request):
- 
-    q = Comodidad.objects.all()
-    d = Servicio.objects.all()
-    contexto = {'ser': d}
-
+    servicios = Servicio.objects.all()
+    contexto = {'ser': servicios}
     if request.method == 'POST':
-        hotel_id = request.session.get('hotel_id')
-        hotel = Hotel.objects.get(pk=hotel_id)
-        nombre = Comodidad.objects.get(pk=request.POST.get('comodidad'))
+        hotel = Hotel.objects.latest('id') 
 
-        c = HotelComodidad(
-            id_hotel=hotel,
-            id_comodidad=nombre,
-        )
-        c.save()
+        servicios_ids = request.POST.getlist('servicios')
 
+        if not servicios_ids:
+            messages.error(request,'Debe ingresar almenos una comodidad')
+            return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_dos_form.html', contexto)
         
+        for servicio_id in servicios_ids:
+            servicio = Servicio.objects.get(pk=servicio_id)
+            HotelServicio.objects.create(
+                id_hotel=hotel,
+                id_servicio=servicio
+            )
 
-        return redirect('paso_tres_form') 
+        return redirect('paso_tres_form')
 
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_dos_form.html', contexto)
 
@@ -999,7 +1000,6 @@ def paso_cuatro_form(request):
     if request.method == 'POST':
         num_habitacion = request.POST.get('num_habitacion')
         id_piso_hotel = PisosHotel.objects.get(pk=request.POST.get('id_piso_hotel'))
-        ocupado = request.POST.get('ocupado') == 'True'
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipo_habitacion')
         precio = request.POST.get('precio')
@@ -1007,7 +1007,6 @@ def paso_cuatro_form(request):
         habitacion = Habitacion(
             num_habitacion=num_habitacion,
             id_piso_hotel=id_piso_hotel,
-            ocupado=ocupado,
             capacidad_huesped=capacidad_huesped,
             tipo_habitacion=tipo_habitacion,
             precio=precio
@@ -1018,8 +1017,21 @@ def paso_cuatro_form(request):
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_cuatro_form.html', contexto)
 
 # paso 5 form 
-def paso_cinco_form(request):
 
+def paso_cinco_form(request):
+    if request.method == 'POST':
+        hotel = Hotel.objects.latest('id') 
+        fotos = request.FILES.getlist('fotos')
+        descripcion = request.POST.get('descripcion')
+
+        for foto in fotos:
+            Foto.objects.create(
+                id_hotel=hotel,
+                url_foto=foto,
+                descripcion=descripcion
+            )
+        messages.success(request, 'Bienvenido anfitrion!!, ahora tienes un nuevo hotel y puedes verlo en "..."')
+        return redirect('inicio') 
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/paso_cinco_form.html')
 
 
