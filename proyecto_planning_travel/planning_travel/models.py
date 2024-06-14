@@ -139,7 +139,7 @@ class HotelServicio(models.Model):
 class Habitacion(models.Model):
     num_habitacion = models.IntegerField()
     id_piso_hotel = models.ForeignKey(PisosHotel, on_delete=models.DO_NOTHING)
-    ocupado = models.BooleanField()
+    ocupado = models.BooleanField(default=False)
     capacidad_huesped = models.IntegerField()
     tipo_habitacion = models.CharField(max_length=255)
     precio = models.DecimalField(max_digits=250, decimal_places=2)

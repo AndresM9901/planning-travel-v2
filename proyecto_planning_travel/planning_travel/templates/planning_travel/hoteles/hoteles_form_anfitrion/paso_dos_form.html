@@ -8,10 +8,9 @@
     <h1 class="text-center">Paso 2: Comodidades o Servicios</h1>
     <form method="post">
         {% csrf_token %}
- 
         {% for c in ser %}
         <div class="form-floating mb-3 col-12 p-1">
-            <input type="checkbox" name="servicio" required value="{{ c.id }}">
+            <input class="mb-3"  type="checkbox" name="servicios"  value="{{ c.id }}">
             <img src="{{ c.icono.url }}">
             <label for="nombre">{{ c.nombre }} </label>
 

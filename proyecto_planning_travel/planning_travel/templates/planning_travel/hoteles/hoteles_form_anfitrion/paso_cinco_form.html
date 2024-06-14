@@ -6,11 +6,16 @@
 {% block contenedor %}
 <div class="container my-5 w-25">
     <h1 class="text-center">Paso 5: Fotos del hotel</h1>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
             <label for="fotos" class="form-label">Subir Fotos</label>
             <input type="file" class="form-control" id="fotos" name="fotos" multiple>
+        </div>
+       
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="descripcion" placeholder="Descripción" name="descripcion">
+            <label for="descripcion">Añade una breve descripcion</label>
         </div>
         <div class="row my-4 ">
             <button type="submit" class="btn btn-primary">Finalizar</button>
