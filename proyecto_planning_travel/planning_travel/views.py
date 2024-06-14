@@ -940,18 +940,20 @@ def hoteles_form_anfitrion(request):
 
 def paso_dos_form(request):
  
-    q = Comodidad.objects.all()
     d = Servicio.objects.all()
     contexto = {'ser': d}
 
     if request.method == 'POST':
         hotel_id = request.session.get('hotel_id')
         hotel = Hotel.objects.get(pk=hotel_id)
-        nombre = Comodidad.objects.get(pk=request.POST.get('comodidad'))
+        nombre = Servicio.objects.get(pk=request.POST.get('servicio'))
 
-        c = HotelComodidad(
+
+        # for para guardar varios servicios
+        
+        c = HotelServicio(
             id_hotel=hotel,
-            id_comodidad=nombre,
+            id_servicio=nombre,
         )
         c.save()
 
