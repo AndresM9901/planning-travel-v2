@@ -1467,6 +1467,70 @@ def hoteles_comodidades_actualizar(request):
         messages.warning(request,'No se enviaron datos')
     return redirect('hoteles_comodidades_listar')
 
+
+#andres
+def cambiar_clave(request):
+    if request.method == "POST":
+        logueo = request.session.get("logueo", False)
+        q = Usuario.objects.get(pk=logueo["id"])
+        c1 = request.POST.get("nueva1")
+        c2 = request.POST.get("nueva2")
+        if verify_password(request.POST.get("clave"), q.password):
+            if c1 == c2:
+                # cambiar clave en DB
+                q.password = make_password(c1)
+                q.save()
+                messages.success(request, "Contraseña guardada correctamente!!")
+            else:
+                messages.info(request, "Las contraseñas nuevas no coinciden...")
+        else:
+            messages.error(request, "Contraseña no válida...")
+    else:
+        messages.warning(request, "Error: No se enviaron datos...")
+
+    return redirect('ver_perfil')
+
+def ver_perfil(request):
+	logueo = request.session.get("logueo", False)
+	# Consultamos en DB por el ID del usuario logueado....
+	q = Usuario.objects.get(pk=logueo["id"])
+	contexto = {"data": q}
+	return render(request, "planning_travel/login/perfil_usuario.html", contexto)
+
+
+
+
+
+def perfil_actualizar(request):
+    if request.method == 'POST':
+        id = request.POST.get('id')
+        nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
+        correo = request.POST.get('correo')
+        print(f"Nombre: {nombre}")  # Debug print
+
+        try:
+            # Obtén el objeto Usuario por su ID
+            usuario = Usuario.objects.get(pk=id)
+            usuario.nombre = nombre
+            usuario.apellido = apellido 
+            usuario.email = correo
+            usuario.save()
+            messages.success(request, "Perfil actualizado correctamente")
+            
+            return redirect('ver_perfil')  # Redirecciona a una página después de la actualización
+        except Usuario.DoesNotExist:
+            messages.error(request, "El usuario no existe")
+        except Exception as e:
+            messages.error(request, f'Error: {e}')
+    else:
+        messages.warning(request, 'No se enviaron datos')
+    return redirect('ver_perfil')
+
+
+
+
+
 # Crud de Reservas
 def reservas(request):
     q = Reserva.objects.all()

@@ -208,6 +208,8 @@ urlpatterns = [
     path('favoritos_mostrar/', views.favoritos_mostrar, name="favoritos_mostrar"),
     path('reservas_mostrar/', views.reservas_mostrar, name="reservas_mostrar"),
     path('registrar_form/', views.registrar_form, name="registrar_form"),
+	path('perfil_actualizar/', views.perfil_actualizar, name="perfil_actualizar"),
+    path('cambiar_clave/', views.cambiar_clave, name="cambiar_clave"),
 ]
 
 # from django.contrib.auth.models import User
