@@ -23,16 +23,20 @@
         </ul>
     </div>
     <div id="contenedor-contenedor">
-        <div id="contenedor-info">
-            {% for q in data %}
-            <div class="card" style="width: 18rem;">
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item">{{ q.fecha_llegada }}</li>
-                  <li class="list-group-item">A second item</li>
-                  <li class="list-group-item">A third item</li>
-                </ul>
-              </div>
-            {% endfor %}
+        <div id="contenedor-info">  
+                <div class="card" style="width: 18rem;">
+                    <ul class="list-group list-group-flush">
+                        
+                        {% for r in data %}
+                        <li class="list-group-item">{{ r.fecha_llegada }}</li>
+                        {% endfor %}
+                        {% for h in habitacion %}
+                        <li class="list-group-item">habitacion{{ h.num_habitacion }}</li>
+                        {% endfor %}{% for ru in reserva_usuario %}
+                        <li class="list-group-item">{{ ru.estado_reserva }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
         </div>  
     </div>
 </div>
