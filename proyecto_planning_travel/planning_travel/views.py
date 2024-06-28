@@ -685,7 +685,10 @@ def dueno_hotel(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html') 
 
 def dueno_hoy(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html') 
+    q = Reserva.objects.all()
+    h = Habitacion.objects.get
+    contexto = {'data': q}
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto) 
 
 def dueno_calendario(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 

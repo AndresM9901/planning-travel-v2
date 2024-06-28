@@ -24,9 +24,16 @@
     </div>
     <div id="contenedor-contenedor">
         <div id="contenedor-info">
-            <p>hola</p>
+            {% for q in data %}
+            <div class="card" style="width: 18rem;">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">{{ q.fecha_llegada }}</li>
+                  <li class="list-group-item">A second item</li>
+                  <li class="list-group-item">A third item</li>
+                </ul>
+              </div>
+            {% endfor %}
         </div>  
     </div>
-   
 </div>
 {% endblock %}

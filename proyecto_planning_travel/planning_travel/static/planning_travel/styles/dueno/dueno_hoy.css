@@ -27,13 +27,15 @@
 }
 #boton-reservaciones{
     background: white;
+    color: #ff5c5c;
     font-size: 15px;
+    padding: 10px;
     border: solid 1px white;
     text-decoration:underline;
 }
 #boton-reservaciones:hover{
     background: rgb(226, 226, 226);
-    border-radius: 10px;
+    border-radius: 20px;
 }
 #nav-dueno-hoy{
     display: flex;
