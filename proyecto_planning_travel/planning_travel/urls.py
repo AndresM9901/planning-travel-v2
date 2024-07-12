@@ -31,7 +31,7 @@ urlpatterns = [
     # Reservas
     path('reserva/<int:id>/', views.reserva, name="reserva"),
     path('verificar_disponibilidad/', views.verificar_disponibilidad, name="verificar_disponibilidad"),
-    path('separar_reserva/', views.separar_reserva, name="separar_reserva"),
+    path('separar_reserva/<int:id>/', views.separar_reserva, name="separar_reserva"),
     path('obtener_precio/', views.obtener_precio, name="obtener_precio"),
     path('api/1.0/crear_reserva/', views.CrearReservaAPIView.as_view(), name='crear_reserva'),
     # path('api/1.0/verificar_disponibilidad/', views.VerificarDisponibilidadAPIView.as_view(), name='verificar_disponibilidad'),

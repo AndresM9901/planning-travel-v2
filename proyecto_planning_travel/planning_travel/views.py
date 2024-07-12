@@ -170,6 +170,7 @@ def reserva(request, id):
                 habitaciones_disponibles = data.get('habitaciones_disponibles', [])
         
         contexto = {
+            'hotel': hotel,
             'habitaciones': habitaciones,
             'num_habitaciones_piso': num_habitaciones_piso,
             'habitaciones_disponibles': habitaciones_disponibles,
@@ -205,12 +206,13 @@ def verificar_disponibilidad(request):
         'habitaciones_disponibles': list(habitaciones_disponibles)
     })
     
-def separar_reserva(request):
+def separar_reserva(request, id):
     if request.method == 'POST':
         habitacion = request.POST.get('habitacion')
         fecha_llegada = request.POST.get('fecha_llegada')
         fecha_salida = request.POST.get('fecha_salida')
         num_huespedes = request.POST.get('num_personas')
+        hotel = Hotel.objects.get(pk=id)
         try:
             qh = Habitacion.objects.get(pk=habitacion)
             reserva = Reserva(
@@ -229,13 +231,16 @@ def separar_reserva(request):
                 )
                 reserva_usuario.save()
             else:
-                messages.success(request, "Fue reservado correctamente")
-                hotel = Hotel.objects.get(pk=PisosHotel.objects.get(pk=Habitacion.objects.get(pk=habitacion.id)))
+                messages.success(request, "Primero inicia sesion")
                 url = reverse('reserva', kwargs={'id': hotel.id})
                 return redirect(url)
             messages.success(request, "Fue reservado correctamente")
         except Exception as e:
-            messages.error(request,f'Error: {e}')
+            # messages.error(request,f'Error: {e}')
+            messages.error(request, 'Todos los campos son obligatorios')
+            url = reverse('reserva', kwargs={'id': hotel.id})
+            return redirect(url)
+
     else:
         hotel = Hotel.objects.get(pk=PisosHotel.objects.get(pk=Habitacion.objects.get(pk=habitacion.id)))
         url = reverse('reserva', kwargs={'id': hotel.id})
