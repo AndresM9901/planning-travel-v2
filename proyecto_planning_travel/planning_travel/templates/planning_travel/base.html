@@ -14,14 +14,15 @@
     <link href="{% static 'planning_travel/styles/bootstrap.min.css' %}" rel="stylesheet" />
     <!-- estilos css -->
     <link rel="stylesheet" href="{% static 'planning_travel/styles/estilos.css' %}" />
+    {% block estilos %}{% endblock %}
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand logo" href="{% url 'inicio' %}"
-                        ><i class="bi bi-globe-americas"></i> Planning Travel</a
-                    >
+                        ><i class="bi bi-globe-americas"></i> Planning Travel
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -68,15 +69,19 @@
                             <li>
                                 <a class="dropdown-item" href="{% url 'reservas_usuarios_listar' %}">Ver Reservas de los Usuarios</a>
                             </li>
+                            <!--
                             <li>
-                                <a class="dropdown-item" href="{% url 'puntuaciones_listar' %}">Ver Puntuaciones</a>
+                                <a class="dropdown-item" href="">Ver Puntuaciones</a>
                             </li>
+                            -->
                             <li>
                                 <a class="dropdown-item" href="{% url 'habitaciones_listar' %}">Ver Habitaciones</a>
                             </li>
+                            <!--
                             <li>
-                                <a class="dropdown-item" href="{% url 'comentarios_listar' %}">Ver Comentarios</a>
+                                <a class="dropdown-item" href="">Ver Comentarios</a>
                             </li>
+                            -->
                             <li>
                                 <a class="dropdown-item" href="{% url 'favoritos_listar' %}">Ver Favoritos</a>
                             </li>
@@ -93,9 +98,6 @@
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'fotos_listar' %}">Ver Fotos</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'roles_listar' %}">Ver Roles</a>
                             </li>
                         </ul>
                     </li>
@@ -118,5 +120,6 @@
     {% endblock %}
     <script src="{% static 'planning_travel/js/libreria.js' %}"></script>
     <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

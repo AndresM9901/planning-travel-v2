@@ -1,0 +1,82 @@
+{% extends 'planning_travel/hoteles/base_hoteles.html' %}
+{% load static %}
+
+{% block title %}Ver reservas{% endblock %}
+{% block estilos %}
+<link
+    rel="stylesheet"
+    href="{% static 'planning_travel/styles/favoritos.css' %}"
+/>
+<link
+    rel="stylesheet"
+    href="{% static 'planning_travel/styles/reservas_mostrar.css' %}"
+/>
+{% endblock %}
+
+{% block content %}
+<main>
+
+   
+    <div class="barra_perfil">
+        <h5 class="texto"><strong>Reservas del usuario</strong></h5>
+    </div>
+
+
+    
+    {% if reservas_usuario %}
+    {% for reserva_usuario in reservas_usuario %}
+    <div class="card-container">
+        <div class="card">
+            <div class="card-content">
+                <div class="card-header"><p><strong>Habitación:</strong> {{ reserva_usuario.reserva.habitacion }}</p> </div>
+                <div class="card-text"><strong>Fecha de Llegada:</strong> {{ reserva_usuario.reserva.fecha_llegada }}</div>
+                <div class="card-text"><strong>Fecha de Salida:</strong> {{ reserva_usuario.reserva.fecha_salida }}</div>
+                <div class="card-text"><strong>Cantidad de Personas:</strong> {{ reserva_usuario.reserva.cantidad_personas }}</div>
+                <div class="card-text"><strong>Fecha de Realización:</strong> {{ reserva_usuario.fecha_realizacion }}</div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div class="card-text"><strong>Total:</strong> {{ reserva_usuario.reserva.total }}</div>
+                    <div class="card-text"><strong>Estado de la Reserva:</strong> {{ reserva_usuario.get_estado_reserva_display }}</div>
+                </div>
+                <div style="display: flex; justify-content:end;">
+                    <button class="btn" onclick="abrirModal('{{ forloop.counter }}')">Ver detalles del hotel</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal{{ forloop.counter }}" class="modal" style="display: none;">
+        <div class="modal-contenido">
+            <span class="cerrar" onclick="cerrarModal('{{ forloop.counter }}')">&times;</span>
+            <h1 class="text-center">Datos del hotel</h1>
+            <div class="card-text"><strong>Nombre:</strong> {{ reserva_usuario.reserva.habitacion.id_piso_hotel.id_hotel.nombre }}</div>
+            <div class="card-text"><strong>Direccion:</strong> {{ reserva_usuario.reserva.habitacion.id_piso_hotel.id_hotel.direccion }}</div>
+            <div class="card-text"><strong>Ciudad:</strong> {{ reserva_usuario.reserva.habitacion.id_piso_hotel.id_hotel.ciudad }}</div>
+        </div>
+    </div>
+    
+    {% endfor %}
+    {% else %}
+    <div style="display: flex; justify-content: center; align-items: center;">
+        <p style="color: gray;">No hay reservas para mostrar.</p>
+    </div>
+    {% endif %}
+    
+        
+    
+</main>
+<script>
+	// Función para abrir la modal
+	function abrirModal(id) {
+        document.getElementById('modal' + id).style.display = 'block';
+    }
+
+    function cerrarModal(id) {
+        document.getElementById('modal' + id).style.display = 'none';
+    }
+</script>
+{% endblock %}
+
+
+
+
+
+
