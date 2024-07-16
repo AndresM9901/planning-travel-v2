@@ -24,19 +24,28 @@ router.register(r'reporte-moderador', views.ReporteModeradorViewSet)
 urlpatterns = [
     path('inicio/', views.inicio, name="inicio"),
     path('api/1.0/', include(router.urls)),
-    path('api/1.0/token-auth/', views_rest.obtain_auth_token),
+    path('api/1.0/token-auth/', views.CustomAuthToken.as_view()),
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
     path('admin/', views.index, name="admin"),
 
     # Reservas
     path('reserva/<int:id>/', views.reserva, name="reserva"),
     path('verificar_disponibilidad/', views.verificar_disponibilidad, name="verificar_disponibilidad"),
-    path('separar_reserva/', views.separar_reserva, name="separar_reserva"),
+    path('separar_reserva/<int:id>/', views.separar_reserva, name="separar_reserva"),
     path('obtener_precio/', views.obtener_precio, name="obtener_precio"),
     path('api/1.0/crear_reserva/', views.CrearReservaAPIView.as_view(), name='crear_reserva'),
-    path('api/1.0/verificar_disponibilidad/', views.VerificarDisponibilidadAPIView.as_view(), name='verificar_disponibilidad'),
+    # path('api/1.0/verificar_disponibilidad/', views.VerificarDisponibilidadAPIView.as_view(), name='verificar_disponibilidad'),
+    path('api/1.0/iniciohoteles/', views.InicioHoteles.as_view(), name='iniciohoteles'),
+    path('api/1.0/detallehotel/<int:id>/', views.DetalleHotel.as_view(), name='detallehotel'),
+    path('api/1.0/ver_reserva_usuario/<int:id>/', views.VerReservaUsuario.as_view(), name='ver_reserva_usuario'),
+    path('api/1.0/hacer_reserva/', views.HacerReserva.as_view(), name='hacer_reserva'),
+    path('api/1.0/registrar_usuario/', views.RegistrarUsuario.as_view(), name='registrar_usuario'),
+    path('api/1.0/borrar_usuario/<int:pk>/', views.DeleteUserView.as_view(), name='borrar_usuario'),
+    
+    path('terminos_condiciones/', views.terminos_condiciones, name='terminos_condiciones'),
     
     # Login
+
     path('login/', views.login, name="login"),
     path('login_form/', views.login_form, name="login_form"),
     path('logout/', views.logout, name="logout"),
@@ -46,6 +55,17 @@ urlpatterns = [
     path("recuperar_clave/", views.recuperar_clave, name="recuperar_clave"),
 	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),
     
+    #dueño hotel
+    path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
+    path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
+    path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
+    path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
+    path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 
+    path('dueno_info/', views.dueno_info, name='dueno_info'), 
+    path('dueno_ingresos/', views.dueno_ingresos, name='dueno_ingresos'), 
+    path('dueno_nuevo_anuncio/', views.dueno_nuevo_anuncio, name='dueno_nuevo_anuncio'), 
+    path('dueno_reservaciones/', views.dueno_reservaciones, name='dueno_reservaciones'), 
+
     # Crud de Categorias
     path('categorias_listar/', views.categorias, name="categorias_listar"),
     path('categorias_form/', views.categorias_form, name="categorias_form"),
@@ -70,18 +90,6 @@ urlpatterns = [
     path('hoteles_eliminar/<int:id>', views.hoteles_eliminar, name='hoteles_eliminar'),
     path('hoteles_form_editar/<int:id>', views.hoteles_form_editar, name='hoteles_form_editar'),
     
-    #dueño hotel
-    path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
-    path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
-    path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
-    path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
-    path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 
-    path('dueno_info/', views.dueno_info, name='dueno_info'), 
-    path('dueno_ingresos/', views.dueno_ingresos, name='dueno_ingresos'), 
-    path('dueno_nuevo_anuncio/', views.dueno_nuevo_anuncio, name='dueno_nuevo_anuncio'), 
-    path('dueno_reservaciones/', views.dueno_reservaciones, name='dueno_reservaciones'), 
-
-
     # # Crud de puntuaciones
     # path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
     # path('puntuaciones_form/', views.puntuaciones_form, name='puntuaciones_form'),
@@ -202,12 +210,23 @@ urlpatterns = [
     path('favoritos_actualizar/', views.favoritos_actualizar, name="favoritos_actualizar"),
     path('favoritos_eliminar/<int:id>/', views.favoritos_eliminar, name="favoritos_eliminar"),
     path('favoritos_formulario_editar/<int:id>/', views.favoritos_formulario_editar, name="favoritos_formulario_editar"),
+	
+
+
+    path('favoritos_crearUser/<int:id_hotel>/', views.favoritos_crearUser, name="favoritos_crearUser"),
+    path('favoritos_crearUser2/<int:id_hotel>/', views.favoritos_crearUser2, name="favoritos_crearUser2"),
+    path('favoritos_crearUser3/<int:id_hotel>/', views.favoritos_crearUser3, name="favoritos_crearUser3"),
+    path('favoritos_mostrar/', views.favoritos_mostrar, name="favoritos_mostrar"),
+    path('reservas_mostrar/', views.reservas_mostrar, name="reservas_mostrar"),
+    path('registrar_form/', views.registrar_form, name="registrar_form"),
+	path('perfil_actualizar/', views.perfil_actualizar, name="perfil_actualizar"),
+    path('cambiar_clave/', views.cambiar_clave, name="cambiar_clave"),
 ]
-"""
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 
-from .models import Usuario
+# from django.contrib.auth.models import User
+# from rest_framework.authtoken.models import Token
 
-for user in Usuario.objects.all():
-    Token.objects.get_or_create(user=user)"""
+# from .models import Usuario
+
+# for user in Usuario.objects.all():
+#     Token.objects.get_or_create(user=user)
