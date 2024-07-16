@@ -13,7 +13,7 @@ def custom_exception_handler(exc, context):
         response = Response(
             {
                 'message': f'Error: {exc}'
-            },	
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
 

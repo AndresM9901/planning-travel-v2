@@ -90,15 +90,20 @@
                 <span class="compare-title">Comparar</span>
             </button>
             {% if request.session.logueo %}
-                {% csrf_token %}
-                    <a class="btn-favorite btns-card">
-                        <i class="bi bi-bookmark-heart"></i>
-                    </a>               
-            {% else %}  
-                <a href="{% url 'login_form' %}" class="btn-favorite btns-card">
+            {% if hotel.id in favoritos %}
+                <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card" style="color: white; background-color:#ff5c5c">
                     <i class="bi bi-bookmark-heart"></i>
-                </a>            
-            {% endif %}
+                </a>   
+                {% else %}
+                <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card">
+                    <i class="bi bi-bookmark-heart"></i>
+                </a>   
+                {% endif %}
+            {% else %}
+                <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card">
+                    <i class="bi bi-bookmark-heart"></i>
+                </a>   
+            {% endif %}   
             <div class="carrusel-container">
                 <div class="carrusel">
                     {% for foto in fotos %}

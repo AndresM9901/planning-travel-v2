@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .authentication import CustomUserManager
 from django.contrib.auth.models import AbstractUser
+from datetime import date
+
 
 # Create your models here.
 class Categoria(models.Model):
@@ -55,7 +57,7 @@ class Hotel(models.Model):
 class Favorito(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
-    fecha_agregado = models.DateField()
+    fecha_agregado = models.DateField(default=date.today)
 
     def __str__(self):
         return f'{self.id_hotel}'
@@ -139,7 +141,7 @@ class HotelServicio(models.Model):
 class Habitacion(models.Model):
     num_habitacion = models.IntegerField()
     id_piso_hotel = models.ForeignKey(PisosHotel, on_delete=models.DO_NOTHING)
-    ocupado = models.BooleanField(default=False)
+    ocupado = models.BooleanField()
     capacidad_huesped = models.IntegerField()
     tipo_habitacion = models.CharField(max_length=255)
     precio = models.DecimalField(max_digits=250, decimal_places=2)

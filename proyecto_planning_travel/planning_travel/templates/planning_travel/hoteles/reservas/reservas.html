@@ -10,7 +10,7 @@
 {% endblock %}
 {% block content %}
 <main>
-    <form action="{% url 'separar_reserva' %}" method="post" class="form-reserva d-flex">
+    <form action="{% url 'separar_reserva' hotel.id %}" method="post" class="form-reserva d-flex">
         {% csrf_token %}
         <h3 class="titulo">Reservar</h3>
         <div id="total">
@@ -40,6 +40,7 @@
                 </div>
             </div>
         </div>
+        <!--
         <div class="pago d-flex">
             <div class="form-floating mb-3 col-12 p-1">
                 <select class="form-select" id="categoria" name="categoria" required>
@@ -53,6 +54,7 @@
             <p>O</p>
             <button class="btn btn-secondario">Añadir metodo de pago</button>
         </div>
+        -->
         <div>
             <div class="form-floating mb-3">
                 <input class="form-control" type="number" name="num_personas" id="num_personas" placeholder="Huespedes">
