@@ -11,16 +11,74 @@
 {% block content %}
 <main>
     <section class="barra-servicios d-flex">
-        <a href="{% url 'inicio' %}" class="servicio-container d-flex {% if not servicio_activo %}active{% endif %}">
-            <img class="icon-servicio" src="{% static 'planning_travel/images/campana.svg' %}" alt="">
-            <p class="text-servicio">Ver todos</p>
-        </a>
-        {% for servicio in servicios %}
-        <a href="{% url 'inicio' %}?servicio={{ servicio.id }}" class="servicio-container d-flex {% if servicio.id == servicio_activo %}active{% endif %}">
-            <img class="icon-servicio" src="{{ servicio.icono.url }}" alt="">
-            <p class="text-servicio">{{ servicio.nombre }}</p>
-        </a>
-        {% endfor %}
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordenar"> Ordenar </button>
+        <div class="modal fade" id="ordenar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="ordenar"> Ordenar </h1>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">  
+                        <label class="p-2" for="">Ordenar por nombre: </label>
+                        <select class="btn btn-primary " name="ordenar" id="ordenar">
+                            <option value="">A-Z</option>
+                            <option value="">Z-A</option>   
+                        </select>
+                    </div>
+                    <div>
+                        <label class="p-2" for="">Ordenar por precio: </label>
+                        <select class="btn btn-primary" name="ordenar" id="ordenar">
+                            <option value="">Menor a mayor</option>
+                            <option value="">Mayor a menor </option>   
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-primary">Aceptar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#x"> x </button>
+        <div class="modal fade" id="x" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel"> Filtros </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    ...
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Cerrar</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtros"> Filtros </button>
+        <div class="modal fade" id="filtros" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel"> Filtros </h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  ...
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"> Cerrar</button>
+                  <button type="button" class="btn btn-primary">Understood</button>
+                </div>
+              </div>
+            </div>
+          </div>
     </section>
     <section
         class="container-fluid py-2 d-flex flex-wrap gap-5 justify-content-center"
