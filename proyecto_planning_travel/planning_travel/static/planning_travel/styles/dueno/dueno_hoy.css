@@ -1,0 +1,67 @@
+#contenedor{
+    margin: 40px 280px;
+}
+.dueno-hoy{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    margin: 20px;
+    padding: 10px;
+}
+#saludo{
+    font-size: 30px;
+}
+#boton-completar-anuncio{
+    background: white;
+    border-radius: 10px;
+    border: solid 1px black;
+    font-size: 14px;
+    padding: 7px 15px;
+    margin: 10px;
+}
+#boton-completar-anuncio:hover{
+    background: rgb(226, 226, 226);
+}
+#titulo1{
+    font-size: 25px;
+}
+#boton-reservaciones{
+    background: white;
+    color: #ff5c5c;
+    font-size: 15px;
+    padding: 10px;
+    border: solid 1px white;
+    text-decoration:underline;
+}
+#boton-reservaciones:hover{
+    background: rgb(226, 226, 226);
+    border-radius: 20px;
+}
+#nav-dueno-hoy{
+    display: flex;
+    flex-direction: row;
+}
+.item-nav-dueno{
+    text-decoration: none;
+    margin: 0 20px 0 0;
+    color: black;
+    border: solid 1px rgb(226, 226, 226);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+.item-nav-dueno:hover{
+    border: solid 1px rgb(0, 0, 0);
+}
+#contenedor-contenedor{
+    display: flex;
+    justify-content: center;
+    background: #EBEBEB;
+    border-radius: 10px;
+}
+#contenedor-info{
+    display: flex;
+    justify-content: center;   
+    align-items: center;
+    height: 300px;
+}
