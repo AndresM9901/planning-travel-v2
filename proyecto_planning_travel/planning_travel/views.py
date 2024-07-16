@@ -829,6 +829,7 @@ def favoritos_mostrar(request):
         return render(request, 'planning_travel/hoteles/favoritos/favoritos_mostrar.html', {'data': hoteles_con_fotos, 'favorito': favoritos_usuario})
     else:
         return redirect('login_form')
+
 def favoritos_crearUser(request, id_hotel):
     logueo = request.session.get("logueo", False)
     if logueo:
@@ -873,6 +874,7 @@ def favoritos_crearUser2(request, id_hotel):
             return redirect('favoritos_mostrar')
     else:
         return redirect('login_form')
+
 def favoritos_crearUser3(request, id_hotel):
     logueo = request.session.get("logueo", False)
     if logueo:
@@ -889,12 +891,13 @@ def favoritos_crearUser3(request, id_hotel):
                 id_hotel = qh,
                 id_usuario = qu,
 
-            )    
+            )
             favorito.save()
             messages.success(request, 'Hotel favorito agregado correctamente!!')
             return redirect('detalle_hotel', id_hotel)
     else:
-        return redirect('login_form')  
+        return redirect('login_form')
+
 def registrar_form(request):
     return render(request, 'planning_travel/login/registrar.html')
 
@@ -1472,7 +1475,6 @@ def hoteles_comodidades_actualizar(request):
         messages.warning(request,'No se enviaron datos')
     return redirect('hoteles_comodidades_listar')
 
-
 #andres
 def cambiar_clave(request):
     if request.method == "POST":
@@ -1502,10 +1504,6 @@ def ver_perfil(request):
 	contexto = {"data": q}
 	return render(request, "planning_travel/login/perfil_usuario.html", contexto)
 
-
-
-
-
 def perfil_actualizar(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -1531,10 +1529,6 @@ def perfil_actualizar(request):
     else:
         messages.warning(request, 'No se enviaron datos')
     return redirect('ver_perfil')
-
-
-
-
 
 # Crud de Reservas
 def reservas(request):
