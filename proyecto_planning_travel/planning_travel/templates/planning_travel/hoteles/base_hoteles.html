@@ -71,15 +71,16 @@
                     </div>      
                     {% endif %}
                 </div>
-                {% if request.session.logueo.rol == 1 %}
-                <a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a>
-                {% endif %}
+                
                 
                 {% if request.session.logueo %}
                 <ul class="dropdown-user">
                     <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
                     <li class="dropdown-elemento"><a href="{% url 'favoritos_mostrar' %}">Ver favoritos</a></li>
                     <li class="dropdown-elemento"><a href="{% url 'reservas_mostrar' %}">Ver reservas</a></li>
+                    {% if request.session.logueo.rol == 1 %}
+                    <li class="dropdown-elemento"><a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a></li>
+                    {% endif %}
                     <li class="dropdown-elemento"><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
                 </ul>
                 {% else %}    

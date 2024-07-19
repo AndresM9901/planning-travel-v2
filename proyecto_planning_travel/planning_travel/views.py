@@ -808,14 +808,22 @@ def index(request):
 # dueño hotel cambios sofia
 
 def dueno_hotel(request):
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html') 
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html')
+    else:
+        return redirect('login')
 
-def dueno_hoy(request): 
+def dueno_hoy(request):
     q = Reserva.objects.all()
     h= Habitacion.objects.all()
     ru= ReservaUsuario.objects.all()
-    contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto) 
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)
+    else:
+        return redirect('login')
 
 def dueno_calendario(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 

@@ -1,5 +1,5 @@
 .container-details {
-    padding: 10px 200px;
+    padding: 10px 100px;
     gap: 8px;
     flex-direction: column;
 }
@@ -11,7 +11,6 @@
 
 .container-gallery {
     width: 40%;
-    max-height: 500px;
 }
 
 .carrusel-container {
@@ -92,6 +91,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .hotel-title {
@@ -103,6 +103,7 @@
 
 .botones-head {
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .btn {
@@ -258,8 +259,35 @@
 .info-comentario {
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .puntuacion {
     font-size: 12px;
+}
+
+@media screen and (max-width: 1200px) {
+    .head-container {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .container-gallery {
+        width: 95%;
+    }
+
+    .container-info {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 950px) {
+    .container-details {
+        padding-inline: 32px;
+    }
+
+    .comentarios {
+        display: flex;
+        flex-wrap: wrap;
+    }
 }

@@ -23,7 +23,7 @@
         {% endfor %}
     </section>
     <section
-        class="container-fluid py-2 d-flex flex-wrap gap-5 justify-content-center"
+        class="container-fluid py-3 d-flex flex-wrap gap-5 justify-content-center"
     >
         {% for hotel, fotos in hoteles %}
         <div class="card-hotel d-flex">
@@ -32,18 +32,18 @@
                 <span class="compare-title">Comparar</span>
             </button>
             {% if request.session.logueo %}
-            {% if hotel.id in favoritos %}
-                <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card" style="color: white; background-color:#ff5c5c">
-                    <i class="bi bi-bookmark-heart"></i>
-                </a>   
+                {% if hotel.id in favoritos %}
+                    <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card" style="color: white; background-color:#ff5c5c">
+                        <i class="bi bi-heart-fill"></i>
+                    </a>   
                 {% else %}
-                <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card">
-                    <i class="bi bi-bookmark-heart"></i>
-                </a>   
+                    <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card">
+                        <i class="bi bi-heart-fill"></i>
+                    </a>   
                 {% endif %}
             {% else %}
                 <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card">
-                    <i class="bi bi-bookmark-heart"></i>
+                    <i class="bi bi-heart-fill"></i>
                 </a>   
             {% endif %}   
             <div class="carrusel-container">

@@ -57,6 +57,7 @@
     gap: 8px;
     border: none;
     position: relative;
+    flex-wrap: wrap;
 }
 
 .btn-publicar {
@@ -96,7 +97,7 @@
     position: absolute;
     top: 100%;
     list-style: none;
-    background-color: #d3d3d3;
+    background: #e9e9ed;
     margin: 10px 0 0 0;
     width: 200px;
     padding: 0;
@@ -131,11 +132,12 @@
 }
 
 /* Media queries para responsividad */
-@media screen and (max-width: 1079px) {
+@media screen and (max-width: 1310px) {
     .nav-bar {
         flex-direction: column;
         align-items: stretch;
         height: auto;
+        padding: 0 20px;
     }
 
     .nav-bar-left {
@@ -151,7 +153,7 @@
         align-items: stretch;
         flex-wrap: wrap;
         width: 100%;
-        padding: 20px;
+        padding: 20px 0;
         z-index: 99;
         transition: all .3s ease-in;
         gap: 8px;
@@ -185,5 +187,16 @@
 
     .change .line3 {
         transform: rotate(45deg) translate(-5px, -6px);
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .responsive-bar {
+        justify-content: center;
+    }
+
+    .input-search {
+        width: 200px;
+        padding: 0 8px;
     }
 }
