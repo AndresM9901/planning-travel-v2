@@ -125,6 +125,38 @@
     gap: 8px;
 }
 
+.propietario {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.propietario__info {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+}
+
+.propietario__img {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+}
+
+.titulo {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.parrafo {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.btn-primary--size {
+    height: 50px;
+}
+
 .comodidades {
     flex-direction: row;
     flex-wrap: wrap;
