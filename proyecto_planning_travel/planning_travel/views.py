@@ -691,9 +691,6 @@ def dueno_hoy(request):
     contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto) 
 
-def dueno_calendario(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
-
 def dueno_anuncio(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
 
@@ -704,13 +701,15 @@ def dueno_info(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
 
 def dueno_ingresos(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html') 
+    r = Reserva.objects.all()
+    contexto = { 'data': r }
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto) 
 
 def dueno_nuevo_anuncio(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
 
 def dueno_reservaciones(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/nuevo_anuncio.html') 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
 
 # Crud Comodidades
 
