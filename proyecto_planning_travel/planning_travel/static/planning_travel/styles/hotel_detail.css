@@ -169,7 +169,7 @@
 
 .popular {
     border: 1px dashed gray;
-    padding: 4px 8px;
+    padding: 4px 16px;
     justify-content: space-between;
     align-items: center;
     border-radius: 10px;
@@ -222,11 +222,15 @@
 }
 
 .servicio {
-    flex-direction: column;
+    border: 1px solid rgb(194, 194, 194);
+    flex-direction: row;
     width: fit-content;
     justify-content: center;
     align-items: center;
     text-align: center;
+    padding: 4px 8px;
+    border-radius: 8px;
+    gap: 8px;
 }
 
 .servicio--icono {
