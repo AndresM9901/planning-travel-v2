@@ -4,8 +4,13 @@ fechaLlegada.addEventListener('change', () => {
     if(fechaLlegada !== '') {
         $(fechaSalida).prop('disabled', false);
     }
+<<<<<<< Updated upstream
     console.log(formatDate(addDay(fechaLlegada.value)));
     fechaSalida.setAttribute('min', fechaLlegada.value)
+=======
+    console.log(fechaLlegada.value);
+    console.log(formatDateToISO(sumaFecha(fechaLlegada.value)));
+>>>>>>> Stashed changes
 });
 
 function verificarDisponibilidad(url) {
@@ -134,4 +139,8 @@ function addDay(date) {
     }
 
     return newDate;
+function sumaFecha(fecha) {
+    let fechaNow = new Date(fecha);
+    fechaNow.setSeconds(86400*2);
+    return `${fechaNow.getFullYear()}-${fechaNow.getMonth()+1}-${fechaNow.getDate()}`;
 }
