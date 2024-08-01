@@ -4,13 +4,11 @@ fechaLlegada.addEventListener('change', () => {
     if(fechaLlegada !== '') {
         $(fechaSalida).prop('disabled', false);
     }
-<<<<<<< Updated upstream
-    console.log(formatDate(addDay(fechaLlegada.value)));
-    fechaSalida.setAttribute('min', fechaLlegada.value)
-=======
-    console.log(fechaLlegada.value);
-    console.log(formatDateToISO(sumaFecha(fechaLlegada.value)));
->>>>>>> Stashed changes
+    // console.log(formatDate(addDay(fechaLlegada.value)));
+    fechaSalida.setAttribute('min', formatDate(sumaFecha(fechaLlegada.value)));
+    console.log(formatDate(sumaFecha(fechaLlegada.value)))
+    // console.log(fechaLlegada.value);
+    // console.log(formatDateToISO(sumaFecha(fechaLlegada.value)));
 });
 
 function verificarDisponibilidad(url) {
@@ -85,8 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.habitaciones').addClass('habitacion-disponible');
     const date = new Date();
     fechaLlegada.setAttribute('min', formatDate(date));
-    fechaSalida.setAttribute('min', fechaLlegada.value);
-    console.log(formatDate(date));
+    
 });
 
 function obtenerTotal(url, id) {
@@ -139,6 +136,8 @@ function addDay(date) {
     }
 
     return newDate;
+}
+
 function sumaFecha(fecha) {
     let fechaNow = new Date(fecha);
     fechaNow.setSeconds(86400*2);
