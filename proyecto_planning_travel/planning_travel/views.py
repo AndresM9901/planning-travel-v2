@@ -57,32 +57,6 @@ def inicio(request):
         # Obtener fotos para los hoteles filtrados
         # fotos_por_hotel = {hotel.id: fotos_por_hotel.get(hotel.id, []) for hotel in hoteles}
 
-     # Filtrar
-    ciudad = request.GET.get('ciudad', '')
-    if ciudad:
-        hoteles = hoteles.filter(ciudad=ciudad)
-
-    precio_min = request.GET.get('precio_min', '')
-    precio_max = request.GET.get('precio_max', '')
-    if precio_min:
-        hoteles = hoteles.filter(habitacion__precio__gte=precio_min).distinct()
-    if precio_max:
-        hoteles = hoteles.filter(habitacion__precio__lte=precio_max).distinct()
-
-    # valoracion  mas de 4, 5, etc   
-    
-    # Ordenar
-    orden = request.GET.get('orden', '')
-    if orden == 'nombre_asc':
-        hoteles = hoteles.order_by('nombre')
-    elif orden == 'nombre_desc':
-        hoteles = hoteles.order_by('-nombre')
-    elif orden == 'precio_asc':
-        hoteles = hoteles.annotate(min_precio=Min('habitacion__precio')).order_by('min_precio')
-    elif orden == 'precio_desc':
-        hoteles = hoteles.annotate(min_precio=Min('habitacion__precio')).order_by('-min_precio')
-   
-    # Obtener los hoteles con la cantidad de opiniones y el promedio de valoración
     for hotel in hoteles:
         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
         valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
@@ -90,13 +64,80 @@ def inicio(request):
 
         hotel.opiniones_count = opiniones_count
         hotel.promedio_valoracion = promedio_valoracion
+
+     # Filtrar por ciudad
+    ciudad = request.GET.get('ciudad', '')
+    if ciudad:
+        hoteles = hoteles.filter(ciudad=ciudad)
+
+    # Filtrar por precio
+    precio_min = request.GET.get('precio_min', '')
+    precio_max = request.GET.get('precio_max', '')
+    if precio_min or precio_max:
+        hotel_ids = Habitacion.objects.filter(
+            precio__gte=precio_min if precio_min else 0,
+            precio__lte=precio_max if precio_max else float('inf')
+        ).values_list('id_piso_hotel', flat=True).distinct()
+        hoteles = hoteles.filter(id__in=hotel_ids)
     
-    #for hotel in hoteles:
+     # Filtrar por servicios seleccionados
+    if 'servicios' in request.GET:
+        servicios_seleccionados = request.GET.getlist('servicios')
+        if servicios_seleccionados:
+            # Filtra hoteles que tienen todos los servicios seleccionados
+            hoteles = hoteles.filter(
+                id__in=HotelServicio.objects.filter(
+                    id_servicio__in=servicios_seleccionados
+                )
+                .values('id_hotel')
+                .annotate(service_count=Count('id_servicio'))
+                .filter(service_count=len(servicios_seleccionados))
+                .values_list('id_hotel', flat=True)
+            )
+
+     # Filtrar por valoración
+    valoracion = request.GET.get('valoracion', '')
+    if valoracion:
+        if valoracion == '2':
+            hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion__lte=3).exists()]
+        elif valoracion == '3':
+            hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=3).exists()]
+            hoteles = hoteles.filter(id__in=hoteles_ids)
+        elif valoracion == '4':
+            hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=4).exists()]
+            hoteles = hoteles.filter(id__in=hoteles_ids)
+        elif valoracion == '5':
+            hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=5).exists()]
+        hoteles = hoteles.filter(id__in=hoteles_ids)
+
+    # Obtener precios mínimos de habitaciones para cada hotel
+    precios_minimos = {}
+    for habitacion in Habitacion.objects.all():
+        if habitacion.id_piso_hotel.id not in precios_minimos:
+            precios_minimos[habitacion.id_piso_hotel.id] = habitacion.precio
+        else:
+            precios_minimos[habitacion.id_piso_hotel.id] = min(precios_minimos[habitacion.id_piso_hotel.id], habitacion.precio)
+
+    # Convertir queryset a lista para permitir ordenación en Python
+    hoteles = list(hoteles)
+
+    # Ordenar por precio
+    orden = request.GET.get('orden', '')
+    if orden == 'nombre_asc':
+        hoteles.sort(key=lambda h: h.nombre)
+    elif orden == 'nombre_desc':
+        hoteles.sort(key=lambda h: h.nombre, reverse=True)
+    elif orden == 'precio_asc':
+        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')))
+    elif orden == 'precio_desc':
+        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')), reverse=True)
+    
+    for hotel in hoteles:
         # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
-        #precio_minimo = Habitacion.objects.filter(id_piso_hotel__id_hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
+        precio_minimo = Habitacion.objects.filter(id_piso_hotel__id_hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
     
         # Actualizar el precio mínimo en el objeto del hotel
-        #hotel.precio_minimo = precio_minimo
+        hotel.precio_minimo = precio_minimo
     
     # Crear un diccionario para agrupar las fotos por ID de hotel
     fotos_por_hotel = {}
@@ -1121,76 +1162,66 @@ def hoteles_actualizar(request):
 
 # hoteles anfitrion form   --  Paso 1
 
-
 def hoteles_form_anfitrion(request):
-    servicios = Servicio.objects.all()
     categorias = Categoria.objects.all()
-    u = Usuario.objects.get(pk=request.session['logueo']['id'])
-
+    servicios = Servicio.objects.all()
+    contexto = {'categorias': categorias, 'servicios': servicios}
     if request.method == 'POST':
-        # Paso 1 
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
         direccion = request.POST.get('direccion')
-        categoria = Categoria.objects.get(pk=request.POST.get('categoria'))
+        categoria_id = request.POST.get('categoria')
         ciudad = request.POST.get('ciudad')
-
-        hotel = Hotel(
-            nombre=nombre,
-            descripcion=descripcion,
-            direccion=direccion,
-            categoria=categoria,
-            propietario=u,
-            ciudad=ciudad
-        )
-        hotel.save()
-
-        # Paso 2
-        servicios_ids = request.POST.getlist('servicios')
-        if not servicios_ids:
-            messages.error(request, 'Debe ingresar al menos una comodidad')
-            return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion.html', {'categorias': categorias, 'servicios': servicios})
-
-        for servicio_id in servicios_ids:
-            servicio = Servicio.objects.get(pk=servicio_id)
-            HotelServicio.objects.create(
-                id_hotel=hotel,
-                id_servicio=servicio
-            )
-
-        # Paso 3
-        num_habitacion = request.POST.get('num_habitacion')
-        capacidad_huesped = request.POST.get('capacidad_huesped')
-        tipo_habitacion = request.POST.get('tipo_habitacion')
-        precio = request.POST.get('precio')
-        ocupado = True
-
-        Habitacion.objects.create(
-            num_habitacion=num_habitacion,
-            capacidad_huesped=capacidad_huesped,
-            tipo_habitacion=tipo_habitacion,
-            precio=precio,
-            ocupado=ocupado
-        )
-
-        # Paso 4
+        servicios_seleccionados = request.POST.getlist('servicios')
         
-        fotos = request.FILES.getlist('fotos')
-        descripcion_foto = request.POST.get('descripcion')
-
-        for foto in fotos:
-            Foto.objects.create(
-                id_hotel=hotel,
-                url_foto=foto,
-                descripcion=descripcion_foto
+        try:
+            hotel = Hotel(
+                nombre=nombre,
+                descripcion=descripcion,
+                direccion=direccion,
+                categoria_id=categoria_id,
+                ciudad=ciudad
             )
+            hotel.save()
+            
+            for servicio_id in servicios_seleccionados:
+                HotelServicio.objects.create(
+                    id_hotel=hotel,
+                    id_servicio_id=servicio_id
+                )
+            
+            # Habitaciones
+            habitaciones = request.POST.get('habitaciones') 
+            if habitaciones:
+                habitaciones = JSON.loads(habitaciones)
+                for habitacion in habitaciones:
+                    Habitacion.objects.create(
+                        num_habitacion=habitacion['num_habitacion'],
+                        id_piso_hotel_id=hotel.id, 
+                        ocupado=False,
+                        capacidad_huesped=habitacion['capacidad_huesped'],
+                        tipo_habitacion=habitacion['tipo_habitacion'],
+                        precio=habitacion['precio']
+                    )
+            
+            # Guardar fotos
+            fotos = request.FILES.getlist('fotos')
+            descripcion_foto = request.POST.get('descripcion_foto', '')
+            for foto in fotos:
+                Foto.objects.create(
+                    id_hotel=hotel,
+                    archivo=foto,
+                    descripcion=descripcion_foto
+                )
+            
+            messages.success(request, 'Hotel registrado exitosamente.')
+            return redirect('inicio')  
 
-        messages.success(request, 'Bienvenido anfitrión!!, ahora tienes un nuevo hotel y puedes verlo en "..."')
-        return redirect('inicio')
-
-    contexto = {'categorias': categorias, 'servicios': servicios}
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error: {str(e)}')
+            return redirect('hoteles_form_anfitrion')  
+   
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
-
 
   
 # dueño hotel 

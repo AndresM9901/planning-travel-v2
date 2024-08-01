@@ -67,6 +67,32 @@
                                 <label for="precio_max" class="form-label">Precio Máximo:</label>
                                 <input type="number" class="form-control" name="precio_max" id="precio_max" placeholder="Precio máximo" value="{{ request.GET.precio_max }}">
                             </div>
+                            <!-- Filtro por Servicios -->
+                            <div class="mb-3">
+                                <label class="form-label">Servicios:</label>
+                                <div>
+                                    {% for servicio in servicios %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="servicio" value="{{ servicio.id }}" id="servicio_{{ servicio.id }}" {% if servicio.id|stringformat:"s" in request.GET.servicio %}checked{% endif %}>
+                                        <label class="form-check-label" for="servicio_{{ servicio.id }}">
+                                            {{ servicio.nombre }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro por Valoración -->
+                            <div class="mb-3">
+                                <label for="valoracion" class="form-label">Valoración:</label>
+                                <select class="form-select" name="valoracion" id="valoracion">
+                                    <option value="">Seleccionar valoración</option>
+                                    <option value="2" {% if request.GET.valoracion == '2' %}selected{% endif %}>Inferior a 3 estrellas</option>
+                                    <option value="3" {% if request.GET.valoracion == '3' %}selected{% endif %}>3 estrellas </option>
+                                    <option value="4" {% if request.GET.valoracion == '4' %}selected{% endif %}>4 estrellas </option>
+                                    <option value="5" {% if request.GET.valoracion == '5' %}selected{% endif %}>5 estrellas</option>
+                                </select>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -80,7 +106,7 @@
 
         <div>
           <a href=""><i class="bi bi-grid-fill" style="color: #ff5c5c;font-size: 1.5rem;padding-right: 15px;"></i></a>
-          <a href=""><i class="bi bi bi-sliders2"  style="color: #ff5c5c;font-size: 1.5rem; "></i> </a>
+          <a href=""><i class="bi bi-layout-three-columns icono-girado"  style="color: #ff5c5c;font-size: 1.5rem; "></i> </a>
         </div>
     </section>
     <section

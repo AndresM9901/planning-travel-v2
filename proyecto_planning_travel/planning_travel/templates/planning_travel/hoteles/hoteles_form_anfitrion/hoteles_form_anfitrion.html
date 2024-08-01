@@ -98,6 +98,9 @@
         <div class="row my-4">
             <button type="submit" class="btn btn-primary">Finalizar</button>
         </div>
+
+        <!-- Campo oculto para datos de habitaciones -->
+        <input type="hidden" id="habitacionesData" name="habitacionesData">
     </form>
 </div>
 
@@ -233,6 +236,11 @@
         document.getElementById('precio').value = '';
         delete saveHabitacionBtn.dataset.action;  // Limpiar acción
         delete saveHabitacionBtn.dataset.id;  // Limpiar ID del botón
+    });
+
+    // Asegurarse de que el campo oculto se actualice antes de enviar el formulario
+    document.getElementById('hotelForm').addEventListener('submit', function() {
+        document.getElementById('habitacionesData').value = JSON.stringify(habitaciones);
     });
 });
 

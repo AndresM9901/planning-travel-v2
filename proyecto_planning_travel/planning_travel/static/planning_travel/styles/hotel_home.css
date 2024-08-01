@@ -241,3 +241,9 @@
 .hotel-price:hover {
     background-color: var(--cta-bg-hover);
 }
+
+.icono-girado {
+    display: inline-block; /* Asegúrate de que el ícono pueda ser transformado */
+    transform: rotate(90deg); /* Gira el ícono 180 grados */
+    transition: transform 0.3s; 
+}
