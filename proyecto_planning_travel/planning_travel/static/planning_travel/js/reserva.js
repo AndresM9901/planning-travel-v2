@@ -1,10 +1,14 @@
 const fechaLlegada = document.querySelector('#fecha_llegada');
 const fechaSalida = document.querySelector('#fecha_salida');
 fechaLlegada.addEventListener('change', () => {
-    console.log(fechaLlegada !== '');
     if(fechaLlegada !== '') {
         $(fechaSalida).prop('disabled', false);
     }
+    // console.log(formatDate(addDay(fechaLlegada.value)));
+    fechaSalida.setAttribute('min', formatDate(sumaFecha(fechaLlegada.value)));
+    console.log(formatDate(sumaFecha(fechaLlegada.value)))
+    // console.log(fechaLlegada.value);
+    // console.log(formatDateToISO(sumaFecha(fechaLlegada.value)));
 });
 
 function verificarDisponibilidad(url) {
@@ -77,6 +81,9 @@ function getCookie(name) {
 
 document.addEventListener('DOMContentLoaded', () => {
     $('.habitaciones').addClass('habitacion-disponible');
+    const date = new Date();
+    fechaLlegada.setAttribute('min', formatDate(date));
+    
 });
 
 function obtenerTotal(url, id) {
@@ -91,4 +98,48 @@ function obtenerTotal(url, id) {
             console.log(error);
         }
     });
+}
+
+function formatDate(date) {
+    // Asegurarse de que 'date' sea un objeto Date válido
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+
+    // Obtener los componentes de la fecha
+    var year = date.getFullYear();
+    var month = ('0' + (date.getMonth() + 1)).slice(-2); // Los meses van de 0 a 11
+    var day = ('0' + date.getDate()).slice(-2);
+
+    // Formato 'yyyy-mm-dd'
+    var formattedDate = year + '-' + month + '-' + day;
+    
+    return formattedDate;
+}
+
+function addDay(date) {
+    // Crear una copia de la fecha para no modificar la original
+    console.log(date);
+    var newDate = new Date(date);
+
+    // Obtener el día actual
+    var currentDay = newDate.getDate();
+
+    // Establecer el día al siguiente
+    newDate.setDate(currentDay + 1);
+
+    // Si el día es igual al día original, significa que era el último día del mes
+    // En este caso, ajustar al primer día del siguiente mes
+    if (newDate.getDate() === currentDay) {
+        newDate.setMonth(newDate.getMonth() + 1);
+        newDate.setDate(1);
+    }
+
+    return newDate;
+}
+
+function sumaFecha(fecha) {
+    let fechaNow = new Date(fecha);
+    fechaNow.setSeconds(86400*2);
+    return `${fechaNow.getFullYear()}-${fechaNow.getMonth()+1}-${fechaNow.getDate()}`;
 }

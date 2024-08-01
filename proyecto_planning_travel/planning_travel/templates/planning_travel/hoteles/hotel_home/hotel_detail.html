@@ -58,6 +58,16 @@
                     </div>
                 </div>
                 <div class="body-info d-flex">
+                    <div class="propietario d-flex">
+                        <div class="propietario__info d-flex">
+                            <img class="propietario__img" src="{{ hotel.propietario.foto.url}}" alt="">
+                            <div class="propietario__details">
+                                <p class="titulo">{{ hotel.propietario.nombre }}</p>
+                                <p class="parrafo">{{ hotel.propietario.email }}</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-primary--size">Enviar mensaje</button>
+                    </div>
                     <ul class="comodidades d-flex">
                         {% for comodidad in comodidades %}
                             {% if comodidad.cantidad > 1 %}
