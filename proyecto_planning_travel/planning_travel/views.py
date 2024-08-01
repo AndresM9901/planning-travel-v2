@@ -56,7 +56,32 @@ def inicio(request):
         # hoteles = [hotel for hotel in hoteles if hotel.id in hoteles_filtrados]
         # Obtener fotos para los hoteles filtrados
         # fotos_por_hotel = {hotel.id: fotos_por_hotel.get(hotel.id, []) for hotel in hoteles}
-        
+
+     # Filtrar
+    ciudad = request.GET.get('ciudad', '')
+    if ciudad:
+        hoteles = hoteles.filter(ciudad=ciudad)
+
+    precio_min = request.GET.get('precio_min', '')
+    precio_max = request.GET.get('precio_max', '')
+    if precio_min:
+        hoteles = hoteles.filter(habitacion__precio__gte=precio_min).distinct()
+    if precio_max:
+        hoteles = hoteles.filter(habitacion__precio__lte=precio_max).distinct()
+
+    # valoracion  mas de 4, 5, etc   
+    
+    # Ordenar
+    orden = request.GET.get('orden', '')
+    if orden == 'nombre_asc':
+        hoteles = hoteles.order_by('nombre')
+    elif orden == 'nombre_desc':
+        hoteles = hoteles.order_by('-nombre')
+    elif orden == 'precio_asc':
+        hoteles = hoteles.annotate(min_precio=Min('habitacion__precio')).order_by('min_precio')
+    elif orden == 'precio_desc':
+        hoteles = hoteles.annotate(min_precio=Min('habitacion__precio')).order_by('-min_precio')
+   
     # Obtener los hoteles con la cantidad de opiniones y el promedio de valoración
     for hotel in hoteles:
         opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
@@ -85,7 +110,8 @@ def inicio(request):
     if servicio_activo:
         servicio_activo = int(servicio_activo)
     # Enviar los datos a la plantilla
-    return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'favoritos':favoritos,'hoteles': hoteles_con_fotos, 'servicios': servicios, 'servicio_activo': servicio_activo})
+    ciudades = Hotel.objects.values_list('ciudad', flat=True).distinct()
+    return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'ciudades':ciudades,'favoritos':favoritos,'hoteles': hoteles_con_fotos, 'servicios': servicios, 'servicio_activo': servicio_activo})
 
 def detalle_hotel(request, id):
     hotel = Hotel.objects.get(pk=id)

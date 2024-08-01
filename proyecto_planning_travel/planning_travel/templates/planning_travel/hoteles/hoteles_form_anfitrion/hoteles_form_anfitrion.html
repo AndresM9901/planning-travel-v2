@@ -2,8 +2,15 @@
 {% load static %}
 
 {% block titulo %}Registrar Hotel como anfitrión{% endblock %}
+{% block estilos %}
+<link
+    rel="stylesheet"
+    href="{% static 'planning_travel/styles/hoteles_anfitrion.css' %}"
+/>
+{% endblock %}
 
 {% block contenedor %}
+
 <div class="container my-5 w-50">
     <!-- PASO 1  -->
     <h1 class="text-center">Paso 1: Registrar Hotel</h1>
@@ -41,10 +48,12 @@
         <!-- PASO 2  -->
         <h1 class="text-center">Paso 2: Comodidades o Servicios</h1>
         {% for c in servicios %}
-        <div class="form-floating mb-3 col-12 p-1">
-            <input class="mb-3" type="checkbox" name="servicios" value="{{ c.id }}">
-            <img src="{{ c.icono.url }}">
-            <label for="nombre">{{ c.nombre }}</label>
+        <div class="checkbox-container">
+            <input type="checkbox" id="servicio{{ c.id }}" name="servicios" value="{{ c.id }}">
+            <label for="servicio{{ c.id }}" class="checkbox-label">
+                <img src="{{ c.icono.url }}" alt="{{ c.nombre }}">
+                {{ c.nombre }}
+            </label>
         </div>
         {% endfor %}
 
