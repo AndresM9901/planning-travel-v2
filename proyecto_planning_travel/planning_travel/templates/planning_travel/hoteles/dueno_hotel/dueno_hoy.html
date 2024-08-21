@@ -7,16 +7,16 @@
 {% block contenedor %}
 <div id="contenedor">
     <div class="dueno-hoy">
-        <p id="saludo" >¡NONBRE, te damos la bienvenida!</p>  
+        <p id="saludo" >¡{{ request.session.logueo.nombre }}, te damos la bienvenida!</p>  
+        
         <button id="boton-completar-anuncio">Completa tu anuncio</button>
     </div>
     <div class="dueno-hoy">
         <p id="titulo1">Tus reservaciones</p>
-        <button id="boton-reservaciones">Todas las reservaciones ()</button>
+        <button id="boton-reservaciones">Todas las reservaciones ({{ data.count }})</button>
     </div>
     <div>
         <ul id="nav-dueno-hoy">
-            <a class="item-nav-dueno" href="#">Hará el check-out ()</a>
             <a class="item-nav-dueno" href="#">En curso ()</a>
             <a class="item-nav-dueno" href="#">llegará pronto ()</a>
             <a class="item-nav-dueno" href="#">Agendadas ()</a>
@@ -24,20 +24,25 @@
     </div>
     <div id="contenedor-contenedor">
         <div id="contenedor-info">  
-                <div class="card" style="width: 18rem;">
-                    <ul class="list-group list-group-flush">
-                        
-                        {% for r in data %}
-                        <li class="list-group-item">{{ r.fecha_llegada }}</li>
-                        {% endfor %}
-                        {% for h in habitacion %}
-                        <li class="list-group-item">habitacion{{ h.num_habitacion }}</li>
-                        {% endfor %}{% for ru in reserva_usuario %}
-                        <li class="list-group-item">{{ ru.estado_reserva }}</li>
-                        {% endfor %}
+                <div class="card" >
+                    <ul  class="lista_grupo">
+                        <li class="lista1">Fecha Llegada</li>
+                        <li class="lista1">Fecha Salida</li>
+                        <li class="lista1">Nombre</li>
+                        <li class="lista1">Fecha Realizacion</li>
                     </ul>
+                    {% for r in reserva_usuario %}
+                    <ul class="lista_grupo">
+                        <li class="lista">{{ r.reserva.fecha_llegada }}</li>
+                        <li class="lista">{{ r.reserva.fecha_salida }}</li>
+                        <li class="lista">{{ r.usuario.nombre }}</li>
+                        <li class="lista">{{ r.fecha_realizacion }}</li>
+                    </ul>
+                    {% endfor %}
                 </div>
         </div>  
     </div>
 </div>
+{% block scripts %}
+{% endblock %} 
 {% endblock %}

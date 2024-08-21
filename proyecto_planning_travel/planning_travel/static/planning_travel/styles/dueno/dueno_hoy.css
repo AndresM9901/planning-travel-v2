@@ -1,5 +1,5 @@
 #contenedor{
-    margin: 40px 280px;
+    margin: 40px 180px;
 }
 .dueno-hoy{
     display: flex;
@@ -64,4 +64,39 @@
     justify-content: center;   
     align-items: center;
     height: 300px;
+}
+.card{ 
+    display: flex;
+    overflow-y:scroll; 
+    white-space: nowrap;
+    width: 1100px; 
+    height: 280px;
+    align-items: center;
+    justify-content: center;
+    padding-top: auto;
+}
+.lista_grupo{
+    display: flex;
+    flex-direction: row; 
+    padding: 0;
+    margin: 0;
+    height: 40px;
+    border-bottom:1px solid rgb(209, 209, 209);
+}
+.lista{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left:1px solid rgb(209, 209, 209);
+    border-right:1px solid rgb(209, 209, 209);
+    width: 265px;
+}
+.lista1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left:1px solid rgb(209, 209, 209);
+    border-right:1px solid rgb(209, 209, 209);
+    width: 265px;
+    background: #EBEBEB;
 }

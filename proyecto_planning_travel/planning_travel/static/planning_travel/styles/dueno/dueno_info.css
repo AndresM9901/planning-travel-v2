@@ -7,9 +7,10 @@
     padding: 20px;
 }
 #todo{
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    display: flex;
 }
 .contenedor { 
     display: flex; 
@@ -29,3 +30,23 @@
     width: 50%; 
     height: 50%; 
 } 
+#contenedor1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 800px;
+}
+#titulo-contenedor1{
+    font-size: 45px;
+    padding: 0;
+}
+#carta{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 500px;
+    height: 400px;   
+    background: #f1f1f1;
+    overflow-y:scroll; 
+}

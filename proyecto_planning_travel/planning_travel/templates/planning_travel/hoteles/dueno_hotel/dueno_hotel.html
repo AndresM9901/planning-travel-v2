@@ -37,7 +37,7 @@
             </div> 
             <div> 
                 <button class="navbar-button"><i class="bi bi-bell"></i></button> 
-                <button class="navbar-button"><i class="bi bi-person-circle"></i></button> 
+                <a class="navbar-button"><img src="{{ request.session.logueo.foto.url }}"></img> </a> 
             </div> 
         </nav> 
         {% block contenedor %}

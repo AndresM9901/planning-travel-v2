@@ -6,24 +6,24 @@
 {% endblock %}
 {% block contenedor %}
 <div id="contenedor">
-    <div class="secciones"> 
+    <div id="seccion1"> 
         <p id="anuncio">Tu anuncio</p> 
         <div> 
-            <button class="botones-1"><i class="bi bi-search"></i></i></button> 
-            <button class="botones-1"><i class="bi bi-list"></i></i></button> 
             <button class="botones-1"><i class="bi bi-plus-lg"></i></button> 
         </div> 
     </div> 
-    <div class="secciones">
-        <div class="carta">
+    <div id="seccion2">
+        {% for f in data %}
+        <div class="carta">   
             <div class="imagen-card">
-                <img class="imagen" src="..." >    
+                <img class="imagen" src="{{ f.url_foto.url }}" alt="{{ f.descripcion }}">    
             </div>
             <div class="card-body">
-                <p class="contenido-card">La publicación del anuncio para tu Casa empieza el xx de marzo de xxxx</p>
-                <p class="ubicacion"> Itagüi, Antioquia</p>
+                <p class="contenido-card">{{ f.id_hotel.nombre }}</p>
+                <p class="ubicacion"> {{ f.id_hotel.ciudad }}</p>
             </div>
         </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %} 
