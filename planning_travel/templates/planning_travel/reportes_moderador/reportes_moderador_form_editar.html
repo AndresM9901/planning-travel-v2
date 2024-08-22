@@ -1,0 +1,43 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Formulario Reportes Moderador{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Actualizar Reportes Moderador</h1>
+        <form action="{% url 'reportes_moderador_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input hidden type="text" name="id" value="{{ data.id }}">
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" name="id_usuario" id="id_usuario" required placeholder="Usuario">
+                    <option value="">Seleccionar Usuario</option>
+                    {% for r in usuario %}
+                        <option value="{{ r.id }}" {% if data.id_usuario.id == r.id %}selected{% endif %}>{{ r.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_usuario"> Usuario</label>
+            </div>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" name="id_reporte" id="id_reporte"required placeholder="Reposte">
+                    <option value="">Seleccionar Repostes</option>
+                    {% for r in reporte %}
+                        <option value="{{ r.id }}" {% if data.id_reporte.id == r.id %}selected{% endif %}>{{ r.id_usuario }}</option>
+                    {% endfor %}
+                </select>
+                <label for="id_reporte"> Reporte</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="datetime-local" class="form-control" id="fecha_inicio" placeholder="Fecha_inicio" name="fecha_inicio" value="{{ data.fecha_inicio|date:'Y-m-d\TH:i'}}">
+                <label for="fecha_inicio">fecha inicio</label>
+            </div>
+            <div class="form-floating mb-3 ">
+                <input type="date" class="form-control" id="fecha_fin" placeholder="Fecha_fin" name="fecha_fin" value="{{ data.fecha_fin|date:'Y-m-d' }}">
+                <label for="fecha_fin">fecha fin</label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

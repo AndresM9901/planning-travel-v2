@@ -1,0 +1,115 @@
+#contenedor{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    height:100%;
+}
+#lado1{
+    border-right: solid 1px rgb(235, 235, 235);
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+}
+#seccion{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+#titulo{
+    justify-content: center;
+    align-items: center;
+    font-size: 23px;
+}
+#seccion1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 30px 0 30px;
+}
+#seccion2{
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+    align-items: center;
+    margin: 0 30px 5px 30px;
+}
+
+.item-todos{
+    border-radius: 50px;
+}
+.boton-todos{
+    width: 300px;
+    padding: 20px;
+}
+#botones{
+    display: flex;
+    flex-direction: row;
+}
+.boton1{
+    border-radius: 100%;
+    background: rgb(241, 241, 241);
+    padding: 5px;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px ;
+    color: black;
+}
+.boton-todo{
+    background: black;
+    color: white;
+    border-radius: 50px;
+    margin: 10px;
+}
+.boton-no-leido{
+    padding: 8px 16px;
+    text-decoration: none;
+    border: solid 2px black;
+    border-radius: 50px;
+    color: black;
+    margin: 10px;
+    font-size: 14px;    
+    background: rgb(243, 243, 243);
+
+}
+#contenedor-parrafo{
+    margin: 0 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.icono-parrafo{
+    font-size: 28px;
+}
+#parrafo1{
+    margin-top: 20px;
+}
+#parrafo2{
+    font-size: 14px;
+    color: rgb(168, 168, 168);
+}
+#parrafo-boton{
+    background: white;
+    border: solid 1px black;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 12px;
+}
+#lado2{
+    width: 100%;
+}
+#barra-icono{
+    padding: 30px 50px;
+    color: white;
+    border-bottom: solid 1px rgb(235, 235, 235) ;
+}
+#barra-icono:hover{
+    color: black;
+}
+.mensaje{
+    padding: 30px 50px;
+}

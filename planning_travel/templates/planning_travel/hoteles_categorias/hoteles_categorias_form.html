@@ -1,0 +1,35 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Formulario Hoteles Categorias{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Registrar Hotel Categoria</h1>
+        <form action="{% url 'hoteles_categorias_crear' %}" method="post">
+            {% csrf_token %}
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="hotel" name="hotel" required>
+                    <option value="">Seleccionar Hotel</option>
+                    {% for c in data %}
+                        <option value="{{ c.id }}">{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="hotel">Hotel</label>
+            </div>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="categoria" name="categoria" required>
+                    <option value="">Seleccionar Categoria</option>
+                    {% for c in categoria %}
+                        <option value="{{ c.id }}">{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="categoria">Categoria</label>
+            </div>
+ 
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary"> Registrar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

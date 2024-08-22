@@ -1,0 +1,36 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Formulario Reportes{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Actualizar Reportes</h1>
+        <form action="{% url 'reportes_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input hidden type="text" name="id" value="{{ data.id }}">
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" name="id_usuario" id="id_usuario" required placeholder="Usuario">
+                    <option value="">Seleccionar Usuario</option>
+                    {% for r in usuario %}
+                        <option value="{{ r.id }}" {% if data.id_usuario.id == r.id %}selected{% endif %}>
+                            {{ r.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <label for="id_usuario"> Usuario</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nombre" placeholder="Nombre" name="nombre" value="{{ data.nombre }}">
+                <label for="nombre">Nombre</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="descripcion" placeholder="Descripcion" name="descripcion" value="{{ data.descripcion }}">
+                <label for="descripcion">descripcion</label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

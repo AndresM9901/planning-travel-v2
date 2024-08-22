@@ -1,0 +1,102 @@
+#contenedor{
+    margin: 40px 180px;
+}
+.dueno-hoy{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    margin: 20px;
+    padding: 10px;
+}
+#saludo{
+    font-size: 30px;
+}
+#boton-completar-anuncio{
+    background: white;
+    border-radius: 10px;
+    border: solid 1px black;
+    font-size: 14px;
+    padding: 7px 15px;
+    margin: 10px;
+}
+#boton-completar-anuncio:hover{
+    background: rgb(226, 226, 226);
+}
+#titulo1{
+    font-size: 25px;
+}
+#boton-reservaciones{
+    background: white;
+    color: #ff5c5c;
+    font-size: 15px;
+    padding: 10px;
+    border: solid 1px white;
+    text-decoration:underline;
+}
+#boton-reservaciones:hover{
+    background: rgb(226, 226, 226);
+    border-radius: 20px;
+}
+#nav-dueno-hoy{
+    display: flex;
+    flex-direction: row;
+}
+.item-nav-dueno{
+    text-decoration: none;
+    margin: 0 20px 0 0;
+    color: black;
+    border: solid 1px rgb(226, 226, 226);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+.item-nav-dueno:hover{
+    border: solid 1px rgb(0, 0, 0);
+}
+#contenedor-contenedor{
+    display: flex;
+    justify-content: center;
+    background: #EBEBEB;
+    border-radius: 10px;
+}
+#contenedor-info{
+    display: flex;
+    justify-content: center;   
+    align-items: center;
+    height: 300px;
+}
+.card{ 
+    display: flex;
+    overflow-y:scroll; 
+    white-space: nowrap;
+    width: auto; 
+    height: 280px;
+    align-items: center;
+    justify-content: center;
+    padding-top: auto;
+}
+.lista_grupo{
+    display: flex;
+    flex-direction: row; 
+    padding: 0;
+    margin: 0;
+    height: 40px;
+    border-bottom:1px solid rgb(209, 209, 209);
+}
+.lista{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left:1px solid rgb(209, 209, 209);
+    border-right:1px solid rgb(209, 209, 209);
+    width: 265px;
+}
+.lista1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left:1px solid rgb(209, 209, 209);
+    border-right:1px solid rgb(209, 209, 209);
+    width: 265px;
+    background: #EBEBEB;
+}

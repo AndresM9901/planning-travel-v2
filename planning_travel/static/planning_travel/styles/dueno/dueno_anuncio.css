@@ -1,0 +1,65 @@
+#contenedor{
+    margin: 45px 80px;
+}
+#seccion1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0 60px;
+}
+#seccion2{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+#anuncio{
+    font-size: 32px;
+}
+.botones-1{
+    background: rgb(247, 247, 247);
+    border: solid 1px rgb(247, 247, 247);
+    border-radius: 100px;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    padding: 8px;
+    margin: 5px;
+}
+.botones-1:hover{
+    background: rgb(235, 235, 235);
+    border: solid 1px rgb(235, 235, 235);
+}
+.carta{
+    width: auto;
+    margin: 30px 30px 30px 0px;
+    background: rgb(232, 232, 232);
+    border: solid 1px rgb(232, 232, 232);
+    border-radius: 15px;
+}
+.imagen-card{
+    width: 400px;
+    height: 350px;
+    background: rgb(221, 221, 221);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;    
+}
+.imagen{
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    width: 400px;
+    height: 350px;
+}
+.contenido-card{
+    color: black;
+    font-size: 20px;
+    padding-top: 12px;
+    margin: 0;
+    padding-left: 20px;
+}
+.ubicacion{
+    color: rgb(148, 148, 148);
+    font-size: 14px;
+    padding-left: 20px;
+}

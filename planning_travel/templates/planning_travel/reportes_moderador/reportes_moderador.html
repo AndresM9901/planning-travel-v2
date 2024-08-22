@@ -1,0 +1,48 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Reportes Moderador{% endblock %}
+
+{% block contenedor %}
+
+    <h1>Reportes Moderador</h1>
+    <a class="btn btn-success" href="{% url 'reportes_moderador_form' %}">Agregar</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ID Reporte</th>
+                <th>Nombre Usuario</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in data %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.id_reporte }}</td>
+                    <td>{{ r.id_usuario }}</td>
+                    <td>{{ r.fecha_inicio }}</td>
+                    <td>{{ r.fecha_fin }}</td>
+                    <td>
+                        <a class="btn btn-danger" href="javascript:eliminar('{% url 'reportes_moderador_eliminar' r.id %}')">Eliminar</a>
+                        <a class="btn btn-info" href="{% url 'reportes_moderador_form_editar' r.id %}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+    </nav>
+
+{% endblock %}
