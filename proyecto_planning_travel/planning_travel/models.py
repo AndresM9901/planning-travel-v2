@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from datetime import date
 
 
+from django.contrib.auth.models import AbstractUser 
 # Create your models here.
 class Categoria(models.Model):
     nombre = models.CharField(max_length=254)
