@@ -686,9 +686,6 @@ def dueno_hoy(request):
     contexto = { 'data': q , 'reserva_usuario' : ru  }
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto) 
 
-def dueno_calendario(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
-
 def dueno_anuncio(request): 
     foto = Foto.objects.select_related('id_hotel').all()
     contexto = {'data': foto}
@@ -703,7 +700,9 @@ def dueno_info(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html', contexto) 
 
 def dueno_ingresos(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html') 
+    r = Reserva.objects.all()
+    contexto = { 'data': r }
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto) 
 
 def dueno_reservaciones(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
