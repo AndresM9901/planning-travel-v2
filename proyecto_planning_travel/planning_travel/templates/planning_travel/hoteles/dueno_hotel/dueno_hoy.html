@@ -22,26 +22,23 @@
             <a class="item-nav-dueno" href="#">Agendadas ()</a>
         </ul>
     </div>
-    <div id="contenedor-contenedor">
-        <div id="contenedor-info">  
-                <div class="card" >
-                    <ul  class="lista_grupo">
-                        <li class="lista1">Fecha Llegada</li>
-                        <li class="lista1">Fecha Salida</li>
-                        <li class="lista1">Nombre</li>
-                        <li class="lista1">Fecha Realizacion</li>
-                    </ul>
-                    {% for r in reserva_usuario %}
-                    <ul class="lista_grupo">
-                        <li class="lista">{{ r.reserva.fecha_llegada }}</li>
-                        <li class="lista">{{ r.reserva.fecha_salida }}</li>
-                        <li class="lista">{{ r.usuario.nombre }}</li>
-                        <li class="lista">{{ r.fecha_realizacion }}</li>
-                    </ul>
-                    {% endfor %}
-                </div>
-        </div>  
-    </div>
+    <div id="contenedor-info">  
+            <ul  class="lista_grupo">
+                <li class="lista1">Fecha Llegada</li>
+                <li class="lista1">Fecha Salida</li>
+                <li class="lista1">Nombre</li>
+                <li class="lista1">Fecha Realizacion</li>
+            </ul>
+            {% for r in reserva_usuario %}
+            <ul class="lista_grupo">
+                <li class="lista">{{ r.reserva.fecha_llegada }}</li>
+                <li class="lista">{{ r.reserva.fecha_salida }}</li>
+                <li class="lista">{{ r.usuario.nombre }}</li>
+                <li class="lista">{{ r.fecha_realizacion }}</li>
+            </ul>
+            {% endfor %}
+        
+    </div>  
 </div>
 {% block scripts %}
 {% endblock %} 
