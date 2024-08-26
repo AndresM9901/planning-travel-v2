@@ -71,7 +71,6 @@ urlpatterns = [
     path('hoteles_form_editar/<int:id>', views.hoteles_form_editar, name='hoteles_form_editar'),
     
     #dueño hotel
-    path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
     path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
     path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
     path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 

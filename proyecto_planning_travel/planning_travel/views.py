@@ -681,9 +681,6 @@ def hoteles_actualizar(request):
 
 # dueño hotel 
 
-def dueno_hotel(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html') 
-
 def dueno_hoy(request): 
     q = Reserva.objects.all()
     h= Habitacion.objects.all()
