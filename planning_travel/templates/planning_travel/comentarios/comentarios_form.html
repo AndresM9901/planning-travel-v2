@@ -1,0 +1,43 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Formulario Comentarios{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Registrar Comentario</h1>
+        <form action="{% url 'comentarios_crear' %}" method="post">
+            {% csrf_token %}
+            <div class="form-floating mb-3 col-12 p-1">
+                <select  class="form-select" id="id_hotel"  name="id_hotel" required>
+                <option value="">Seleccionar hotel</option>
+                {% for c in data %}
+                <option value="{{ c.id }}">{{ c.nombre}}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-floating mb-3 col-12 p-1">
+                <select  class="form-select" id="id_usuario"  name="id_usuario" required>
+                <option value="">Seleccionar usuario</option>
+                {% for c in usuario %}
+                <option value="{{ c.id }}">{{ c.nombre}}</option>
+                {% endfor %}
+                </select>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="id_usuario" placeholder="Contenido" name="contenido" required>
+                <label for="Comentario">Contenido</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input class="form-control" type="datetime-local" id="fecha" name="fecha" placeholder="Selecciona una fecha:" required>
+                <label for="fecha">Selecciona una fecha:</label>
+            </div>
+
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

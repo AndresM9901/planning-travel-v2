@@ -1,0 +1,143 @@
+{% extends 'planning_travel/hoteles/hotel_home/base_hotel_detail.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ hotel.nombre }}{% endblock %}
+{% block estilos %}
+<link
+    rel="stylesheet"
+    href="{% static 'planning_travel/styles/hotel_detail.css' %}"
+/>
+{% endblock %}
+{% block content %}
+    <main class="container-details d-flex">
+        <div class="head-container d-flex">
+            <div class="container-gallery">
+                <div class="carrusel-container">
+                    <div class="carrusel">
+                        {% for foto in fotos %}
+                        <div class="carrusel-item">
+                            <img
+                                src="{{ foto.url_foto.url }}"
+                                alt=""
+                            />
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="carrusel-indicators"></div>
+                    <div class="carrusel-controls">
+                        <div class="carrusel-control prev">
+                            <i class="bi bi-caret-left-fill"></i>
+                        </div>
+                        <div class="carrusel-control next">
+                            <i class="bi bi-caret-right-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-info d-flex">
+                <div class="head-info d-flex">
+                    <div class="d-flex flex-column">
+                        <h1 class="hotel-title">{{ hotel.nombre }}</h1>
+                        <p class="m-0">{{ hotel.ciudad }}</p>
+                    </div>
+                    <div class="botones-head d-flex">
+                        <a href="" class="btn"><i class="bi bi-arrow-left-right btn-icon"></i> Comparar</a>
+                        <a href="" class="btn"><i class="bi bi-bookmark-heart"></i> Favoritos</a>
+                        <a href="{% url 'reserva' hotel.id %}" class="btn btn-primary">Reserva ya</a>
+                    </div>
+                </div>
+                <div class="body-info d-flex">
+                    <ul class="comodidades d-flex">
+                        {% for comodidad in comodidades %}
+                            {% if comodidad.cantidad > 1 %}
+                                {% if comodidad.comodidad.nombre == "Huesped" %}
+                                <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}es</li>
+                                {% else %}
+                                <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}s</li>
+                                {% endif %}
+                            {% else %}
+                            <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% if hotel.promedio_valoracion > 4 %}
+                    <div class="popular d-flex">
+                        <div class="popular--texto d-flex">
+                            <i class="bi bi-star-fill"></i>
+                            <p class="m-0">Según los usuarios, uno de los hoteles más populares</p>
+                        </div>
+                        <div class="popular--puntuacion d-flex">
+                            <p class="m-0 popular__tamaño">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
+                            <div class="popular__estrellas d-flex">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                        </div>
+                        <p class="m-0 popular__tamaño">({{ hotel.opiniones_count }})</p>
+                    </div>
+                    {% else %}
+                    <div class="opiniones d-flex">
+                        <div class="opiniones--puntuacion d-flex">
+                            <i class="bi bi-star-fill"></i>
+                            <p class="m-0">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
+                        </div>
+                        <span class="separador">·</span>
+                        <p class="m-0 opiniones--cantidad">{{ hotel.opiniones_count }} opiniones</p>
+                    </div>
+                    {% endif %}
+                    <div class="servicios d-flex">
+                        {% for servicio in servicios %}
+                        <div class="servicio d-flex">
+                            <img class="servicio--icono" src="{{ servicio.icono.url }}" alt="">
+                            <p class="servicio--texto">{{ servicio.nombre }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="divisor"></div>
+        <div class="body d-flex">
+            <div class="descripcion">
+                <details>
+                    <summary>Descripcion</summary>
+                    <p>{{ hotel.descripcion }}</p>
+                </details>
+            </div>
+            <div class="divisor"></div>
+            <div class="comentarios">
+                {% for comentario in opiniones %}
+                <div class="card-comentario">
+                    <div class="comentario-header d-flex">
+                        <img class="comentario__imagen" src="{{ comentario.id_usuario.foto.url }}" alt="">
+                        <div class="info-usuario d-flex">
+                            <p class="info__nombre">{{ comentario.id_usuario.nombre }}</p>
+                            <p class="info__lugar">Ciudad donde vive</p>
+                        </div>
+                    </div>
+                    <div class="comentario-body">
+                        <div class="info-comentario d-flex">
+                            <div class="puntuacion">
+                                {% for i in comentario.puntuacion %}
+                                <i class="bi bi-star-fill"></i>
+                                {% endfor %}
+                            </div>
+                            <p class="m-0">{{ comentario.fecha }}</p>
+                        </div>
+                        <p class="m-0">{{ comentario.contenido }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'planning_travel/js/hotel_detail.js' %}"></script>
+
+{% endblock %}

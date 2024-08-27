@@ -1,0 +1,97 @@
+#contenedor{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+}
+#lado1{
+    border-right: solid 1px rgb(235, 235, 235);
+    padding: 40px 50px ;
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    height: 100%;
+}
+#seccion{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+#titulo{
+    justify-content: center;
+    align-items: center;
+    font-size: 23px;
+}
+#seccion1{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+#seccion2{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    padding: 0 10px;
+}
+.item-todos{
+    border-radius: 50px;
+}
+.boton-todos{
+    width: 300px;
+    padding: 20px;
+}
+#botones{
+    display: flex;
+    flex-direction: row;
+}
+#boton1{
+    border-radius: 100%;
+    background: rgb(241, 241, 241);
+    padding: 5px;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+}
+.boton-todo{
+    background: black;
+    color: white;
+    border-radius: 50px;
+}
+#parrafo-boton{
+    background: white;
+    border: solid 1px black;
+    border-radius: 50px;
+    font-size: 14px;
+    padding: 5px 15px;
+}
+#contenedor-parrafo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+}
+.icono-parrafo{
+    font-size: 28px;
+}
+#parrafo2{
+    font-size: 14px;
+    color: rgb(168, 168, 168);
+}
+#lado2{
+    width: 100%;
+}
+#barra-icono{
+    padding: 30px 50px;
+    color: white;
+    border-bottom: solid 1px rgb(235, 235, 235) ;
+}
+#barra-icono:hover{
+    color: black;
+}
+.mensaje{
+    padding: 30px 50px;
+}

@@ -1,0 +1,58 @@
+{% extends 'planning_travel/base.html' %} 
+{% load static %} 
+{% block titulo %}Usuarios{% endblock %}
+{% block contenedor %}
+    <h1>Usuarios</h1>
+    <a class="btn btn-success" href="{% url 'usuarios_form' %}">Agregar Usuarios</a>
+
+    <table class="table">
+        <thead>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Contraseña</th>
+            <th>Rol</th>
+            <th>Foto</th>
+            <th>Acciones</th>
+        </thead>
+        <tbody>
+            {% for r in data %}
+            <tr>
+                <td>{{ r.id }}</td>
+                <td>{{ r.nombre }}</td>
+                <td>{{ r.correo }}</td>
+                <td>{{ r.contrasena }}</td>
+                <td>{{ r.rol }}</td>
+                <td>{% if r.foto.url != '' %}<img width="100" height="100" src="{{ r.foto.url }}" alt="">{% endif %}</td>
+                <td>
+                    <button
+                        type="button"
+                        class="btn btn-info"
+                    >
+                        <i class="bi bi-eye-fill"></i>
+                    </button>
+                    <a
+                        class="btn btn-warning"
+                        href="{% url 'usuarios_form_editar' r.id %}"
+                        ><i class="bi bi-pencil"></i
+                    ></a>
+                    <a
+                        href="javascript:eliminar('{% url 'usuarios_eliminar' r.id %}')"
+                        class="btn btn-danger"
+                        ><i class="bi bi-x-lg"></i
+                    ></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+        </ul>
+    </nav>
+{% endblock %}

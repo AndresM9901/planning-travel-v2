@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restablecer Contraseña</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+    }
+
+    h1 {
+    text-align: center;
+    margin-top: 20px;
+    }
+
+    form {
+    width: 50%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    input[type="password"],
+    button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    </style>
+</head>
+<body>
+    <h1>Restablecer Contraseña</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <form action="{% url 'recuperar_contrasena'  %}" method="post">
+        {% csrf_token %}
+        <label for="nueva_contrasena">Nueva Contraseña:</label>
+        <input type="text" id="nueva_contrasena" name="nueva_contrasena" required>
+        <label for="repetir_contrasena">Repetir Contraseña:</label>
+        <input type="text" id="repetir_contrasena" name="repetir_contrasena" required>
+        <button type="submit">Restablecer Contraseña</button>
+    </form>
+</body>
+</html>

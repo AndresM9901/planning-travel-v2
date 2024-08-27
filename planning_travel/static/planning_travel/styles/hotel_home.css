@@ -1,0 +1,237 @@
+/* Barra de filtros */
+.barra-servicios {
+    padding: 0 80px;
+    flex-direction: row;
+    gap: 16px;
+    justify-content: flex-start;
+    align-items: center;
+    height: 80px;
+    border-bottom: 1px solid #d1d1d1;
+}
+
+.servicio-container {
+    width: fit-content;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    padding-bottom: 2px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.icon-servicio {
+    width: 24px;
+    color: aqua;
+}
+
+.text-servicio {
+    font-size: 12px;
+    margin-bottom: 0;
+    color: #707070;
+}
+
+.servicio-container:hover {
+    opacity: 0.7;
+    border-bottom: 2px solid var(--secondary-color);
+    transform: scale(0.8);
+}
+
+.active {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Card-hotel */
+
+.card-hotel {
+    position: relative;
+    width: 320px;
+    height: 360px;
+    border: 1px solid black;
+    flex-direction: column;
+    gap: 16px;
+    border-radius: 20px;
+    align-items: center;
+    cursor: pointer;
+    padding-top: 8px;
+}
+
+.btns-card {
+    color: var(--primary-color);
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 999;
+    border-radius: 40px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    position: absolute;
+}
+
+.btn-compare {
+    top: 10px;
+    left: 10px;
+}
+
+.btn-favorite {
+    top: 10px;
+    right: 10px;
+}
+
+.compare-title {
+    display: none;
+    font-size: 16px;
+}
+
+.card-hotel:hover .btn-compare,
+.card-hotel:hover .btn-favorite {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.btn-compare:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-favorite:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-compare:hover .compare-title {
+    display: flex;
+}
+
+.card-hotel:hover .btn-compare .btn-icon {
+    display: flex;
+}
+
+/* Carusel */
+
+.carrusel-container {
+    overflow: hidden;
+    width: 300px;
+    height: 200px;
+    position: relative;
+}
+.carrusel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+.carrusel-item {
+    flex: 0 0 auto;
+    width: 300px;
+    height: 200px;
+}
+
+.carrusel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.carrusel-indicators {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+}
+.carrusel-indicator {
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+}
+.carrusel-indicator.active {
+    background-color: var(--primary-color);
+}
+.carrusel-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.carrusel-control {
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+.hotel-info {
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    width: 100%;
+}
+
+.hotel-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-wrap: wrap;
+}
+
+.hotel-info-right {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.hotel-rating-container {
+    flex-direction: column;
+    align-items: flex-end;
+    color: var(--secondary-hover);
+}
+
+.hotel-rating-container p {
+    margin-bottom: 0;
+}
+
+.hotel-rating {
+    color: white;
+    background-color: var(--secondary-color);
+    padding: 4px 6px;
+    border-radius: 20px;
+}
+
+.hotel-opinions {
+    font-size: 0.75rem;
+}
+
+.hotel-price-container {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.hotel-price-container p {
+    margin-bottom: 0;
+}
+
+.hotel-price {
+    font-size: 1.125rem;
+    color: black;
+    background-color: var(--cta-bg);
+    padding: 4px 8px;
+    text-decoration: none;
+    border-radius: 20px;
+}
+
+.hotel-price:hover {
+    background-color: var(--cta-bg-hover);
+}

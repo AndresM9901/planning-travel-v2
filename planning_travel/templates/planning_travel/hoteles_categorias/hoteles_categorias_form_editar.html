@@ -1,0 +1,36 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Formulario Habitaciones{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Actualizar Hotel Categoria</h1>
+        <form action="{% url 'hoteles_categorias_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input hidden type="text" name="id" value="{{ data.id }}">
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="hotel" name="hotel" required>
+                    <option value="">Seleccionar Hotel</option>
+                    {% for c in hotel %}
+                    <option value="{{ c.id }}" {% if data.id_usuario.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="hotel">Hotel</label>
+            </div>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="categoria" name="categoria" required>
+                    <option value="">Seleccionar Categoria</option>
+                    {% for c in categoria %}
+                    <option value="{{ c.id }}" {% if data.id_categoria.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="hotel">Categoria</label>
+            </div>
+        
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary"> Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

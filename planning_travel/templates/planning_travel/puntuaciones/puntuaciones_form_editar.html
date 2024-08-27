@@ -1,0 +1,32 @@
+{% extends 'planning_travel/base.html' %}
+{% load static %}
+
+{% block titulo %}Actualizar Puntuaciones{% endblock %}
+
+{% block contenedor %}
+    <div class="container my-5 w-25">
+        <h1 class="text-center">Actualizar Puntuacion</h1>
+        <form action="{% url 'puntuaciones_actualizar' %}" method="post">
+            {% csrf_token %}
+            <input hidden type="text" name="id" value="{{ data.id }}">
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="comentario" name="comentario" required>
+                    <option value="">Seleccionar Comentario</option>
+                    {% for c in comentario %}
+                        <option value="{{ c.id }}" {% if data.id_comentario.id == c.id %}selected{% endif %}>{{ c.contenido }}</option>
+                    {% endfor %}
+                </select>
+                <label for="comentario"
+                    >Comentario</label
+                >
+            </div>
+            <div class="form-floating mb-3">
+                <input type="number" max="5" min="1" class="form-control" id="valoracion" placeholder="Valoración" name="valoracion" value="{{ data.valoracion }}">
+                <label for="valoracion">Valoración</label>
+            </div>
+            <div class="row my-2">
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

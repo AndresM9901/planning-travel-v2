@@ -1,0 +1,356 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;500;700&family=Tektur:wght@400;600&display=swap");
+/* Variables */
+:root {
+    --primary-color: #ff5c5c;
+    --primary-color-hover: #e65353;
+    --secondary-color: #172929;
+    --secondary-color-hover: #386363;
+    --cta-bg: #ffc107;
+    --cta-bg-hover: #e0a800;
+    --text-cta: #282828;
+    --text-secondary: #262626;
+    --gradiant-color: linear-gradient(#ffc107, #ff5c5c);
+}
+
+* {
+    font-family: "Poppins", sans-serif;
+    box-sizing: border-box;
+}
+
+.header-page {
+    background-color: var(--secondary-color) !important;
+}
+
+.logo,
+.logo:hover {
+    background: var(--primary-color);
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    font-size: 2rem;
+    font-family: "Poppins" !important;
+    font-weight: 700 !important;
+}
+
+.nav-link,
+.dropdown-item {
+    font-family: "Poppins" !important;
+    color: black !important;
+    font-weight: 500 !important;
+    font-size: 1.1rem;
+}
+
+.dropdown-item {
+    color: var(--text-cta) !important;
+}
+
+/* Modal del Login */
+.login {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.nav-link:hover,
+.dropdown-item:hover {
+    color: var(--primary-color) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--cta-bg) !important;
+    box-shadow: 0 0 0 0.25rem var(--cta-bg) !important;
+}
+
+.btn-cta {
+    background-color: var(--cta-bg) !important;
+    color: var(--text-cta) !important;
+    border-color: var(--cta-bg) !important;
+    font-family: "Poppins" !important;
+    font-weight: 500 !important;
+}
+
+.btn-cta:hover {
+    background-color: var(--cta-bg-hover) !important;
+    border-color: var(--cta-bg-hover) !important;
+    box-shadow: 5px 5px 4px 0px rgba(224, 168, 0, 0.75);
+}
+
+.btn-primary {
+    background-color: white !important;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    font-family: "Poppins" !important;
+    font-weight: 500 !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color-hover) !important;
+    border-color: var(--primary-color-hover) !important;
+    color: white !important;
+    box-shadow: 5px 5px 4px 0px rgba(230, 83, 83, 0.75);
+}
+
+.btn-secondario {
+    background-color: var(--secondary-color) !important;
+    color: white;
+    font-family: "Poppins";
+    font-weight: 500;
+}
+
+.btn-secondario:hover {
+    background-color: var(--secondary-color-hover) !important;
+    color: white;
+    box-shadow: 5px 5px 4px 0px rgba(142, 217, 217, 0.75);
+}
+
+.banner {
+    background-color: var(--secondary-color);
+    height: 400px;
+    position: relative;
+}
+
+.mask {
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 80%;
+    width: 50%;
+}
+
+.text {
+    font-family: "Poppins" !important;
+    font-weight: 300;
+    font-size: 14px;
+}
+
+.card {
+    height: fit-content;
+    width: 18rem;
+}
+
+.card-action {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    color: var(--primary-color);
+    background: #fff;
+    border-radius: 100%;
+    text-decoration: none;
+    padding: 15px;
+    font-size: 15px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.19);
+}
+
+.card-action:hover {
+    color: #fff;
+    background: var(--primary-color-hover);
+    animation: pulse 1.5s infinite;
+    -webkit-animation: pulse 1.5s infinite;
+}
+
+.card-text {
+    padding: 10px 15px;
+    background: #fff;
+    font-size: 14px;
+    color: #636262;
+}
+
+.buscador {
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 50%);
+    width: 90%;
+    max-width: 1100px;
+}
+
+/* Lugares de moda */
+
+.lugares {
+    width: 24rem;
+    height: fit-content;
+    position: relative;
+    border-radius: 20px;
+    margin: 1rem 1rem;
+}
+
+.lugares:hover {
+    filter: grayscale(0.5);
+    cursor: pointer;
+}
+
+.lugares img {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+}
+
+.contenedor-texto {
+    position: absolute;
+    color: var(--primary-color);
+    left: 10%;
+    top: 10%;
+}
+
+.contenedor-texto p {
+    font-size: 1.3rem;
+    font-family: "Poppins";
+}
+
+.contenedor-links {
+    position: absolute;
+    right: 10%;
+    bottom: 10%;
+}
+
+/* seccion de opiniones */
+.people {
+    padding: 50px 0;
+}
+
+.item {
+    text-align: center;
+    max-width: 30%;
+    min-width: 400px;
+}
+
+.item .box {
+    text-align: center;
+    padding: 30px;
+    background-color: #fff;
+    margin-bottom: 30px;
+}
+
+.item .box .box-image {
+    width: 100px;
+    height: 100px;
+    image-orientation: center;
+    border-radius: 50% !important;
+}
+
+.item .name {
+    font-weight: bold;
+    margin-top: 28px;
+    margin-bottom: 8px;
+    color: inherit;
+}
+
+.item .title {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #d0d0d0;
+    letter-spacing: 2px;
+    font-size: 13px;
+}
+
+.item .description {
+    font-size: 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.item img {
+    max-width: 160px;
+}
+
+.footer {
+    background-color: var(--secondary-color);
+}
+
+.subtitulo-footer {
+    font-family: "Poppins" !important;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.social-link {
+    color: var(--primary-color);
+    font-size: 1.125rem;
+    text-decoration: none;
+}
+
+.social-link:hover {
+    color: var(--primary-color-hover);
+}
+
+.links-text {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.links-text:hover {
+    color: var(--primary-color-hover);
+    text-decoration: underline;
+}
+
+.texto-footer {
+    color: var(--primary-color);
+}
+
+.registro-empleado {
+    height: 70vh;
+    min-height: 500px;
+}
+
+/* pagina verHoteles */
+.texto-puntos {
+    font-size: 14px;
+    background-color: #c4c4c4;
+    border-radius: 10px;
+    padding: 0 5px;
+}
+
+.texto-puntos .puntos {
+    color: #000;
+    font-weight: bold;
+}
+
+.texto-puntos .num-opiniones {
+    color: #7b7b7b;
+}
+
+.tarjetas-hotel {
+    height: fit-content;
+    border: 1px solid #ccc;
+    padding: 0;
+    max-width: 1050px;
+}
+
+.tarjeta-llamativa {
+    background-color: #ccc;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.precio {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Tablas */
+
+/* Animaciones */
+
+@keyframes pulse {
+    0% {
+        -moz-transform: scale(0.9);
+        -ms-transform: scale(0.9);
+        -webkit-transform: scale(0.9);
+        transform: scale(0.9);
+    }
+
+    70% {
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        box-shadow: 0 0 0 50px rgba(90, 153, 212, 0);
+    }
+
+    100% {
+        -moz-transform: scale(0.9);
+        -ms-transform: scale(0.9);
+        -webkit-transform: scale(0.9);
+        transform: scale(0.9);
+        box-shadow: 0 0 0 0 rgba(90, 153, 212, 0);
+    }
+}
