@@ -1,18 +1,15 @@
 #contenedor{
-    margin: 45px 80px;
+    margin: 5% 5%;
 }
 #seccion1{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    margin: 0 60px;
 }
 #seccion2{
     display: flex;
-    flex-direction: row;
+    flex-direction: colum;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
 }
 #anuncio{
     font-size: 32px;
@@ -39,8 +36,8 @@
     border-radius: 15px;
 }
 .imagen-card{
-    width: 400px;
-    height: 350px;
+    width: 300px;
+    height: 250px;
     background: rgb(221, 221, 221);
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;    
@@ -48,8 +45,8 @@
 .imagen{
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-    width: 400px;
-    height: 350px;
+    width: 100%;
+    height: 100%;
 }
 .contenido-card{
     color: black;

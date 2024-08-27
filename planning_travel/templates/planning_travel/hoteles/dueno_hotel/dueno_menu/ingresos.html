@@ -5,5 +5,39 @@
 <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_ingresos.css' %}">
 {% endblock %}
 {% block contenedor %}
-
+<div id="contenedor1">
+<div>
+    <div id = "contenedor">
+        <div id="contenedor-ingreso">
+            <h2 id ="titulo">Ingresos</h2>
+            <button id="boton"><i class="bi bi-gear"></i></button>
+        </div>
+        <div id="contenedor-ganaste">
+            <p class = "texto">Ganaste</p>
+            <p class = "texto"><span>$00.00</span> este mes</p>
+        </div>
+        <div id="contenedor-2">
+            <button id="boton2"><i class="bi bi-arrows-angle-expand"></i></button>
+        </div>
+    </div>
+</div>    
+<div>
+    <div id="carta_ingresos">
+        <p id="titulo"> <strong>Resumen del año en curso</strong></p>
+        <p id="fecha">1 ene - 16 jul 2024</p>
+        <section class="resumen">
+            <p class="texto-resumen">Ingresos</p>
+            <p class="texto-resumen">$ COP</p>   
+        </section>
+        <section class="resumen">
+            <p class="texto-resumen">Tarifa por servicio</p>
+            <p class="texto-resumen">$ COP</p>   
+        </section>
+        <section class="resumen">
+            <p><strong>Total (COP)</strong></p>
+            <p class="texto-resumen"><strong>$ COP</strong></p>   
+        </section>
+    </div>
+</div>
+</div>
 {% endblock %}

@@ -9,39 +9,37 @@
     <div class="dueno-hoy">
         <p id="saludo" >¡{{ request.session.logueo.nombre }}, te damos la bienvenida!</p>  
         
-        <button id="boton-completar-anuncio">Completa tu anuncio</button>
+<!--       <button id="boton-completar-anuncio">Completa tu anuncio</button>--> 
     </div>
     <div class="dueno-hoy">
         <p id="titulo1">Tus reservaciones</p>
         <button id="boton-reservaciones">Todas las reservaciones ({{ data.count }})</button>
     </div>
-    <div>
+<!--  <div>
         <ul id="nav-dueno-hoy">
             <a class="item-nav-dueno" href="#">En curso ()</a>
             <a class="item-nav-dueno" href="#">llegará pronto ()</a>
             <a class="item-nav-dueno" href="#">Agendadas ()</a>
         </ul>
-    </div>
-    <div id="contenedor-contenedor">
-        <div id="contenedor-info">  
-                <div class="card" >
-                    <ul  class="lista_grupo">
-                        <li class="lista1">Fecha Llegada</li>
-                        <li class="lista1">Fecha Salida</li>
-                        <li class="lista1">Nombre</li>
-                        <li class="lista1">Fecha Realizacion</li>
-                    </ul>
-                    {% for r in reserva_usuario %}
-                    <ul class="lista_grupo">
-                        <li class="lista">{{ r.reserva.fecha_llegada }}</li>
-                        <li class="lista">{{ r.reserva.fecha_salida }}</li>
-                        <li class="lista">{{ r.usuario.nombre }}</li>
-                        <li class="lista">{{ r.fecha_realizacion }}</li>
-                    </ul>
-                    {% endfor %}
-                </div>
-        </div>  
-    </div>
+    </div>-->  
+    <div id="contenedor_info_tabla">  
+        <table>
+            <tr class="tabla_grupo">
+                <td class="tabla_gris">Fecha Llegada</td>
+                <td class="tabla_gris">Fecha Salida</td>
+                <td class="tabla_gris">Nombre</td>
+                <td class="tabla_gris">Fecha Realizacion</td>
+            </tr>
+            {% for r in reserva_usuario %}
+            <tr class="tabla_grupo">
+                <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
+                <td class="tabla">{{ r.reserva.fecha_salida }}</td>
+                <td class="tabla">{{ r.usuario.nombre }}</td>
+                <td class="tabla">{{ r.fecha_realizacion }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>  
 </div>
 {% block scripts %}
 {% endblock %} 

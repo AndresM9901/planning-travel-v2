@@ -7,19 +7,19 @@
 {% block contenedor %}
 <div id="todo">
     <nav id="nav"> 
-        <div class="contenedor"> 
+<!--        <div class="contenedor"> 
             <li><a class="navbarItem" href="#">Evaluaciones</a></li>
             <li><a class="navbarItem" href="#">Visitas</a> </li>
             <li><a class="navbarItem" href="#">Problemas con el alojamiento</a> </li>
-        </div> 
+        </div> -->
     </nav>  
     <div id="contenedor1 ">
         <p id="titulo-contenedor1">Reseñas</p>
-        <a>todos los Anuncios <i class="bi bi-caret-down-fill"></i></a>
+        <!--<a>todos los Anuncios <i class="bi bi-caret-down-fill"></i></a>-->
     </div>
-    <div id="carta">
+    <div id="cartas">
         {% for r in data %}
-        <div class="card">
+        <div class="card carta">
             <div class="card-body">
               <h4>{{ r.id_usuario.nombre }}</h5>
               <h6 class="card-subtitle mb-2 text-muted">hotel: {{ r.id_hotel.nombre }}</h6>

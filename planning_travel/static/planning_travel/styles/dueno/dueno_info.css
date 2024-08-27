@@ -41,12 +41,20 @@
     font-size: 45px;
     padding: 0;
 }
-#carta{
+#cartas{
     display: flex;
     justify-content: center;
     align-items: center;
     width: 500px;
     height: 400px;   
     background: #f1f1f1;
-    overflow-y:scroll; 
+    overflow-y:scroll;     
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+.carta{
+    width: 200px;
+    height: 200px;
+    flex-wrap: wrap;
+    margin: 2px;
 }
