@@ -680,33 +680,35 @@ def hoteles_actualizar(request):
         messages.warning(request,'No se enviaron datos')
 
 # dueño hotel 
-
 def dueno_hoy(request): 
     q = Reserva.objects.all()
-    h= Habitacion.objects.all()
-    ru= ReservaUsuario.objects.all()
-    contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
+    ru = ReservaUsuario.objects.select_related('usuario','reserva').all()
+    contexto = { 'data': q , 'reserva_usuario' : ru  }
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto) 
 
 def dueno_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
+    foto = Foto.objects.select_related('id_hotel').all()
+    contexto = {'data': foto}
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html', contexto) 
 
 def dueno_mensaje(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_mensaje.html') 
 
 def dueno_info(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
+    opinion = Opinion.objects.select_related('id_hotel','id_usuario').all()
+    contexto = {'data': opinion}
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html', contexto) 
 
 def dueno_ingresos(request): 
     r = Reserva.objects.all()
     contexto = { 'data': r }
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto) 
 
-def dueno_nuevo_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
-
-def dueno_reservaciones(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
+def dueno_reservaciones(request):
+    q = Reserva.objects.all()
+    ru = ReservaUsuario.objects.select_related('usuario').all()
+    contexto = { 'data': q , 'reserva_usuario' : ru  } 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html', contexto) 
 
 # Crud Comodidades
 
