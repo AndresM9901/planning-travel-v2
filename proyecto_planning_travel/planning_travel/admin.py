@@ -27,7 +27,7 @@ class HotelAdmin(admin.ModelAdmin):
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nombre', 'username', 'correo', 'password', 'rol', 'foto', 'last_login']
+    list_display = ['id', 'nombre', 'nick', 'email', 'password', 'rol', 'foto', 'last_login']
 
     def nombre_en_plural(self, obj):
         return mark_safe(

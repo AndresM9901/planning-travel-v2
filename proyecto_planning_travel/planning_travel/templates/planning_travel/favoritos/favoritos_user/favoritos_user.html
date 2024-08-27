@@ -1,0 +1,27 @@
+{% extends 'planning_travel/hoteles/base_hoteles.html' %}
+{% load static %}
+
+{% block title %}Mis favoritos{% endblock %}
+{% block estilos %}
+<link
+    rel="stylesheet"
+    href="{% static 'planning_travel/styles/favoritos' %}"
+/>
+{% endblock %}
+{% block content %}
+
+<h1>Mis favoritos</h1>
+
+<div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+  </div>
+  <div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    </div>
+  </div>
+{% endblock %}

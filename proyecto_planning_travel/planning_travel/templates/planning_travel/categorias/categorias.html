@@ -5,8 +5,9 @@
     <h1>Categorias</h1>
     <a class="btn btn-success" href="{% url 'categorias_form' %}">Agregar Categorias</a>
 
+    <div style="margin:40px">
     <table class="table">
-        <thead>
+        <thead class="table-info">
             <th>ID</th>
             <th>Nombre</th>
             <th>Descripcion</th>
@@ -51,4 +52,5 @@
             <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
         </ul>
     </nav>
+    </div>
 {% endblock %}

@@ -25,54 +25,73 @@
 </head>
 <body>
     <nav class="nav-bar">
-        <div>
-            <a class="navbar-brand logo" href="{% url 'inicio' %}">
-                <i class="bi bi-globe-americas"></i> Planning Travel
-            </a>
-        </div>
-        <div class="search-bar d-flex">
-            <form action="{% url 'inicio' %}">
-                <input
-                class="input-search"
-                placeholder="¿Donde quieres ir?"
-                type="text"
-                name="nombre"
-            />
-            <input
-                type="text"
-                class="input-search"
-                name="cantidad"
-                placeholder="¿Cuantas Personas?"
-            />
-            <button class="btn-search"><i class="bi bi-search"></i></button>
-            </form>
-        </div>
-        <div class="nav-bar-btns btn-dropdown d-flex">
-            <a class="btn-publicar" href="{% url 'dueno_hoy' %}">Hazte anfitrión</a>
-            <div class="btn-profile d-flex">
-                <div>
-                    <i class="bi bi-list"></i>
-                </div>
-                <div>
-                    <i class="bi bi-person-circle"></i>
-                </div>
+        <div class="nav-bar-left">
+            <div>
+                <a class="navbar-brand logo" href="{% url 'inicio' %}">
+                    <i class="bi bi-globe-americas"></i> Planning Travel
+                </a>
             </div>
-            {% if request.session.logueo.rol == 1 %}
-            <a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a>
-            {% endif %}
-            {% if request.session.logueo %}
+            <div class="burger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </div>
+        <div class="responsive-bar">
+            <div class="search-bar d-flex">
+                <form action="{% url 'inicio' %}" role="search" class="d-flex align-items-center">
+                    <input
+                    class="input-search"
+                    placeholder="¿Dónde quieres ir?"
+                    type="text"
+                    name="nombre"
+                />
+                <button class="btn-search"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+            <div class="nav-bar-btns btn-dropdown d-flex">
+                <a href="{% url 'dueno_hoy' %}"  class="btn-publicar">Hazte anfitrión</a>
+                <div class="btn-profile d-flex">
+                    <div>
+                        <i class="bi bi-list"></i>
+                    </div>
+                    {% if request.session.logueo %}
+                        {% with request.session.logueo.nombre as nm %}
+                            {% if nm %}
+                                {% with nm|first as initial %}
+                                    <div style="width: 35px; height: 35px; border-radius: 50%; background-color: black; color: white; display: flex; justify-content: center; align-items: center;">
+                                        <p style="margin: 0;font-size: 14px;">{{ initial|upper }}</p>
+                                    </div>
+                                {% endwith %}
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                    <div>
+                        <i class="bi bi-person-circle"></i>
+                    </div>      
+                    {% endif %}
+                </div>
+                
+                
+                {% if request.session.logueo %}
                 <ul class="dropdown-user">
                     <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
-                    <li class="dropdown-elemento"><a href="{% url 'favoritos_listar' %}">Ver favoritos</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'favoritos_mostrar' %}">Ver favoritos</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'reservas_mostrar' %}">Ver reservas</a></li>
+                    {% if request.session.logueo.rol == 1 %}
+                    <li class="dropdown-elemento"><a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a></li>
+                    {% endif %}
                     <li class="dropdown-elemento"><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
                 </ul>
-            {% else %}    
+                {% else %}    
                 <ul class="dropdown-user">
                     <li class="dropdown-elemento"><a href="{% url 'login_form' %}">Iniciar Sesion</a></li>
-                    <li class="dropdown-elemento"><a href="">Registrarse</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'registrar_form' %}">Registrarse</a></li>
                 </ul>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
+        
     </nav>
     {% if messages %}
         {% for message in messages %}

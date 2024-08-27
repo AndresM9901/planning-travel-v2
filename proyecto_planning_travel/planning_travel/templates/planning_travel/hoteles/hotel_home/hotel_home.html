@@ -11,19 +11,106 @@
 {% block content %}
 <main>
     <section class="barra-servicios d-flex">
-        <a href="{% url 'inicio' %}" class="servicio-container d-flex {% if not servicio_activo %}active{% endif %}">
-            <img class="icon-servicio" src="{% static 'planning_travel/images/campana.svg' %}" alt="">
-            <p class="text-servicio">Ver todos</p>
-        </a>
-        {% for servicio in servicios %}
-        <a href="{% url 'inicio' %}?servicio={{ servicio.id }}" class="servicio-container d-flex {% if servicio.id == servicio_activo %}active{% endif %}">
-            <img class="icon-servicio" src="{{ servicio.icono.url }}" alt="">
-            <p class="text-servicio">{{ servicio.nombre }}</p>
-        </a>
-        {% endfor %}
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordenar">Ordenar</button>
+        <div class="modal fade" id="ordenar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Ordenar</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form id="ordenarForm" method="get">
+                            <div class="mb-3">
+                                <label class="p-2" for="orden">Ordenar por:</label>
+                                <select class="form-select" name="orden" id="orden">
+                                    <option value="">Seleccionar opción</option>
+                                    <option value="nombre_asc">Nombre A-Z</option>
+                                    <option value="nombre_desc">Nombre Z-A</option>
+                                    <option value="precio_asc">Precio Menor a Mayor</option>
+                                    <option value="precio_desc">Precio Mayor a Menor</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" form="ordenarForm" class="btn btn-primary">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtros">Filtros</button>
+        <div class="modal fade" id="filtros" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Filtros</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="filtrosForm" method="get">
+                            <div class="mb-3">
+                                <label for="ciudad" class="form-label">Ciudad:</label>
+                                <select class="form-select" name="ciudad" id="ciudad">
+                                    <option value="">Seleccionar ciudad</option>
+                                    {% for ciudad in ciudades %}
+                                    <option value="{{ ciudad }}" {% if ciudad == request.GET.ciudad %}selected{% endif %}>{{ ciudad }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="precio_min" class="form-label">Precio Mínimo:</label>
+                                <input type="number" class="form-control" name="precio_min" id="precio_min" placeholder="Precio mínimo" value="{{ request.GET.precio_min }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="precio_max" class="form-label">Precio Máximo:</label>
+                                <input type="number" class="form-control" name="precio_max" id="precio_max" placeholder="Precio máximo" value="{{ request.GET.precio_max }}">
+                            </div>
+                            <!-- Filtro por Servicios -->
+                            <div class="mb-3">
+                                <label class="form-label">Servicios:</label>
+                                <div>
+                                    {% for servicio in servicios %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="servicio" value="{{ servicio.id }}" id="servicio_{{ servicio.id }}" {% if servicio.id|stringformat:"s" in request.GET.servicio %}checked{% endif %}>
+                                        <label class="form-check-label" for="servicio_{{ servicio.id }}">
+                                            {{ servicio.nombre }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Filtro por Valoración -->
+                            <div class="mb-3">
+                                <label for="valoracion" class="form-label">Valoración:</label>
+                                <select class="form-select" name="valoracion" id="valoracion">
+                                    <option value="">Seleccionar valoración</option>
+                                    <option value="2" {% if request.GET.valoracion == '2' %}selected{% endif %}>Inferior a 3 estrellas</option>
+                                    <option value="3" {% if request.GET.valoracion == '3' %}selected{% endif %}>3 estrellas </option>
+                                    <option value="4" {% if request.GET.valoracion == '4' %}selected{% endif %}>4 estrellas </option>
+                                    <option value="5" {% if request.GET.valoracion == '5' %}selected{% endif %}>5 estrellas</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" form="filtrosForm" class="btn btn-primary">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div>
+          <a href=""><i class="bi bi-grid-fill" style="color: #ff5c5c;font-size: 1.5rem;padding-right: 15px;"></i></a>
+          <a href=""><i class="bi bi-layout-three-columns icono-girado"  style="color: #ff5c5c;font-size: 1.5rem; "></i> </a>
+        </div>
     </section>
     <section
-        class="container-fluid py-2 d-flex flex-wrap gap-5 justify-content-center"
+        class="container-fluid py-3 d-flex flex-wrap gap-5 justify-content-center"
     >
         {% for hotel, fotos in hoteles %}
         <div class="card-hotel d-flex">
@@ -32,15 +119,20 @@
                 <span class="compare-title">Comparar</span>
             </button>
             {% if request.session.logueo %}
-                {% csrf_token %}
-                    <a class="btn-favorite btns-card">
-                        <i class="bi bi-bookmark-heart"></i>
-                    </a>               
-            {% else %}  
-                <a href="{% url 'login_form' %}" class="btn-favorite btns-card">
-                    <i class="bi bi-bookmark-heart"></i>
-                </a>            
-            {% endif %}
+                {% if hotel.id in favoritos %}
+                    <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card" style="color: white; background-color:#ff5c5c">
+                        <i class="bi bi-heart-fill"></i>
+                    </a>   
+                {% else %}
+                    <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card">
+                        <i class="bi bi-heart-fill"></i>
+                    </a>   
+                {% endif %}
+            {% else %}
+                <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card">
+                    <i class="bi bi-heart-fill"></i>
+                </a>   
+            {% endif %}   
             <div class="carrusel-container">
                 <div class="carrusel">
                     {% for foto in fotos %}

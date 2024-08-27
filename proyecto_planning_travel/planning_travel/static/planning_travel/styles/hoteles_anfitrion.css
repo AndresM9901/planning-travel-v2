@@ -1,0 +1,35 @@
+.checkbox-container input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-label {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 5px;
+    border: 2px solid #ff5c5c;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: background-color 0.3s, border-color 0.3s;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 24px;
+}
+
+.checkbox-label img {
+    width: 24px; 
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkbox-label {
+    background-color: #ff5c5c;
+    border-color: #ff5c5c;
+    color: white;
+}
+
+.checkbox-container input[type="checkbox"]:checked + .checkbox-label img {
+    filter: invert(1); /* Cambia el color del icono al estar seleccionado */
+}

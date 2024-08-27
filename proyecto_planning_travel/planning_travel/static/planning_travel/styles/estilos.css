@@ -12,6 +12,10 @@
     --gradiant-color: linear-gradient(#ffc107, #ff5c5c);
 }
 
+p {
+    margin: 0;
+}
+
 * {
     font-family: "Poppins", sans-serif;
     box-sizing: border-box;
