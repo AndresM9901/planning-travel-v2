@@ -709,7 +709,6 @@ def login(request):
                 except Exception as e:
                     print(f'{user}, {password}')
                     messages.error(request, "Error: Usuario o contraseña incorrectos...")
-
     else:
         return redirect("login_form")  # Redirige solo en caso de GET
     # Renderiza la misma página de inicio de sesión con los mensajes de error
@@ -718,7 +717,6 @@ def login(request):
 def registrar(request):
     if request.method == "POST":
         nombre = request.POST.get("nombre")
-        apellido = request.POST.get("apellido")
         correo = request.POST.get("correo")
         clave = request.POST.get("clave")
         confirmar_clave = request.POST.get("confirmar_clave")
@@ -735,7 +733,6 @@ def registrar(request):
             try:
                 q = Usuario(
                     nombre=nombre,
-                    apellido=apellido,
                     email=correo,
                     password=make_password(clave),
                     nick=nick
@@ -883,11 +880,10 @@ def dueno_hotel(request):
 
 def dueno_hoy(request):
     q = Reserva.objects.all()
-    h= Habitacion.objects.all()
-    ru= ReservaUsuario.objects.all()
+    ru = ReservaUsuario.objects.select_related('usuario','reserva').all()
     logueo = request.session.get("logueo", False)
     if logueo:
-        contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
+        contexto = { 'data': q , 'reserva_usuario' : ru  }
         return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)
     else:
         return redirect('login')
@@ -896,22 +892,28 @@ def dueno_calendario(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
 
 def dueno_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
+    foto = Foto.objects.select_related('id_hotel').all()
+    contexto = {'data': foto}
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html', contexto)
 
 def dueno_mensaje(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_mensaje.html') 
 
 def dueno_info(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
+    opinion = Opinion.objects.select_related('id_hotel','id_usuario').all()
+    contexto = {'data': opinion}
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html', contexto) 
 
 def dueno_ingresos(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html') 
+    r = Reserva.objects.all()
+    contexto = { 'data': r }
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto)
 
-def dueno_nuevo_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
-
-def dueno_reservaciones(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/nuevo_anuncio.html') 
+def dueno_reservaciones(request):
+    q = Reserva.objects.all()
+    ru = ReservaUsuario.objects.select_related('usuario').all()
+    contexto = { 'data': q , 'reserva_usuario' : ru  } 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html', contexto) 
 
 #andres
 def reservas_mostrar(request):
@@ -1163,6 +1165,7 @@ def hoteles_actualizar(request):
 # hoteles anfitrion form   --  Paso 1
 
 def hoteles_form_anfitrion(request):
+
     categorias = Categoria.objects.all()
     servicios = Servicio.objects.all()
     contexto = {'categorias': categorias, 'servicios': servicios}
@@ -1224,38 +1227,6 @@ def hoteles_form_anfitrion(request):
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
 
   
-# dueño hotel 
-
-def dueno_hotel(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html') 
-
-def dueno_hoy(request): 
-    q = Reserva.objects.all()
-    h= Habitacion.objects.all()
-    ru= ReservaUsuario.objects.all()
-    contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto) 
-
-def dueno_calendario(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
-
-def dueno_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
-
-def dueno_mensaje(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_mensaje.html') 
-
-def dueno_info(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
-
-def dueno_ingresos(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html') 
-
-def dueno_nuevo_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
-
-def dueno_reservaciones(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/nuevo_anuncio.html') 
 
 # Crud Comodidades
 

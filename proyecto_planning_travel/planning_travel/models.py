@@ -22,7 +22,6 @@ class Comodidad(models.Model):
     
 class Usuario(AbstractUser):
     nombre = models.CharField(max_length=254)
-    apellido = models.CharField(max_length=254, default='', null=True)
     email = models.EmailField(max_length=254, unique=True)
     username = None
     nick = models.CharField(max_length=100, unique=True)
@@ -39,7 +38,7 @@ class Usuario(AbstractUser):
     # baneado = models.BooleanField()
     objects = CustomUserManager()
     USERNAME_FIELD = 'nick'
-    REQUIRED_FIELDS = ['nombre', 'apellido', 'email']
+    REQUIRED_FIELDS = ['nombre','apellido', 'email']
 
     def __str__(self):
         return f'{self.nombre}'
