@@ -38,7 +38,7 @@ class Usuario(AbstractUser):
     # baneado = models.BooleanField()
     objects = CustomUserManager()
     USERNAME_FIELD = 'nick'
-    REQUIRED_FIELDS = ['nombre','apellido', 'email']
+    REQUIRED_FIELDS = ['nombre', 'email']
 
     def __str__(self):
         return f'{self.nombre}'
@@ -148,7 +148,7 @@ class HotelServicio(models.Model):
     
 class Habitacion(models.Model):
     num_habitacion = models.IntegerField()
-    id_piso_hotel = models.ForeignKey(PisosHotel, on_delete=models.DO_NOTHING)
+    hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
     ocupado = models.BooleanField()
     capacidad_huesped = models.IntegerField()
     tipo_habitacion = models.CharField(max_length=255)
