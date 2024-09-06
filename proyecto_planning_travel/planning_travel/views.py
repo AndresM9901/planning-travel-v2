@@ -113,8 +113,8 @@ def inicio(request):
     # Obtener precios mínimos de habitaciones para cada hotel
     precios_minimos = {}
     for habitacion in Habitacion.objects.all():
-        if habitacion.id not in precios_minimos:
-            precios_minimos[habitacion.hotel.id] = habitacion.precio
+        if habitacion.id_piso_hotel.id not in precios_minimos:
+            precios_minimos[habitacion.id_piso_hotel.id] = habitacion.precio
         else:
             precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.id_piso_hotel.id], habitacion.precio)
 
