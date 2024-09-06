@@ -154,29 +154,31 @@
                     </div>
                 </div>
             </div>
-            <div class="hotel-info d-flex">
-                <div class="hotel-info-left">
-                    <h1 class="hotel-title">{{ hotel.nombre }}</h1>
-                    <p class="hotel-city">{{ hotel.ciudad }}</p>
-                    <p class="hotel-category">{{ hotel.categoria }}</p>
-                </div>
-                <div class="hotel-info-right d-flex">
-                    <div class="hotel-rating-container d-flex">
-                        <p class="hotel-rating">
-                            {% if hotel.promedio_valoracion >= 0 %}
-                            {{ hotel.promedio_valoracion | floatformat:1 }}
-                            {% else %}
-                            0
-                            {% endif %}
-                            <i class="bi bi-star-fill"></i>
-                        </p>
-                        <p class="hotel-opinions">({% if hotel.opiniones_count %}{{ hotel.opiniones_count }}{% else %}0{% endif %} opiniones)</p>
+            <div class="hotel-info d-flex flex-column">
+                <div class="d-flex flex-row contenedor-info-opinion">
+                    <div class="hotel-info-left">
+                        <h1 class="hotel-title">{{ hotel.nombre }}</h1>
+                        <p class="hotel-city">{{ hotel.ciudad }}</p>
+                        <p class="hotel-category">{{ hotel.categoria }}</p>
                     </div>
-                    <div class="hotel-price-container d-flex">
-                        <p class="text">Desde</p>
+                    <div class="hotel-info-right d-flex">
+                        <div class="hotel-rating-container d-flex">
+                            <p class="hotel-rating">
+                                {% if hotel.promedio_valoracion >= 0 %}
+                                {{ hotel.promedio_valoracion | floatformat:1 }}
+                                {% else %}
+                                0
+                                {% endif %}
+                                <i class="bi bi-star-fill"></i>
+                            </p>
+                            <p class="hotel-opinions">({% if hotel.opiniones_count %}{{ hotel.opiniones_count }}{% else %}0{% endif %} opiniones)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="hotel-price-container d-flex">
+                        <p class="text desde">Desde</p>
                         <a class="hotel-price" onclick="detallesDelHotel(`{% url 'detalle_hotel' hotel.id %}`)">$ {{ hotel.precio_minimo | floatformat:0 }}</a>
                     </div>
-                </div>
             </div>
         </div>
         {% endfor %}

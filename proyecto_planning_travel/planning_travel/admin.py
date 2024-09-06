@@ -23,7 +23,7 @@ class PerfilUsuarioAdmin(admin.ModelAdmin):
 
 
 class HotelAdmin(admin.ModelAdmin):
-    list_display = ['id', 'nombre', 'descripcion', 'direccion', 'capacidad_huesped', 'precio']
+    list_display = ['id', 'nombre', 'descripcion', 'direccion', 'capacidad_huesped']
 
 @admin.register(Usuario)
 class UsuarioAdmin(admin.ModelAdmin):

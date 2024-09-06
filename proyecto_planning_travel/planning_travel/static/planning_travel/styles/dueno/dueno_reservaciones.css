@@ -5,50 +5,55 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 5px 10px;
+    margin: 20px 5px;
 }
 .flecha{
     color: black;
-    font-size: 25px;
+    font-size: 20px;
 }
 .titulo_reserva{
     font-size: 32px;
-    margin: 0;
-    margin-left: 15px;
+    margin-left: 5px;
 }
-.tabla_completa{
+#contenedor_info_tabla{
     display: flex;
+    justify-content: center;   
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    min-height: 300px;
+    height: auto;
+    background: #dadada;
+    border-radius: 10px;
     overflow-y:auto; 
     overflow-x:auto; 
-    height: 300px;
-    width: 900px;
-    background: #cecece;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap; 
-    padding: 30px;
+    width: auto;
+    height: auto;
+    padding: 10px;
 }
-.tabla_completa::-webkit-scrollbar{
+#contenedor_info_tabla::-webkit-scrollbar{
     height: 10px;
     width: 10px;
     background: #929292;
     border-radius: 50px;
     }
-.tabla_completa::-webkit-scrollbar-thumb  {
-    background-color: rgb(184, 184, 184);
+#contenedor_info_tabla::-webkit-scrollbar-thumb  {
+    background-color: rgb(189, 189, 189);
     border-radius: 50px;
     }
 .tabla_grupo{
     display: flex;
-    flex-direction: row;  
+    flex-direction: row; 
+    padding: 0;
+    margin: 0;
 }
 .tabla{
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
     background: #ffffff;
-    width: 250px;
+    justify-content: center;
+    width: 280px;
     height: 50px;
     padding: 5px;
 }
@@ -56,7 +61,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 250px;
+    width: 280px;
     height: 50px;
     background: #EBEBEB;
 }

@@ -1,49 +1,51 @@
-{% load static %} 
-<!DOCTYPE html> 
-<html lang="es"> 
-    <head> 
-        <meta charset="UTF-8"> 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-        <title>{% block title %}{% endblock %}</title> 
-        <!-- iconos --> 
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" /> 
-        <!-- bootstrap --> 
-        <link href="{% static 'planning_travel/styles/bootstrap.min.css' %}" rel="stylesheet" /> 
-        <!-- estilos css --> 
-        <link rel="stylesheet" href="{% static 'planning_travel/styles/estilos.css' %}" /> 
-        <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/navbar_dueno_hotel.css' %}"> 
-        {% block estilos %}{% endblock %} 
-    </head> 
-    <body> 
-        <nav class="nav-bar navbar" > 
-            <div> 
-                <a class="navbar-brand logo" href="{% url 'inicio' %}"> 
-                <i class="bi bi-globe-americas"></i> Planning Travel 
-                </a> 
-            </div> 
-            <div class='nav-bar'>
-                    <li><a class="navbar_item" href="{% url 'dueno_hoy' %}">Hoy</a></li>
-                    <li><a class="navbar_item" href="{% url 'dueno_anuncio' %}">Anuncios</a> </li>
-                    <li><a class="navbar_item" href="{% url 'dueno_mensaje' %}">Mensajes</a> </li>
-                    <li class="nav-item dropdown"> 
-                        <a class="navbar_item dropdown-togglem " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" >Menú <i class="bi bi-caret-down-fill"></i></a> 
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"> 
-                            <li><a class="dropdown-item" href="{% url 'dueno_info' %}">Info</a></li> 
-                            <li><a class="dropdown-item" href="{% url 'dueno_ingresos' %}">Ingresos</a></li> 
-                         <li><a class="dropdown-item" href="{% url 'dueno_reservaciones' %}">Reservaciones</a></li> 
-                        </ul> 
-                    </li>
-            </div> 
-            <div> 
-                <button class="navbar-button"><i class="b
-                    i bi-bell"></i></button> 
-                <a class="navbar-button"><img src="{{ request.session.logueo.foto.url }}"></img> </a> 
-            </div> 
-        </nav> 
-        {% block contenedor %}
-        {% endblock %}
-        {% block content %}{% endblock %} 
-        {% block scripts %}{% endblock %} 
-        <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script> 
-    </body> 
-</html> 
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- iconos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <!-- bootstrap -->
+    <link href="{% static 'planning_travel/styles/bootstrap.min.css' %}" rel="stylesheet" />
+    <!-- estilos css -->
+    <link rel="stylesheet" href="{% static 'planning_travel/styles/estilos.css' %}" />
+    <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/navbar_dueno_hotel.css' %}">
+    {% block estilos %}{% endblock %}
+</head>
+
+<body>
+    <nav class="nav-bar navbar">
+        <div>
+            <a class="navbar-brand logo" href="{% url 'inicio' %}">
+                <i class="bi bi-globe-americas"></i> Planning Travel
+            </a>
+        </div>
+        <div class='nav-bar'>
+            <li><a class="navbar_item" href="{% url 'dueno_hoy' %}">Hoy</a></li>
+            <li><a class="navbar_item" href="{% url 'dueno_anuncio' %}">Hotel</a> </li>
+            <li><a class="navbar_item" href="{% url 'dueno_mensaje' %}">Mensajes</a> </li>
+            <li class="nav-item dropdown">
+                <a class="navbar_item dropdown-togglem " href="#" id="navbarDropdownMenuLink" role="button"
+                    data-bs-toggle="dropdown">Menú <i class="bi bi-caret-down-fill"></i></a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <li><a class="dropdown-item" href="{% url 'dueno_info' %}">Info</a></li>
+                    <li><a class="dropdown-item" href="{% url 'dueno_ingresos' %}">Ingresos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'dueno_reservaciones' %}">Reservaciones</a></li>
+                </ul>
+            </li>
+        </div>
+        <div>
+            <a class="navbar-button" href="{% url 'ver_perfil' %}"><img src="{{ request.session.logueo.foto }}" class="foto"></img> </a>
+        </div>
+    </nav>
+    {% block contenedor %}
+    {% endblock %}
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+    <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+
+</html>

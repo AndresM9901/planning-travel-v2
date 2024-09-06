@@ -113,10 +113,10 @@ def inicio(request):
     # Obtener precios mínimos de habitaciones para cada hotel
     precios_minimos = {}
     for habitacion in Habitacion.objects.all():
-        if habitacion.id_piso_hotel.id not in precios_minimos:
-            precios_minimos[habitacion.id_piso_hotel.id] = habitacion.precio
+        if habitacion.id not in precios_minimos:
+            precios_minimos[habitacion.hotel.id] = habitacion.precio
         else:
-            precios_minimos[habitacion.id_piso_hotel.id] = min(precios_minimos[habitacion.id_piso_hotel.id], habitacion.precio)
+            precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.id_piso_hotel.id], habitacion.precio)
 
     # Convertir queryset a lista para permitir ordenación en Python
     hoteles = list(hoteles)
@@ -134,7 +134,7 @@ def inicio(request):
     
     for hotel in hoteles:
         # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
-        precio_minimo = Habitacion.objects.filter(id_piso_hotel__id_hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
+        precio_minimo = Habitacion.objects.filter(hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
     
         # Actualizar el precio mínimo en el objeto del hotel
         hotel.precio_minimo = precio_minimo
@@ -217,8 +217,8 @@ def reserva(request, id):
             metodo_usuario = metodo.TIPO_PAGO
 
     
-        for piso in pisos:
-            habitacion_hotel = Habitacion.objects.filter(id_piso_hotel=piso.id)
+        for piso in Hotel:
+            habitacion_hotel = Habitacion.objects.filter(hotel=piso.id)
             habitaciones.append(habitacion_hotel)
             num_habitaciones_piso.append({'piso': piso, 'habitaciones': habitacion_hotel})
             
@@ -697,7 +697,8 @@ def login(request):
                             "id": q.id,
                             "nombre": q.nombre,
                             "rol": q.rol,
-                            "nombre_rol": q.get_rol_display()
+                            "nombre_rol": q.get_rol_display(),
+                            "foto":q.foto.url
                         }
                         request.session["carrito"] = []
                         request.session["items"] = 0
