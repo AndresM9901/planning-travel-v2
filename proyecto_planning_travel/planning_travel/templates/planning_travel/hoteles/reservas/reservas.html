@@ -18,13 +18,9 @@
         </div>
         <div class="hotel d-flex">
             {% for piso in num_habitaciones_piso %}
-            <div class="d-flex pisos">
-                {% for habitaciones_piso in piso.habitaciones %}
-                <div class="habitaciones">
-                    <input type="radio" value="{{ habitaciones_piso.id }}" class="habitacion" name="habitacion" id="habitacion-{{habitaciones_piso}}" onclick="obtenerTotal(`{% url 'obtener_precio' %}`, {{ habitaciones_piso.id }})">
-                    <label for="habitacion-{{habitaciones_piso}}">{{habitaciones_piso}}</label>
-                </div>
-                {% endfor %}
+            <div class="habitaciones">
+                <input type="radio" value="{{ piso.id }}" class="habitacion" name="habitacion" id="habitacion-{{piso.id}}" onclick="obtenerTotal(`{% url 'obtener_precio' %}`, {{ piso.id }})">
+                <label for="habitacion-{{piso.id}}">{{piso.num_habitacion}}</label>
             </div>
             {% endfor %}
         </div>

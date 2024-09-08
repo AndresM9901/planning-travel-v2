@@ -13,16 +13,13 @@
 
 .hotel {
     gap: 8px;
-    flex-direction: column-reverse;
+    flex-direction: row;
     border: 1px solid var(--secondary-color);
-    width: fit-content;
+    max-width: 600px;
     justify-content: center;
     align-items: center;
     padding: 4px 8px;
-}
-
-.pisos {
-    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .habitaciones {
