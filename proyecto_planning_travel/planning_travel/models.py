@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from datetime import date
 
 
+from django.contrib.auth.models import AbstractUser 
 # Create your models here.
 class Categoria(models.Model):
     nombre = models.CharField(max_length=254)
@@ -53,6 +54,14 @@ class Hotel(models.Model):
 
     def __str__(self):
         return f'{self.nombre}'
+
+class Comodidad(models.Model):
+    nombre = models.CharField(max_length=200)
+    descripcion = models.TextField(max_length=200)
+
+    def __str__(self):
+        return f'{self.nombre}'
+    
     
 class Favorito(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)

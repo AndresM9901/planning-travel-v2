@@ -3,6 +3,8 @@ from . import views
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as views_rest
 
+# Hola mundo
+
 router = DefaultRouter()
 router.register(r'categoria', views.CategoriaViewSet)
 router.register(r'hotel', views.HotelViewSet)
