@@ -24,6 +24,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import re
+import json
 
 # Create your views here.
 
@@ -110,13 +111,13 @@ def inicio(request):
             hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=5).exists()]
         hoteles = hoteles.filter(id__in=hoteles_ids)
 
-    # Obtener precios mínimos de habitaciones para cada hotel
+     # Obtener precios mínimos de habitaciones para cada hotel
     precios_minimos = {}
     for habitacion in Habitacion.objects.all():
-        if habitacion.id_piso_hotel.id not in precios_minimos:
-            precios_minimos[habitacion.id_piso_hotel.id] = habitacion.precio
+        if habitacion.id not in precios_minimos:
+            Habitacion.objects.filter(hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
         else:
-            precios_minimos[habitacion.id_piso_hotel.id] = min(precios_minimos[habitacion.id_piso_hotel.id], habitacion.precio)
+            precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.hotel.id], habitacion.precio)
 
     # Convertir queryset a lista para permitir ordenación en Python
     hoteles = list(hoteles)
@@ -134,7 +135,7 @@ def inicio(request):
     
     for hotel in hoteles:
         # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
-        precio_minimo = Habitacion.objects.filter(id_piso_hotel__id_hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
+        precio_minimo = Habitacion.objects.filter(hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
     
         # Actualizar el precio mínimo en el objeto del hotel
         hotel.precio_minimo = precio_minimo
@@ -1166,6 +1167,12 @@ def hoteles_form_anfitrion(request):
     categorias = Categoria.objects.all()
     servicios = Servicio.objects.all()
     contexto = {'categorias': categorias, 'servicios': servicios}
+    
+    categorias = Categoria.objects.all()
+    servicios = Servicio.objects.all()
+    contexto = {'categorias': categorias, 'servicios': servicios}
+
+    
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
@@ -1175,12 +1182,16 @@ def hoteles_form_anfitrion(request):
         servicios_seleccionados = request.POST.getlist('servicios')
         
         try:
+            usuario_id = request.session["logueo"]["id"]
+            propietario = Usuario.objects.get(pk=usuario_id)
+            print(usuario_id)
             hotel = Hotel(
                 nombre=nombre,
                 descripcion=descripcion,
                 direccion=direccion,
                 categoria_id=categoria_id,
-                ciudad=ciudad
+                ciudad=ciudad,
+                propietario=propietario 
             )
             hotel.save()
             
@@ -1190,27 +1201,31 @@ def hoteles_form_anfitrion(request):
                     id_servicio_id=servicio_id
                 )
             
-            # Habitaciones
-            habitaciones = request.POST.get('habitaciones') 
-            if habitaciones:
-                habitaciones = JSON.loads(habitaciones)
+            for servicio_id in servicios_seleccionados:
+                HotelServicio.objects.create(
+                    id_hotel=hotel,
+                    id_servicio_id=servicio_id
+                )
+            
+            habitaciones_data = request.POST.get('habitacionesData') 
+            if habitaciones_data:
+                habitaciones = json.loads(habitaciones_data)
                 for habitacion in habitaciones:
                     Habitacion.objects.create(
                         num_habitacion=habitacion['num_habitacion'],
-                        id_piso_hotel_id=hotel.id, 
                         ocupado=False,
                         capacidad_huesped=habitacion['capacidad_huesped'],
                         tipo_habitacion=habitacion['tipo_habitacion'],
-                        precio=habitacion['precio']
+                        precio=habitacion['precio'],
+                        hotel=hotel  # Asociar la habitación al hotel
                     )
-            
             # Guardar fotos
             fotos = request.FILES.getlist('fotos')
             descripcion_foto = request.POST.get('descripcion_foto', '')
             for foto in fotos:
                 Foto.objects.create(
                     id_hotel=hotel,
-                    archivo=foto,
+                    url_foto=foto,
                     descripcion=descripcion_foto
                 )
             
