@@ -78,7 +78,7 @@ def inicio(request):
         hotel_ids = Habitacion.objects.filter(
             precio__gte=precio_min if precio_min else 0,
             precio__lte=precio_max if precio_max else float('inf')
-        ).values_list('id_piso_hotel', flat=True).distinct()
+        ).values_list('hotel', flat=True).distinct()
         hoteles = hoteles.filter(id__in=hotel_ids)
     
      # Filtrar por servicios seleccionados
@@ -119,27 +119,21 @@ def inicio(request):
         else:
             precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.hotel.id], habitacion.precio)
 
-    # Convertir queryset a lista para permitir ordenación en Python
-    hoteles = list(hoteles)
 
-    # Ordenar por precio
+    # Variable precio minimo
+    hoteles = Hotel.objects.annotate(precio_minimo=Min('habitacion__precio'))
+    # ordena
     orden = request.GET.get('orden', '')
+
     if orden == 'nombre_asc':
-        hoteles.sort(key=lambda h: h.nombre)
+        hoteles = hoteles.order_by('nombre')
     elif orden == 'nombre_desc':
-        hoteles.sort(key=lambda h: h.nombre, reverse=True)
+        hoteles = hoteles.order_by('-nombre')
     elif orden == 'precio_asc':
-        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')))
+        hoteles = hoteles.order_by('precio_minimo')
     elif orden == 'precio_desc':
-        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')), reverse=True)
-    
-    for hotel in hoteles:
-        # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
-        precio_minimo = Habitacion.objects.filter(hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
-    
-        # Actualizar el precio mínimo en el objeto del hotel
-        hotel.precio_minimo = precio_minimo
-    
+        hoteles = hoteles.order_by('-precio_minimo')
+
     # Crear un diccionario para agrupar las fotos por ID de hotel
     fotos_por_hotel = {}
     for foto in fotos:

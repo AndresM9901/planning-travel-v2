@@ -9,11 +9,11 @@
     <div class="dueno-hoy">
         <p id="saludo" >¡{{ request.session.logueo.nombre }}, te damos la bienvenida!</p>  
         
-<!--       <button id="boton-completar-anuncio">Completa tu anuncio</button>--> 
+       <a class="btn" href="{% url 'hoteles_form_anfitrion' %}" id="boton-completar-anuncio">Completa tu hotel</a>
     </div>
     <div class="dueno-hoy">
         <p id="titulo1">Tus reservaciones</p>
-        <button id="boton-reservaciones">Todas las reservaciones ({{ data.count }})</button>
+        <a href="{% url 'dueno_info' %}" class="btn" id="boton-reservaciones">Todas las reservaciones ({{ data.count }})</a>
     </div>
 <!--  <div>
         <ul id="nav-dueno-hoy">
