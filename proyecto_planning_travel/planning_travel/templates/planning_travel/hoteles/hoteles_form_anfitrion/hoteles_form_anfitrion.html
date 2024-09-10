@@ -101,6 +101,8 @@
 
         <!-- Campo oculto para datos de habitaciones -->
         <input type="hidden" id="habitacionesData" name="habitacionesData">
+        <!-- Campo oculto para ID del hotel -->
+        <input type="hidden" name="hotel_id" id="hotel_id" value="{{ hotel.id }}">
     </form>
 </div>
 
@@ -113,6 +115,7 @@
     let saveHabitacionBtn = document.getElementById('saveHabitacionBtn');
     let cancelHabitacionBtn = document.getElementById('cancelHabitacionBtn');
     let habitaciones = JSON.parse(localStorage.getItem('habitaciones')) || [];
+    let hotelId = document.getElementById('hotel_id').value; // Obtener el ID del hotel
 
     function createHabitacionElement(habitacion) {
         let nuevaHabitacion = document.createElement('div');
@@ -243,7 +246,5 @@
         document.getElementById('habitacionesData').value = JSON.stringify(habitaciones);
     });
 });
-
 </script>
-
 {% endblock %}
