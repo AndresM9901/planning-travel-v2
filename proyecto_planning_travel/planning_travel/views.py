@@ -114,8 +114,8 @@ def inicio(request):
      # Obtener precios mínimos de habitaciones para cada hotel
     precios_minimos = {}
     for habitacion in Habitacion.objects.all():
-        if habitacion.id not in precios_minimos:
-            Habitacion.objects.filter(hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
+        if habitacion.hotel.id not in precios_minimos:
+            precios_minimos[habitacion.hotel.id] = habitacion.precio
         else:
             precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.hotel.id], habitacion.precio)
 
@@ -204,24 +204,26 @@ def detalle_hotel(request, id):
 
 def reserva(request, id):
     hotel = Hotel.objects.get(pk=id)
-    pisos = PisosHotel.objects.filter(id_hotel=id)
+    # pisos = PisosHotel.objects.filter(id_hotel=id)
+    habitaciones = Habitacion.objects.filter(hotel=hotel)
+    print(habitaciones)
     num_habitaciones_piso = []
-    habitaciones = []
+    # habitaciones = []
     logueo = request.session.get("logueo", False)
     if  logueo:
         usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
-        metodo_usuario = tuple((m.id, m.get_tipo_pago_display()) for m in MetodoPago.objects.filter(id_usuario=usuario.id))
-        if metodo_usuario:
-            print(tuple(metodo_usuario))
-        else:
-            metodo = MetodoPago()
-            metodo_usuario = metodo.TIPO_PAGO
+        # metodo_usuario = tuple((m.id, m.get_tipo_pago_display()) for m in MetodoPago.objects.filter(id_usuario=usuario.id))
+        # if metodo_usuario:
+        #     print(tuple(metodo_usuario))
+        # else:
+        #     metodo = MetodoPago()
+        #     metodo_usuario = metodo.TIPO_PAGO
 
     
-        for piso in Hotel:
-            habitacion_hotel = Habitacion.objects.filter(hotel=piso.id)
-            habitaciones.append(habitacion_hotel)
-            num_habitaciones_piso.append({'piso': piso, 'habitaciones': habitacion_hotel})
+        for piso in habitaciones:
+            num_habitaciones_piso.append(piso)
+
+        print(num_habitaciones_piso)
             
         habitaciones_disponibles = []
         if request.method == 'POST':
@@ -242,7 +244,7 @@ def reserva(request, id):
             'habitaciones': habitaciones,
             'num_habitaciones_piso': num_habitaciones_piso,
             'habitaciones_disponibles': habitaciones_disponibles,
-            'metodo_pago': metodo_usuario
+            # 'metodo_pago': metodo_usuario
         }
         return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
     else:
@@ -262,13 +264,13 @@ def verificar_disponibilidad(request):
     habitaciones_ocupadas = Habitacion.objects.filter(
         reserva__fecha_llegada__lte=fecha_salida,
         reserva__fecha_salida__gte=fecha_llegada
-    ).values_list('num_habitacion', flat=True)
+    ).values_list('id', 'num_habitacion')
 
     habitaciones_disponibles = Habitacion.objects.exclude(
         reserva__fecha_llegada__lte=fecha_salida,
         reserva__fecha_salida__gte=fecha_llegada
-    ).values_list('num_habitacion', flat=True)
-    print(f'{fecha_llegada}, {fecha_salida}')
+    ).values_list('id', 'num_habitacion')
+    print(f'{habitaciones_ocupadas}, {habitaciones_disponibles}')
     return JsonResponse({
         'habitaciones_ocupadas': list(habitaciones_ocupadas),
         'habitaciones_disponibles': list(habitaciones_disponibles)
