@@ -1,29 +1,35 @@
-{% extends "planning_travel/hoteles/dueno_hotel/dueno_hotel.html" %} 
-{% load static %} 
-{% block title %}Hoteles{% endblock %} 
-{% block estilos %} 
+{% extends "planning_travel/hoteles/dueno_hotel/dueno_hotel.html" %}
+{% load static %}
+{% block title %}Hoteles{% endblock %}
+{% block estilos %}
 <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_anuncio.css' %}">
 {% endblock %}
 {% block contenedor %}
 <div id="contenedor">
-    <div id="seccion1"> 
-        <p id="anuncio">Tus Hoteles</p> 
-<!--        <div> 
+    <div id="seccion1">
+        <p id="anuncio">Tus Hoteles</p>
+        <!--        <div> 
             <button class="botones-1"><i class="bi bi-plus-lg"></i></button> 
         </div> -->
-    </div> 
+    </div>
     <div id="seccion2">
-        {% for f in data %}
-        <div class="carta">   
+        {% for hotel in data %}
+        {% if hotel.propietario.id == request.session.logueo.id %}
+        <div class="carta">
             <div class="imagen-card">
-                <img class="imagen" src="{{ f.url_foto.url }}" alt="{{ f.descripcion }}">    
+                {% if hotel.foto_set.first %}
+                <img class="imagen" src="{{ hotel.foto_set.first.url_foto.url }}" alt="{{ hotel.nombre }}">
+                {% else %}
+                <img class="imagen" src="{% static 'path/to/default/image.jpg' %}" alt="Imagen no disponible">
+                {% endif %}
             </div>
             <div class="card-body">
-                <p class="contenido-card">{{ f.id_hotel.nombre }}</p>
-                <p class="ubicacion"> {{ f.id_hotel.ciudad }}</p>
+                <p class="contenido-card">{{ hotel.nombre }}</p>
+                <p class="ubicacion">{{ hotel.ciudad }}</p>
             </div>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

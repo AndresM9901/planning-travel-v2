@@ -890,8 +890,8 @@ def dueno_calendario(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
 
 def dueno_anuncio(request): 
-    foto = Foto.objects.select_related('id_hotel').all()
-    contexto = {'data': foto}
+    hoteles = Hotel.objects.prefetch_related('foto_set').all()
+    contexto = {'data': hoteles}
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html', contexto)
 
 def dueno_mensaje(request): 

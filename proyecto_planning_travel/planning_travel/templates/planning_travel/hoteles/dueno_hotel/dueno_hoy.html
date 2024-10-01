@@ -1,28 +1,28 @@
 {% extends 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html' %}
-{% load static %} 
+{% load static %}
 {% block titulo %}Hoy{% endblock %}
 {% block estilos %}
 <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_hoy.css' %}">
-{% endblock %} 
+{% endblock %}
 {% block contenedor %}
 <div id="contenedor">
     <div class="dueno-hoy">
-        <p id="saludo" >¡{{ request.session.logueo.nombre }}, te damos la bienvenida!</p>  
-        
-       <a class="btn" href="{% url 'hoteles_form_anfitrion' %}" id="boton-completar-anuncio">Completa tu hotel</a>
+        <p id="saludo">¡{{ request.session.logueo.nombre }}, te damos la bienvenida!</p>
+
+        <a class="btn" href="{% url 'hoteles_form_anfitrion' %}" id="boton-completar-anuncio">Completa tu hotel</a>
     </div>
     <div class="dueno-hoy">
         <p id="titulo1">Tus reservaciones</p>
         <a href="{% url 'dueno_info' %}" class="btn" id="boton-reservaciones">Todas las reservaciones ({{ data.count }})</a>
     </div>
-<!--  <div>
+    <!--  <div>
         <ul id="nav-dueno-hoy">
             <a class="item-nav-dueno" href="#">En curso ()</a>
             <a class="item-nav-dueno" href="#">llegará pronto ()</a>
             <a class="item-nav-dueno" href="#">Agendadas ()</a>
         </ul>
-    </div>-->  
-    <div id="contenedor_info_tabla">  
+    </div>-->
+    <div id="contenedor_info_tabla">
         <table>
             <tr class="tabla_grupo">
                 <td class="tabla_gris">Fecha Llegada</td>
@@ -30,6 +30,7 @@
                 <td class="tabla_gris">Nombre</td>
                 <td class="tabla_gris">Fecha Realización</td>
             </tr>
+            {% if reserva.hotel.propietario.id == request.session.logueo.id %}
             {% for r in reserva_usuario %}
             <tr class="tabla_grupo">
                 <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
@@ -38,9 +39,10 @@
                 <td class="tabla">{{ r.fecha_realizacion }}</td>
             </tr>
             {% endfor %}
+            {% endif %}
         </table>
-    </div>  
+    </div>
 </div>
 {% block scripts %}
-{% endblock %} 
+{% endblock %}
 {% endblock %}

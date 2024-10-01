@@ -4,6 +4,10 @@
     justify-content: center;
     align-items: center;
     gap: 16px;
+    margin: 50px 30%;
+    -webkit-box-shadow: 0px 0px 47px -4px rgba(217,217,217,1);
+-moz-box-shadow: 0px 0px 47px -4px rgba(217,217,217,1);
+box-shadow: 0px 0px 47px -4px rgba(217,217,217,1);
 }
 
 .titulo {
@@ -14,7 +18,8 @@
 .hotel {
     gap: 8px;
     flex-direction: row;
-    border: 1px solid var(--secondary-color);
+    border-radius: 5px;
+    border: 1px solid rgb(136, 136, 136);
     max-width: 600px;
     justify-content: center;
     align-items: center;
