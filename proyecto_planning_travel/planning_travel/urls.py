@@ -226,6 +226,9 @@ urlpatterns = [
     path('registrar_form/', views.registrar_form, name="registrar_form"),
 	path('perfil_actualizar/', views.perfil_actualizar, name="perfil_actualizar"),
     path('cambiar_clave/', views.cambiar_clave, name="cambiar_clave"),
+    path('enviar_mensaje/<int:id_hotel>/', views.enviar_mensaje, name="enviar_mensaje"),
+    path('enviar_men/', views.enviar_men, name='enviar_men'),
+    path('chat/', views.chat, name='chat'),
 ]
 
 # from django.contrib.auth.models import User

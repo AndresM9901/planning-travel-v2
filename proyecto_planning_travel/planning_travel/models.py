@@ -232,3 +232,14 @@ class ReporteModerador(models.Model):
 
     def __str__(self):
         return f'{self.id_reporte}'
+
+class Mensaje(models.Model):
+    id_remitente = models.ForeignKey(Usuario, related_name='mensajes_enviados', on_delete=models.DO_NOTHING)
+    id_destinatario = models.ForeignKey(Usuario, related_name='mensajes_recibidos', on_delete=models.DO_NOTHING)
+    contenido = models.CharField(max_length=255)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    
+
+    def __str__(self):
+        return f'{self.id_remitente}'

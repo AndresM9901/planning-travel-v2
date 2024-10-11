@@ -874,12 +874,134 @@ def index(request):
 
 # dueño hotel cambios sofia
 
-def dueno_hotel(request):
+def enviar_men(request):
+    if request.method == 'POST':
+        print("Datos POST recibidos:", request.POST)  
+        
+        contenido = request.POST.get('mensaje')
+        destinatario_id = request.POST.get('destinatario_id')  
+        remitente_id = request.session["logueo"]["id"]
+
+        if contenido and destinatario_id:
+            nuevo_mensaje = Mensaje(
+                contenido=contenido,
+                id_remitente_id=remitente_id,
+                id_destinatario_id=destinatario_id
+            )
+            nuevo_mensaje.save()
+
+            messages.success(request, 'Mensaje enviado correctamente.')
+        else:
+            if not contenido:
+                messages.error(request, 'Error al enviar el mensaje. El contenido no puede estar vacío.')
+            if not destinatario_id:
+                messages.error(request, 'Error al enviar el mensaje. El destinatario no es válido.')
+
+        return redirect('dueno_mensaje')  
+
+    messages.error(request, 'Método no permitido.')
+    return redirect('dueno_mensaje')  
+    
+    
+from django.db.models import Q, Max
+
+def dueno_mensaje(request):
     logueo = request.session.get("logueo", False)
     if logueo:
-        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html')
+        usuario_actual = request.session["logueo"]["id"]
+
+        todos_mensajes = Mensaje.objects.filter(
+            Q(id_remitente=usuario_actual) | Q(id_destinatario=usuario_actual)
+        ).order_by('-fecha')  # Ordenar por fecha de manera descendente
+
+        # Crear un diccionario para almacenar el último mensaje de cada conversación
+        conversaciones = {}
+        for mensaje in todos_mensajes:
+            # Usar los IDs de remitente y destinatario en lugar de los objetos
+            id_otros_usuarios = tuple(sorted([mensaje.id_remitente.id, mensaje.id_destinatario.id]))
+
+            if id_otros_usuarios not in conversaciones:
+                conversaciones[id_otros_usuarios] = mensaje  
+
+        # Convertir los valores del diccionario (últimos mensajes) en una lista
+        mensajes_unicos = list(conversaciones.values())
+
+        # Obtener los datos del usuario actual
+        q = Usuario.objects.get(pk=usuario_actual)
+
+        context = {
+            'mensajes': mensajes_unicos,  
+            'todos_mensajes': todos_mensajes, 
+            'data': q
+        }
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_mensaje.html', context)
     else:
         return redirect('login')
+        
+def chat(request):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        usuario_actual = request.session["logueo"]["id"]
+
+        todos_mensajes = Mensaje.objects.filter(
+            Q(id_remitente=usuario_actual) | Q(id_destinatario=usuario_actual)
+        ).order_by('-fecha')  # Ordenar por fecha de manera descendente
+
+        # Crear un diccionario para almacenar el último mensaje de cada conversación
+        conversaciones = {}
+        for mensaje in todos_mensajes:
+            # Usar los IDs de remitente y destinatario en lugar de los objetos
+            id_otros_usuarios = tuple(sorted([mensaje.id_remitente.id, mensaje.id_destinatario.id]))
+
+            if id_otros_usuarios not in conversaciones:
+                conversaciones[id_otros_usuarios] = mensaje  
+
+        # Convertir los valores del diccionario (últimos mensajes) en una lista
+        mensajes_unicos = list(conversaciones.values())
+
+        # Obtener los datos del usuario actual
+        q = Usuario.objects.get(pk=usuario_actual)
+
+        context = {
+            'mensajes': mensajes_unicos,  
+            'todos_mensajes': todos_mensajes, 
+            'data': q
+        }
+        return render(request, 'planning_travel/hoteles/dueno_hotel/chat_usuario.html', context)
+    else:
+        return redirect('login')
+        
+        
+        
+def enviar_mensaje(request, id_hotel):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        hotel = get_object_or_404(Hotel, pk=id_hotel)
+        user=request.session["logueo"]["id"]        
+        contenido = request.POST.get('descripcion')
+
+        if contenido == "":
+            messages.error(request, "El campo no puede estar vacio")
+            return redirect(reverse('detalle_hotel', args=[id_hotel]))
+        else:
+            if user:
+                id_usuario = Usuario.objects.get(pk=user)
+                if request.method == 'POST':
+                            q = Mensaje(
+                                id_destinatario = hotel.propietario,
+                                id_remitente = id_usuario,
+                                contenido =contenido
+                            )
+                            q.save()
+                            messages.success(request, "Mensaje enviado correctamente!")
+                            return redirect(reverse('detalle_hotel', args=[id_hotel]))
+                else:
+                    messages.error(request, "No estás autenticado.")
+                    return redirect('login_form')
+        
+    else:
+        return redirect('login_form')
+        
 
 def dueno_hoy(request):
     q = Reserva.objects.all()
@@ -898,8 +1020,7 @@ def dueno_calendario(request):
 def dueno_anuncio(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
 
-def dueno_mensaje(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_mensaje.html') 
+
 
 def dueno_info(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
@@ -1242,8 +1363,7 @@ def dueno_calendario(request):
 def dueno_anuncio(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
 
-def dueno_mensaje(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_mensaje.html') 
+
 
 def dueno_info(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
