@@ -840,34 +840,8 @@ def verificar_recuperar(request):
         correo = request.GET.get("correo")
         contexto = {"correo":correo}
         return render(request, "planning_travel/login/verificar_recuperar.html", contexto)
-    
-def ver_perfil(request):
-	logueo = request.session.get("logueo", False)
-	# Consultamos en DB por el ID del usuario logueado....
-	q = Usuario.objects.get(pk=logueo["id"])
-	contexto = {"data": q}
-	return render(request, "planning_travel/login/perfil_usuario.html", contexto)
 
-def perfil_actualizar(request):
-    if request.method == 'POST':
-        id = request.POST.get('id')
-        nombre = request.POST.get('nombre')
-        correo = request.POST.get('correo')
-        try:
-            # Obtén el objeto Usuario por su ID
-            usuario = Usuario.objects.get(pk=id)
-            usuario.nombre = nombre
-            usuario.correo = correo
-            usuario.save()
-            messages.success(request, "Perfil actualizado correctamente")
-            return redirect('ver_perfil')  # Redirecciona a una página después de la actualización
-        except Usuario.DoesNotExist:
-            messages.error(request, "El usuario no existe")
-        except Exception as e:
-            messages.error(request, f'Error: {e}')
-    else:
-        messages.warning(request, 'No se enviaron datos')
-    return redirect('ver_perfil')  # Redirecciona en caso de un error o método GET
+
 
 def index(request):
     return render(request, 'planning_travel/inicio.html')
@@ -1824,7 +1798,6 @@ def cambiar_clave(request):
 
 def ver_perfil(request):
 	logueo = request.session.get("logueo", False)
-	# Consultamos en DB por el ID del usuario logueado....
 	q = Usuario.objects.get(pk=logueo["id"])
 	contexto = {"data": q}
 	return render(request, "planning_travel/login/perfil_usuario.html", contexto)
@@ -1835,22 +1808,29 @@ def perfil_actualizar(request):
         nombre = request.POST.get('nombre')
         apellido = request.POST.get('apellido')
         correo = request.POST.get('correo')
-        print(f"Nombre: {nombre}")  # Debug print
-
-        try:
-            # Obtén el objeto Usuario por su ID
-            usuario = Usuario.objects.get(pk=id)
-            usuario.nombre = nombre
-            usuario.apellido = apellido 
-            usuario.email = correo
-            usuario.save()
-            messages.success(request, "Perfil actualizado correctamente")
-            
-            return redirect('ver_perfil')  # Redirecciona a una página después de la actualización
-        except Usuario.DoesNotExist:
-            messages.error(request, "El usuario no existe")
-        except Exception as e:
-            messages.error(request, f'Error: {e}')
+        if nombre == '' or apellido == '' or correo == '':
+            messages.error(request, "Todos los campos son obligatorios")
+        elif nombre.isalpha() == False:
+            messages.error(request, "El nombre solo puede contener letras y espacios")
+        elif apellido.isalpha() == False:
+            messages.error(request, "El apellido solo puede contener letras y espacios")
+        elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+                messages.error(request, "El correo no es válido")
+        else:
+            try:
+                # Obtén el objeto Usuario por su ID
+                usuario = Usuario.objects.get(pk=id)
+                usuario.nombre = nombre
+                usuario.apellido = apellido 
+                usuario.email = correo
+                usuario.save()
+                messages.success(request, "Perfil actualizado correctamente")
+                
+                return redirect('ver_perfil')  
+            except Usuario.DoesNotExist:
+                messages.error(request, "El usuario no existe")
+            except Exception as e:
+                messages.error(request, f'Error: {e}')
     else:
         messages.warning(request, 'No se enviaron datos')
     return redirect('ver_perfil')
