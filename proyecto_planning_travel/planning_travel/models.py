@@ -54,13 +54,6 @@ class Hotel(models.Model):
 
     def __str__(self):
         return f'{self.nombre}'
-
-class Comodidad(models.Model):
-    nombre = models.CharField(max_length=200)
-    descripcion = models.TextField(max_length=200)
-
-    def __str__(self):
-        return f'{self.nombre}'
     
     
 class Favorito(models.Model):
@@ -149,7 +142,7 @@ class HotelServicio(models.Model):
     
 class Habitacion(models.Model):
     num_habitacion = models.IntegerField()
-    id_piso_hotel = models.ForeignKey(PisosHotel, on_delete=models.DO_NOTHING)
+    hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
     ocupado = models.BooleanField()
     capacidad_huesped = models.IntegerField()
     tipo_habitacion = models.CharField(max_length=255)

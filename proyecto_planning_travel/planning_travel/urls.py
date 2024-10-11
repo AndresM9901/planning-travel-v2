@@ -30,6 +30,7 @@ urlpatterns = [
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
     path('admin/', views.index, name="admin"),
 
+    path('guardar_opinion/', views.guardar_opinion, name='guardar_opinion'),
     # Reservas
     path('reserva/<int:id>/', views.reserva, name="reserva"),
     path('verificar_disponibilidad/', views.verificar_disponibilidad, name="verificar_disponibilidad"),
