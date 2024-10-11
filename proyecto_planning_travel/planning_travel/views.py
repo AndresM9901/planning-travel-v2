@@ -35,52 +35,39 @@ def inicio(request):
     servicios = Servicio.objects.all().order_by('nombre')
     servicio_activo = None
     
+    # Filtrar por precio
+    precio_min = request.GET.get('precio_min', None)
+    precio_max = request.GET.get('precio_max', None)
+
+    habitacion_filter = Habitacion.objects.all()
+
+    if precio_min and precio_min.isdigit():
+        habitacion_filter = habitacion_filter.filter(precio__gte=float(precio_min))
+
+    if precio_max and precio_max.isdigit():
+        habitacion_filter = habitacion_filter.filter(precio__lte=float(precio_max))
+
+    hotel_ids = habitacion_filter.values_list('hotel__id', flat=True).distinct()
+    if hotel_ids:
+        hoteles = hoteles.filter(id__in=hotel_ids)
+        
     if 'logueo' in request.session and 'id' in request.session['logueo']:
         id_usuario = request.session['logueo']['id']
         favoritos = Favorito.objects.filter(id_usuario=id_usuario).values_list('id_hotel_id', flat=True)
     else:
         favoritos = []
-        
-
-    habitaciones_total = []
-    if 'nombre' in request.GET:
-        query_nombre = request.GET.get('nombre')
-        hoteles = Hotel.objects.filter(nombre__icontains=query_nombre)
     
-    # Filtrar hoteles por servicios seleccionados
-    if 'servicio' in request.GET:
-        servicio_id = request.GET.get('servicio')
-        servicio_activo = servicio_id
-        hoteles_servicio = HotelServicio.objects.filter(id_servicio=servicio_id)
-        ids_hoteles_servicio = hoteles_servicio.values_list('id_hotel', flat=True)
-        hoteles = Hotel.objects.filter(id__in=ids_hoteles_servicio)
-        # hoteles = [hotel for hotel in hoteles if hotel.id in hoteles_filtrados]
-        # Obtener fotos para los hoteles filtrados
-        # fotos_por_hotel = {hotel.id: fotos_por_hotel.get(hotel.id, []) for hotel in hoteles}
+    # Ordenar por precio
+    orden = request.GET.get('orden', '')
+    if orden == 'nombre_asc':
+        hoteles = hoteles.order_by('nombre')
+    elif orden == 'nombre_desc':
+        hoteles = hoteles.order_by('-nombre')
+    elif orden == 'precio_asc':
+        hoteles = hoteles.annotate(precio_min=Min('habitacion__precio')).order_by('precio_min')
+    elif orden == 'precio_desc':
+        hoteles = hoteles.annotate(precio_min=Min('habitacion__precio')).order_by('-precio_min')
 
-    for hotel in hoteles:
-        opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
-        valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
-        promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
-
-        hotel.opiniones_count = opiniones_count
-        hotel.promedio_valoracion = promedio_valoracion
-
-     # Filtrar por ciudad
-    ciudad = request.GET.get('ciudad', '')
-    if ciudad:
-        hoteles = hoteles.filter(ciudad=ciudad)
-
-    # Filtrar por precio
-    precio_min = request.GET.get('precio_min', '')
-    precio_max = request.GET.get('precio_max', '')
-    if precio_min or precio_max:
-        hotel_ids = Habitacion.objects.filter(
-            precio__gte=precio_min if precio_min else 0,
-            precio__lte=precio_max if precio_max else float('inf')
-        ).values_list('id_piso_hotel', flat=True).distinct()
-        hoteles = hoteles.filter(id__in=hotel_ids)
-    
      # Filtrar por servicios seleccionados
     if 'servicios' in request.GET:
         servicios_seleccionados = request.GET.getlist('servicios')
@@ -95,8 +82,11 @@ def inicio(request):
                 .filter(service_count=len(servicios_seleccionados))
                 .values_list('id_hotel', flat=True)
             )
-
-     # Filtrar por valoración
+    # Filtrar por ciudad
+    ciudad = request.GET.get('ciudad', '')
+    if ciudad:
+        hoteles = hoteles.filter(ciudad=ciudad)
+    # Filtrar por valoración
     valoracion = request.GET.get('valoracion', '')
     if valoracion:
         if valoracion == '2':
@@ -110,6 +100,21 @@ def inicio(request):
         elif valoracion == '5':
             hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=5).exists()]
         hoteles = hoteles.filter(id__in=hoteles_ids)
+        
+    habitaciones_total = []
+    if 'nombre' in request.GET:
+        query_nombre = request.GET.get('nombre')
+        hoteles = Hotel.objects.filter(nombre__icontains=query_nombre)
+
+
+    for hotel in hoteles:
+        opiniones_count = Opinion.objects.filter(id_hotel=hotel.id).count()
+        valoraciones = Opinion.objects.filter(id_hotel=hotel.id).values_list('puntuacion', flat=True)
+        promedio_valoracion = sum(valoraciones) / len(valoraciones) if valoraciones else 0
+
+        hotel.opiniones_count = opiniones_count
+        hotel.promedio_valoracion = promedio_valoracion
+
 
      # Obtener precios mínimos de habitaciones para cada hotel
     precios_minimos = {}
@@ -119,19 +124,6 @@ def inicio(request):
         else:
             precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.hotel.id], habitacion.precio)
 
-    # Convertir queryset a lista para permitir ordenación en Python
-    hoteles = list(hoteles)
-
-    # Ordenar por precio
-    orden = request.GET.get('orden', '')
-    if orden == 'nombre_asc':
-        hoteles.sort(key=lambda h: h.nombre)
-    elif orden == 'nombre_desc':
-        hoteles.sort(key=lambda h: h.nombre, reverse=True)
-    elif orden == 'precio_asc':
-        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')))
-    elif orden == 'precio_desc':
-        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')), reverse=True)
     
     for hotel in hoteles:
         # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
@@ -1164,9 +1156,6 @@ def hoteles_actualizar(request):
 # hoteles anfitrion form   --  Paso 1
 
 def hoteles_form_anfitrion(request):
-    categorias = Categoria.objects.all()
-    servicios = Servicio.objects.all()
-    contexto = {'categorias': categorias, 'servicios': servicios}
     
     categorias = Categoria.objects.all()
     servicios = Servicio.objects.all()
@@ -1200,13 +1189,7 @@ def hoteles_form_anfitrion(request):
                     id_hotel=hotel,
                     id_servicio_id=servicio_id
                 )
-            
-            for servicio_id in servicios_seleccionados:
-                HotelServicio.objects.create(
-                    id_hotel=hotel,
-                    id_servicio_id=servicio_id
-                )
-            
+
             habitaciones_data = request.POST.get('habitacionesData') 
             if habitaciones_data:
                 habitaciones = json.loads(habitaciones_data)
