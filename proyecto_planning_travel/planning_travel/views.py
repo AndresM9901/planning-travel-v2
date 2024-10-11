@@ -225,29 +225,16 @@ def guardar_opinion(request):
 
     # Si no es POST, redirigir o mostrar un error
     return redirect('home')  # O cualquier otra página adecuada
+
 def reserva(request, id):
     hotel = Hotel.objects.get(pk=id)
-    # pisos = PisosHotel.objects.filter(id_hotel=id)
     habitaciones = Habitacion.objects.filter(hotel=hotel)
     print(habitaciones)
-    num_habitaciones_piso = []
-    # habitaciones = []
-    logueo = request.session.get("logueo", False)
-    if  logueo:
-        usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
-        # metodo_usuario = tuple((m.id, m.get_tipo_pago_display()) for m in MetodoPago.objects.filter(id_usuario=usuario.id))
-        # if metodo_usuario:
-        #     print(tuple(metodo_usuario))
-        # else:
-        #     metodo = MetodoPago()
-        #     metodo_usuario = metodo.TIPO_PAGO
-
     
-        for piso in habitaciones:
-            num_habitaciones_piso.append(piso)
-
-        print(num_habitaciones_piso)
-            
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
+    
         habitaciones_disponibles = []
         if request.method == 'POST':
             fecha_llegada = request.POST.get('fecha_llegada')
@@ -258,16 +245,14 @@ def reserva(request, id):
                 'fecha_salida': fecha_salida
             })
             
-            if response.status.code == 200:
+            if response.status_code == 200:
                 data = response.json()
                 habitaciones_disponibles = data.get('habitaciones_disponibles', [])
         
         contexto = {
             'hotel': hotel,
             'habitaciones': habitaciones,
-            'num_habitaciones_piso': num_habitaciones_piso,
             'habitaciones_disponibles': habitaciones_disponibles,
-            # 'metodo_pago': metodo_usuario
         }
         return render(request, 'planning_travel/hoteles/reservas/reservas.html', contexto)
     else:
