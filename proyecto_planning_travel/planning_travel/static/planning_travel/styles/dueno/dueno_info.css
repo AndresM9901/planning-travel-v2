@@ -45,7 +45,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 500px;
+    width: 1000px;
     height: 400px;   
     background: #f1f1f1;
     overflow-y:scroll;     
@@ -64,6 +64,7 @@
     border-radius: 50px;
     }
 .carta{
+    display: flex;
     width: 200px;
     height: 220px;
     flex-wrap: wrap;
@@ -72,6 +73,12 @@
 .contenido_carta{
     overflow-y:scroll;     
     height: 100px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.contenido_carta h5{
+    text-wrap: wrap;
+    width: 150px;
 }
 .contenido_carta::-webkit-scrollbar{
     height: 10px;

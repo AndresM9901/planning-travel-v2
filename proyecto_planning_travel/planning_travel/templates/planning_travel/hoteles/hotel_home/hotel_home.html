@@ -11,7 +11,7 @@
 {% block content %}
 <main>
     <section class="barra-servicios d-flex">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordenar">Ordenar</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordenar"><i class="bi bi-sort-up"></i> Ordenar</button>
         <div class="modal fade" id="ordenar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtros">Filtros</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtros"><i class="bi bi-funnel"></i> Filtros</button>
         <div class="modal fade" id="filtros" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -103,10 +103,8 @@
             </div>
         </div>
 
-
         <div>
-          <a href=""><i class="bi bi-grid-fill" style="color: #ff5c5c;font-size: 1.5rem;padding-right: 15px;"></i></a>
-          <a href=""><i class="bi bi-layout-three-columns icono-girado"  style="color: #ff5c5c;font-size: 1.5rem; "></i> </a>
+            <a class="btn btn-primary" href="{% url 'inicio' %}"><i class="bi bi-arrow-clockwise"></i> Borrar filtros</a>
         </div>
     </section>
     <section

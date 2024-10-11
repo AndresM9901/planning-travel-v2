@@ -24,6 +24,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import re
+import json
 
 # Create your views here.
 
@@ -77,7 +78,7 @@ def inicio(request):
         hotel_ids = Habitacion.objects.filter(
             precio__gte=precio_min if precio_min else 0,
             precio__lte=precio_max if precio_max else float('inf')
-        ).values_list('id_piso_hotel', flat=True).distinct()
+        ).values_list('hotel', flat=True).distinct()
         hoteles = hoteles.filter(id__in=hotel_ids)
     
      # Filtrar por servicios seleccionados
@@ -110,7 +111,7 @@ def inicio(request):
             hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=5).exists()]
         hoteles = hoteles.filter(id__in=hoteles_ids)
 
-    # Obtener precios mínimos de habitaciones para cada hotel
+     # Obtener precios mínimos de habitaciones para cada hotel
     precios_minimos = {}
     for habitacion in Habitacion.objects.all():
         if habitacion.hotel.id not in precios_minimos:
@@ -118,27 +119,21 @@ def inicio(request):
         else:
             precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.hotel.id], habitacion.precio)
 
-    # Convertir queryset a lista para permitir ordenación en Python
-    hoteles = list(hoteles)
 
-    # Ordenar por precio
+    # Variable precio minimo
+    hoteles = Hotel.objects.annotate(precio_minimo=Min('habitacion__precio'))
+    # ordena
     orden = request.GET.get('orden', '')
+
     if orden == 'nombre_asc':
-        hoteles.sort(key=lambda h: h.nombre)
+        hoteles = hoteles.order_by('nombre')
     elif orden == 'nombre_desc':
-        hoteles.sort(key=lambda h: h.nombre, reverse=True)
+        hoteles = hoteles.order_by('-nombre')
     elif orden == 'precio_asc':
-        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')))
+        hoteles = hoteles.order_by('precio_minimo')
     elif orden == 'precio_desc':
-        hoteles.sort(key=lambda h: precios_minimos.get(h.id, float('inf')), reverse=True)
-    
-    for hotel in hoteles:
-        # Consulta para encontrar el precio mínimo de las habitaciones del hotel actual
-        precio_minimo = Habitacion.objects.filter(hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
-    
-        # Actualizar el precio mínimo en el objeto del hotel
-        hotel.precio_minimo = precio_minimo
-    
+        hoteles = hoteles.order_by('-precio_minimo')
+
     # Crear un diccionario para agrupar las fotos por ID de hotel
     fotos_por_hotel = {}
     for foto in fotos:
@@ -889,8 +884,8 @@ def dueno_calendario(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
 
 def dueno_anuncio(request): 
-    foto = Foto.objects.select_related('id_hotel').all()
-    contexto = {'data': foto}
+    hoteles = Hotel.objects.prefetch_related('foto_set').all()
+    contexto = {'data': hoteles}
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html', contexto)
 
 def dueno_mensaje(request): 
@@ -1166,6 +1161,7 @@ def hoteles_form_anfitrion(request):
     categorias = Categoria.objects.all()
     servicios = Servicio.objects.all()
     contexto = {'categorias': categorias, 'servicios': servicios}
+    
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
@@ -1175,42 +1171,44 @@ def hoteles_form_anfitrion(request):
         servicios_seleccionados = request.POST.getlist('servicios')
         
         try:
+            usuario_id = request.session["logueo"]["id"]
+            propietario = Usuario.objects.get(pk=usuario_id)
+            print(usuario_id)
             hotel = Hotel(
                 nombre=nombre,
                 descripcion=descripcion,
                 direccion=direccion,
                 categoria_id=categoria_id,
-                ciudad=ciudad
+                ciudad=ciudad,
+                propietario=propietario 
             )
             hotel.save()
-            
+
             for servicio_id in servicios_seleccionados:
                 HotelServicio.objects.create(
                     id_hotel=hotel,
                     id_servicio_id=servicio_id
                 )
             
-            # Habitaciones
-            habitaciones = request.POST.get('habitaciones') 
-            if habitaciones:
-                habitaciones = JSON.loads(habitaciones)
+            habitaciones_data = request.POST.get('habitacionesData') 
+            if habitaciones_data:
+                habitaciones = json.loads(habitaciones_data)
                 for habitacion in habitaciones:
                     Habitacion.objects.create(
                         num_habitacion=habitacion['num_habitacion'],
-                        id_piso_hotel_id=hotel.id, 
                         ocupado=False,
                         capacidad_huesped=habitacion['capacidad_huesped'],
                         tipo_habitacion=habitacion['tipo_habitacion'],
-                        precio=habitacion['precio']
+                        precio=habitacion['precio'],
+                        hotel=hotel  # Asociar la habitación al hotel
                     )
-            
             # Guardar fotos
             fotos = request.FILES.getlist('fotos')
             descripcion_foto = request.POST.get('descripcion_foto', '')
             for foto in fotos:
                 Foto.objects.create(
                     id_hotel=hotel,
-                    archivo=foto,
+                    url_foto=foto,
                     descripcion=descripcion_foto
                 )
             
