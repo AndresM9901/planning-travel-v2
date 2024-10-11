@@ -47,9 +47,9 @@
         <div class="modal-contenido">
             <span class="cerrar" onclick="cerrarModal('{{ forloop.counter }}')">&times;</span>
             <h1 class="text-center">Datos del hotel</h1>
-            <div class="card-text"><strong>Nombre:</strong> {{ reserva_usuario.reserva.habitacion.id_piso_hotel.id_hotel.nombre }}</div>
-            <div class="card-text"><strong>Direccion:</strong> {{ reserva_usuario.reserva.habitacion.id_piso_hotel.id_hotel.direccion }}</div>
-            <div class="card-text"><strong>Ciudad:</strong> {{ reserva_usuario.reserva.habitacion.id_piso_hotel.id_hotel.ciudad }}</div>
+            <div class="card-text"><strong>Nombre:</strong> {{ reserva_usuario.reserva.habitacion.hotel.nombre }}</div>
+            <div class="card-text"><strong>Direccion:</strong> {{ reserva_usuario.reserva.habitacion.hotel.direccion }}</div>
+            <div class="card-text"><strong>Ciudad:</strong> {{ reserva_usuario.reserva.habitacion.hotel.ciudad }}</div>
         </div>
     </div>
     
