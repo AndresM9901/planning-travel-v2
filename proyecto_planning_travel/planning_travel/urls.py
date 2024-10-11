@@ -24,11 +24,11 @@ router.register(r'reporte', views.ReporteViewSet)
 router.register(r'reporte-moderador', views.ReporteModeradorViewSet)
 
 urlpatterns = [
-    path('inicio/', views.inicio, name="inicio"),
+    path('', views.inicio, name="inicio"),
     path('api/1.0/', include(router.urls)),
     path('api/1.0/token-auth/', views.CustomAuthToken.as_view()),
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
-    path('admin/', views.index, name="admin"),
+    path('administrador/', views.index, name="admin"),
 
     path('guardar_opinion/', views.guardar_opinion, name='guardar_opinion'),
     # Reservas

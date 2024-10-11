@@ -1303,7 +1303,6 @@ import json
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Hotel, Habitacion, Usuario, Categoria, Servicio, Foto
-
 def hoteles_form_anfitrion(request):
     categorias = Categoria.objects.all()
     servicios = Servicio.objects.all()
@@ -1327,7 +1326,7 @@ def hoteles_form_anfitrion(request):
 
             # Validar que los campos de texto no contengan números ni caracteres especiales
             if re.search(r'[^a-zA-ZñÑ\s.,-]', nombre):
-                raise ValueError("El nombre no debe tener caracteres especiales")
+                raise ValueError("El nombre no debe numeros ni caracteres especiales")
 
             if re.search(r'[^a-zA-Z\s]', ciudad):
                 raise ValueError("La ciudad solo debe contener letras y espacios.")
