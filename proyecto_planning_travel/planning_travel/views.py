@@ -12,7 +12,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from rest_framework import status, viewsets, generics, permissions
@@ -404,8 +404,6 @@ class InicioHoteles(APIView):
         
         return Response({'hoteles': hoteles_serializados})
 
-from django.shortcuts import get_object_or_404
-
 class DetalleHotel(APIView):
     def get(self, request, id):
         # Obtener el hotel, devolver un error 404 si no existe
@@ -462,12 +460,10 @@ class DetalleHotel(APIView):
 
         return Response(contexto, status=status.HTTP_200_OK)
 
-
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
 	if created:
 		Token.objects.create(user=instance)
-
 
 class CustomAuthToken(ObtainAuthToken):
 	def post(self, request, *args, **kwargs):
@@ -489,7 +485,6 @@ class CustomAuthToken(ObtainAuthToken):
 				'foto': usuario.foto.url
 			}
 		})
-
 
 class HacerReserva(APIView):
     def post(self, request):
@@ -796,7 +791,6 @@ def recuperar_clave(request):
             return redirect("recuperar_clave")
     else:
         return render(request, "planning_travel/login/login.html")
-from django.urls import reverse
 
 def verificar_recuperar(request):
     if request.method == "POST":
