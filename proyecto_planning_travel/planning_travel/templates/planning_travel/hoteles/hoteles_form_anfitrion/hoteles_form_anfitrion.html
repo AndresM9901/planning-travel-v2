@@ -3,10 +3,7 @@
 
 {% block titulo %}Registrar Hotel como anfitrión{% endblock %}
 {% block estilos %}
-<link
-    rel="stylesheet"
-    href="{% static 'planning_travel/styles/hoteles_anfitrion.css' %}"
-/>
+<link rel="stylesheet" href="{% static 'planning_travel/styles/hoteles_anfitrion.css' %}" />
 {% endblock %}
 
 {% block contenedor %}
@@ -92,7 +89,8 @@
             <input type="file" class="form-control" id="fotos" name="fotos" multiple>
         </div>
         <div class="form-floating mb-5">
-            <input type="text" class="form-control" id="descripcion_foto" placeholder="Descripción" name="descripcion_foto">
+            <input type="text" class="form-control" id="descripcion_foto" placeholder="Descripción"
+                name="descripcion_foto">
             <label for="descripcion_foto">Añade una breve descripción</label>
         </div>
         <div class="row my-4">
@@ -107,144 +105,161 @@
 </div>
 
 <script>
- document.addEventListener('DOMContentLoaded', function() {
-    let habitacionesContainer = document.getElementById('habitacionesContainer');
-    let addHabitacionBtn = document.getElementById('addHabitacionBtn');
-    let habitacionFormContainer = document.getElementById('habitacionFormContainer');
-    let habitacionFormTitle = document.getElementById('habitacionFormTitle');
-    let saveHabitacionBtn = document.getElementById('saveHabitacionBtn');
-    let cancelHabitacionBtn = document.getElementById('cancelHabitacionBtn');
-    let habitaciones = JSON.parse(localStorage.getItem('habitaciones')) || [];
-    let hotelId = document.getElementById('hotel_id').value; // Obtener el ID del hotel
+    document.addEventListener('DOMContentLoaded', function () {
+        let habitacionesContainer = document.getElementById('habitacionesContainer');
+        let addHabitacionBtn = document.getElementById('addHabitacionBtn');
+        let habitacionFormContainer = document.getElementById('habitacionFormContainer');
+        let habitacionFormTitle = document.getElementById('habitacionFormTitle');
+        let saveHabitacionBtn = document.getElementById('saveHabitacionBtn');
+        let cancelHabitacionBtn = document.getElementById('cancelHabitacionBtn');
+        let habitaciones = JSON.parse(localStorage.getItem('habitaciones')) || [];
+        let hotelId = document.getElementById('hotel_id').value; // Obtener el ID del hotel
 
-    function createHabitacionElement(habitacion) {
-        let nuevaHabitacion = document.createElement('div');
-        nuevaHabitacion.className = 'habitacion mb-3';
-        nuevaHabitacion.dataset.id = habitacion.id;
-        nuevaHabitacion.innerHTML = `
+        function createHabitacionElement(habitacion) {
+            let nuevaHabitacion = document.createElement('div');
+            nuevaHabitacion.className = 'habitacion mb-3';
+            nuevaHabitacion.dataset.id = habitacion.id;
+            nuevaHabitacion.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <button type="button" class="btn btn-warning btn-sm editHabitacionBtn">Número: <span class="habitacion-numero">${habitacion.num_habitacion}</span></button>
                 <button type="button" class="btn btn-danger btn-sm removeHabitacionBtn" style="margin-left: 10px;">X</button>
             </div>
             <hr>
         `;
-        habitacionesContainer.appendChild(nuevaHabitacion);
+            habitacionesContainer.appendChild(nuevaHabitacion);
 
-        let editHabitacionBtn = nuevaHabitacion.querySelector('.editHabitacionBtn');
-        let removeHabitacionBtn = nuevaHabitacion.querySelector('.removeHabitacionBtn');
+            let verHabitacionBtn = nuevaHabitacion.querySelector('.editHabitacionBtn');
+            let removeHabitacionBtn = nuevaHabitacion.querySelector('.removeHabitacionBtn');
 
-        // Mostrar formulario para editar
-        editHabitacionBtn.addEventListener('click', function() {
-            let id = habitacion.id;
-            let existingHabitacion = habitaciones.find(h => h.id === id);
-            
-            // Llenar formulario de edición con datos existentes
-            document.getElementById('num_habitacion').value = existingHabitacion.num_habitacion;
-            document.getElementById('capacidad_huesped').value = existingHabitacion.capacidad_huesped;
-            document.getElementById('tipo_habitacion').value = existingHabitacion.tipo_habitacion;
-            document.getElementById('precio').value = existingHabitacion.precio;
-            
-            saveHabitacionBtn.textContent = 'Editar';  // Cambiar texto del botón a 'Editar'
-            saveHabitacionBtn.dataset.action = 'edit';  // Indicar acción de edición
-            saveHabitacionBtn.dataset.id = existingHabitacion.id;  // Guardar ID para edición
-            
-            habitacionFormTitle.textContent = 'Editar Habitación';  // Cambiar título del formulario
-            habitacionFormContainer.style.display = 'block';
-            addHabitacionBtn.style.display = 'none';
-        });
+            verHabitacionBtn.addEventListener('click', function () {
+                let id = habitacion.id;
+                let existingHabitacion = habitaciones.find(h => h.id === id);
 
-        // Añadir el evento de eliminación al botón "X"
-        removeHabitacionBtn.addEventListener('click', function() {
-            habitacionesContainer.removeChild(nuevaHabitacion);
-            habitaciones = habitaciones.filter(h => h.id !== habitacion.id);
-            localStorage.setItem('habitaciones', JSON.stringify(habitaciones));
+                // Mostrar los detalles de la habitación en los campos del formulario
+                document.getElementById('num_habitacion').value = existingHabitacion.num_habitacion;
+                document.getElementById('capacidad_huesped').value = existingHabitacion.capacidad_huesped;
+                document.getElementById('tipo_habitacion').value = existingHabitacion.tipo_habitacion;
+                document.getElementById('precio').value = existingHabitacion.precio;
 
-            // Mostrar el botón de agregar si no hay habitaciones
-            if (habitaciones.length === 0) {
-                addHabitacionBtn.style.display = 'inline-block';
-            }
-        });
-    }
+                // Deshabilitar los campos para que sean solo lectura
+                document.getElementById('num_habitacion').setAttribute('readonly', true);
+                document.getElementById('capacidad_huesped').setAttribute('readonly', true);
+                document.getElementById('tipo_habitacion').setAttribute('readonly', true);
+                document.getElementById('precio').setAttribute('readonly', true);
 
-    // Cargar habitaciones desde el localStorage al inicio
-    habitaciones.forEach(createHabitacionElement);
+                saveHabitacionBtn.style.display = 'none';  // Ocultar botón de guardar
+                // Mostrar el contenedor del formulario
+                habitacionFormContainer.style.display = 'block';
+                addHabitacionBtn.style.display = 'none';
+            });
 
-    // Manejar el botón "Agregar Habitación +"
-    addHabitacionBtn.addEventListener('click', function() {
-        habitacionFormTitle.textContent = 'Agregar Nueva Habitación';
-        habitacionFormContainer.style.display = 'block';
-        addHabitacionBtn.style.display = 'none';
-        saveHabitacionBtn.textContent = 'Guardar';  // Cambiar texto del botón a 'Guardar'
-        saveHabitacionBtn.dataset.action = 'add';  // Indicar acción de adición
-        delete saveHabitacionBtn.dataset.id;  // Eliminar ID si está presente
-    });
+            // Añadir el evento de eliminación al botón "X"
+            removeHabitacionBtn.addEventListener('click', function () {
+                habitacionesContainer.removeChild(nuevaHabitacion);
+                habitaciones = habitaciones.filter(h => h.id !== habitacion.id);
+                localStorage.setItem('habitaciones', JSON.stringify(habitaciones));
 
-    // Manejar el evento de guardar una nueva habitación
-    saveHabitacionBtn.addEventListener('click', function() {
-        let numHabitacion = document.getElementById('num_habitacion').value;
-        let capacidadHuesped = document.getElementById('capacidad_huesped').value;
-        let tipoHabitacion = document.getElementById('tipo_habitacion').value;
-        let precio = document.getElementById('precio').value;
-
-        if (!numHabitacion || !capacidadHuesped || !tipoHabitacion || !precio) {
-            alert('Por favor, complete todos los campos.');
-            return;
+                // Mostrar el botón de agregar si no hay habitaciones
+                if (habitaciones.length === 0) {
+                    addHabitacionBtn.style.display = 'inline-block';
+                }
+            });
         }
 
-        let habitacionData = {
-            id: saveHabitacionBtn.dataset.id || Date.now(),  // Usa timestamp como id si es nueva
-            num_habitacion: numHabitacion,
-            capacidad_huesped: capacidadHuesped,
-            tipo_habitacion: tipoHabitacion,
-            precio: precio
-        };
-
-        if (saveHabitacionBtn.dataset.action === 'edit') {
-            // Editar habitación existente
-            let existingHabitacion = habitaciones.find(h => h.id === habitacionData.id);
-            Object.assign(existingHabitacion, habitacionData);
-        } else {
-            // Añadir nueva habitación
-            habitaciones.push(habitacionData);
-        }
-
-        localStorage.setItem('habitaciones', JSON.stringify(habitaciones));
-
-        // Actualizar la vista de habitaciones
-        habitacionesContainer.innerHTML = '';
+        // Cargar habitaciones desde el localStorage al inicio
         habitaciones.forEach(createHabitacionElement);
 
-        // Ocultar formulario y mostrar el botón de agregar
-        habitacionFormContainer.style.display = 'none';
-        addHabitacionBtn.style.display = 'inline-block';
+        // Manejar el botón "Agregar Habitación +"
+        addHabitacionBtn.addEventListener('click', function () {
+            // Restablecer los campos del formulario
+            document.getElementById('num_habitacion').removeAttribute('readonly');
+            document.getElementById('capacidad_huesped').removeAttribute('readonly');
+            document.getElementById('tipo_habitacion').removeAttribute('readonly');
+            document.getElementById('precio').removeAttribute('readonly');
 
-        // Limpiar los campos del formulario
-        document.getElementById('num_habitacion').value = '';
-        document.getElementById('capacidad_huesped').value = '';
-        document.getElementById('tipo_habitacion').value = '';
-        document.getElementById('precio').value = '';
-        delete saveHabitacionBtn.dataset.action;  // Limpiar acción
-        delete saveHabitacionBtn.dataset.id;  // Limpiar ID del botón
+            // Limpiar los campos del formulario
+            document.getElementById('num_habitacion').value = '';
+            document.getElementById('capacidad_huesped').value = '';
+            document.getElementById('tipo_habitacion').value = '';
+            document.getElementById('precio').value = '';
+
+            // Cambiar el título y mostrar el formulario para agregar una nueva habitación
+            habitacionFormTitle.textContent = 'Agregar Nueva Habitación';
+            habitacionFormContainer.style.display = 'block';
+            addHabitacionBtn.style.display = 'none';
+            saveHabitacionBtn.style.display = 'inline-block';  // Asegurarse de que el botón de guardar sea visible
+            saveHabitacionBtn.textContent = 'Guardar';  // Cambiar texto del botón a 'Guardar'
+            saveHabitacionBtn.dataset.action = 'add';  // Indicar acción de adición
+            delete saveHabitacionBtn.dataset.id;  // Eliminar ID si está presente
+        });
+
+        // Manejar el evento de guardar una nueva habitación
+        saveHabitacionBtn.addEventListener('click', function () {
+            let numHabitacion = document.getElementById('num_habitacion').value;
+            let capacidadHuesped = document.getElementById('capacidad_huesped').value;
+            let tipoHabitacion = document.getElementById('tipo_habitacion').value;
+            let precio = document.getElementById('precio').value;
+
+            if (!numHabitacion || !capacidadHuesped || !tipoHabitacion || !precio) {
+                alert('Por favor, complete todos los campos.');
+                return;
+            }
+
+            let habitacionData = {
+                id: saveHabitacionBtn.dataset.id || Date.now(),  // Usa timestamp como id si es nueva
+                num_habitacion: numHabitacion,
+                capacidad_huesped: capacidadHuesped,
+                tipo_habitacion: tipoHabitacion,
+                precio: precio
+            };
+
+            if (saveHabitacionBtn.dataset.action === 'edit') {
+                // Editar habitación existente
+                let existingHabitacion = habitaciones.find(h => h.id === habitacionData.id);
+                Object.assign(existingHabitacion, habitacionData);
+            } else {
+                // Añadir nueva habitación
+                habitaciones.push(habitacionData);
+            }
+
+            localStorage.setItem('habitaciones', JSON.stringify(habitaciones));
+
+            // Actualizar la vista de habitaciones
+            habitacionesContainer.innerHTML = '';
+            habitaciones.forEach(createHabitacionElement);
+
+            // Ocultar formulario y mostrar el botón de agregar
+            habitacionFormContainer.style.display = 'none';
+            addHabitacionBtn.style.display = 'inline-block';
+
+            // Limpiar los campos del formulario
+            document.getElementById('num_habitacion').value = '';
+            document.getElementById('capacidad_huesped').value = '';
+            document.getElementById('tipo_habitacion').value = '';
+            document.getElementById('precio').value = '';
+            delete saveHabitacionBtn.dataset.action;  // Limpiar acción
+            delete saveHabitacionBtn.dataset.id;  // Limpiar ID del botón
+        });
+
+        // Manejar el evento de cancelar la adición/edición de habitación
+        cancelHabitacionBtn.addEventListener('click', function () {
+            habitacionFormContainer.style.display = 'none';
+            addHabitacionBtn.style.display = 'inline-block';
+
+            // Limpiar los campos del formulario
+            document.getElementById('num_habitacion').value = '';
+            document.getElementById('capacidad_huesped').value = '';
+            document.getElementById('tipo_habitacion').value = '';
+            document.getElementById('precio').value = '';
+            delete saveHabitacionBtn.dataset.action;  // Limpiar acción
+            delete saveHabitacionBtn.dataset.id;  // Limpiar ID del botón
+        });
+
+        // Asegurarse de que el campo oculto se actualice antes de enviar el formulario
+        document.getElementById('hotelForm').addEventListener('submit', function () {
+            document.getElementById('habitacionesData').value = JSON.stringify(habitaciones);
+        });
     });
-
-    // Manejar el evento de cancelar la adición/edición de habitación
-    cancelHabitacionBtn.addEventListener('click', function() {
-        habitacionFormContainer.style.display = 'none';
-        addHabitacionBtn.style.display = 'inline-block';
-
-        // Limpiar los campos del formulario
-        document.getElementById('num_habitacion').value = '';
-        document.getElementById('capacidad_huesped').value = '';
-        document.getElementById('tipo_habitacion').value = '';
-        document.getElementById('precio').value = '';
-        delete saveHabitacionBtn.dataset.action;  // Limpiar acción
-        delete saveHabitacionBtn.dataset.id;  // Limpiar ID del botón
-    });
-
-    // Asegurarse de que el campo oculto se actualice antes de enviar el formulario
-    document.getElementById('hotelForm').addEventListener('submit', function() {
-        document.getElementById('habitacionesData').value = JSON.stringify(habitaciones);
-    });
-});
 </script>
+
 {% endblock %}
