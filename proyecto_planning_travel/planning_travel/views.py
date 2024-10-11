@@ -244,6 +244,34 @@ def reserva(request, id):
     else:
         return redirect('login_form')
 
+def guardar_opinion(request):
+    if 'logueo' not in request.session:
+        # Redirigir al login si el usuario no está logueado
+        messages.error(request, 'Debes estar logueado para dejar una opinión.')
+        return redirect('login')
+    if request.method == 'POST':
+        hotel_id = request.POST.get('hotel_id')
+        contenido = request.POST.get('contenido').strip()  
+        puntuacion = request.POST.get('puntuacion')
+        
+        if not contenido:
+            messages.error(request, 'El contenido de la opinión no puede estar vacío.')
+            return redirect('detalle_hotel', id=hotel_id) 
+        try:
+            opinion = Opinion(
+                id_hotel_id=hotel_id,
+                id_usuario=request.user,  
+                contenido=contenido,
+                puntuacion=puntuacion
+            )
+            opinion.save()
+
+            messages.success(request, 'Opinión guardada exitosamente.')
+            return redirect('detalle_hotel', id=hotel_id)
+
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+            return redirect('detalle_hotel', id=hotel_id)
 
 def verificar_disponibilidad(request):
     fecha_llegada_str = request.POST.get('fecha_llegada')
@@ -881,7 +909,7 @@ def dueno_hoy(request):
     reservas_usuario = ReservaUsuario.objects.all()
     logueo = request.session.get("logueo", False)
     if logueo:
-        contexto = { 'hoteles': hoteles, 'data': reservas_usuario ,} 
+        contexto = { 'hoteles': hoteles, 'data': reservas_usuario} 
         return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)         
     else:
         return redirect('login')
@@ -1163,11 +1191,10 @@ def hoteles_actualizar(request):
 # hoteles anfitrion form   --  Paso 1
 
 def hoteles_form_anfitrion(request):
-
     categorias = Categoria.objects.all()
     servicios = Servicio.objects.all()
     contexto = {'categorias': categorias, 'servicios': servicios}
-    
+
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
@@ -1176,10 +1203,42 @@ def hoteles_form_anfitrion(request):
         ciudad = request.POST.get('ciudad')
         servicios_seleccionados = request.POST.getlist('servicios')
         
+        habitaciones_data = request.POST.get('habitacionesData')
+        habitaciones_validas = []
+
         try:
+            # Validar que todos los campos del hotel estén completos
+            if not nombre or not descripcion or not direccion or not categoria_id or not ciudad:
+                raise ValueError("Todos los campos son obligatorios.")
+
+            # Validar que los campos de texto no contengan números ni caracteres especiales
+            if re.search(r'[^a-zA-ZñÑ\s.,-]', nombre):
+                raise ValueError("El nombre no debe tener caracteres especiales")
+
+            if re.search(r'[^a-zA-Z\s]', ciudad):
+                raise ValueError("La ciudad solo debe contener letras y espacios.")
+
+            # Validar habitaciones antes de crear el hotel
+            if habitaciones_data:
+                habitaciones = json.loads(habitaciones_data)
+                for habitacion in habitaciones:
+                    capacidad_huesped = int(habitacion['capacidad_huesped'])
+                    precio = float(habitacion['precio'])
+
+                    # Validaciones de las habitaciones
+                    if capacidad_huesped <= 0:
+                        raise ValueError("La capacidad de huésped debe ser un número positivo.")
+                    if precio < 0:
+                        raise ValueError("El precio no puede ser negativo.")
+
+                    habitaciones_validas.append(habitacion)
+
+            if not habitaciones_validas:
+                raise ValueError("No se proporcionaron habitaciones válidas.")
+
+            # Ahora que todas las validaciones están pasadas, podemos crear el hotel
             usuario_id = request.session["logueo"]["id"]
             propietario = Usuario.objects.get(pk=usuario_id)
-            print(usuario_id)
             hotel = Hotel(
                 nombre=nombre,
                 descripcion=descripcion,
@@ -1190,24 +1249,17 @@ def hoteles_form_anfitrion(request):
             )
             hotel.save()
 
-            for servicio_id in servicios_seleccionados:
-                HotelServicio.objects.create(
-                    id_hotel=hotel,
-                    id_servicio_id=servicio_id
+            # Crear habitaciones válidas
+            for habitacion in habitaciones_validas:
+                Habitacion.objects.create(
+                    num_habitacion=habitacion['num_habitacion'],
+                    ocupado=False,
+                    capacidad_huesped=habitacion['capacidad_huesped'],
+                    tipo_habitacion=habitacion['tipo_habitacion'],
+                    precio=habitacion['precio'],
+                    hotel=hotel  # Asociar la habitación al hotel
                 )
-            
-            habitaciones_data = request.POST.get('habitacionesData') 
-            if habitaciones_data:
-                habitaciones = json.loads(habitaciones_data)
-                for habitacion in habitaciones:
-                    Habitacion.objects.create(
-                        num_habitacion=habitacion['num_habitacion'],
-                        ocupado=False,
-                        capacidad_huesped=habitacion['capacidad_huesped'],
-                        tipo_habitacion=habitacion['tipo_habitacion'],
-                        precio=habitacion['precio'],
-                        hotel=hotel  # Asociar la habitación al hotel
-                    )
+
             # Guardar fotos
             fotos = request.FILES.getlist('fotos')
             descripcion_foto = request.POST.get('descripcion_foto', '')
@@ -1221,10 +1273,13 @@ def hoteles_form_anfitrion(request):
             messages.success(request, 'Hotel registrado exitosamente.')
             return redirect('inicio')  
 
+        except ValueError as ve:
+            messages.error(request, f'Error: {str(ve)}')
+            return redirect('hoteles_form_anfitrion')  
         except Exception as e:
             messages.error(request, f'Ocurrió un error: {str(e)}')
             return redirect('hoteles_form_anfitrion')  
-   
+
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
 
   

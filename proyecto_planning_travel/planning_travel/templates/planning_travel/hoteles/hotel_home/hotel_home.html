@@ -112,10 +112,6 @@
     >
         {% for hotel, fotos in hoteles %}
         <div class="card-hotel d-flex">
-            <button class="btn-compare btns-card">
-                <i class="bi bi-arrow-left-right btn-icon"></i>
-                <span class="compare-title">Comparar</span>
-            </button>
             {% if request.session.logueo %}
                 {% if hotel.id in favoritos %}
                     <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card" style="color: white; background-color:#ff5c5c">
