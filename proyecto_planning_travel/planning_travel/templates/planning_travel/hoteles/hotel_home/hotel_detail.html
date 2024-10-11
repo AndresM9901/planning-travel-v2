@@ -4,7 +4,89 @@
 
 {% block title %}{{ hotel.nombre }}{% endblock %}
 {% block estilos %}
-<link rel="stylesheet" href="{% static 'planning_travel/styles/hotel_detail.css' %}" />
+<link
+    rel="stylesheet"
+    href="{% static 'planning_travel/styles/hotel_detail.css' %}"
+/>
+<style>
+    .modalDialog {
+    position: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 99999;
+    opacity:0;
+    pointer-events: none;
+  }
+  .modalDialog:target {
+    opacity:1;
+    pointer-events: auto;
+  }
+  .modalDialog > div {
+    width: 500px;
+    position: center;
+    margin: 5% auto;
+      height: 730px;
+    border-radius: 10px;
+    background: #fff;
+    -webkit-transition: opacity 400ms ease-in;
+  -moz-transition: opacity 400ms ease-in;
+  transition: opacity 400ms ease-in;
+  }
+  .close {
+    background: #606061;
+    color: #FFFFFF;
+    line-height: 25px;
+    position: absolute;
+    right: 3px;
+    text-align: center;
+    top: 7px;
+    width: 24px;
+    text-decoration: none;
+    font-weight: bold;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+    -moz-box-shadow: 1px 1px 3px #000;
+    -webkit-box-shadow: 1px 1px 3px #000;
+    box-shadow: 1px 1px 3px #000;
+  }
+  .close:hover { background: #ff5c5c; }
+  .modal {
+    display: none; /* Oculta la modal por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modal-contenido {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .cerrar {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #aaa;
+  }
+
+</style>
 {% endblock %}
 {% block content %}
 <main class="container-details d-flex">
@@ -43,6 +125,68 @@
                         style="color: white; background-color:#ff5c5c"><i class="bi bi-bookmark-heart"></i>
                         Favoritos</a>
 
+                <div class="body-info d-flex">
+                    <div class="propietario d-flex">
+                        <div class="propietario__info d-flex">
+                            <img class="propietario__img" src="{{ hotel.propietario.foto.url}}" alt="">
+                            <div class="propietario__details">
+                                <p class="titulo">{{ hotel.propietario.nombre }}</p>
+                                <p class="parrafo">{{ hotel.propietario.email }}</p>
+                            </div>
+                        </div>
+                        <div id="modal" class="modal" style="display: none;">
+                            <div class="modal-contenido">
+                                <span class="cerrar" onclick="cerrarModal()">&times;</span>
+                                <h1 class="text-center">Enviar Mensaje</h1>
+                                <form action="{% url 'enviar_mensaje' hotel.id %}" method="post">
+                                  {% csrf_token %}
+                                  <div class="form-floating mb-3">
+                                     <textarea class="form-control" id="descripcion" placeholder="Escribe tu mensaje aquí..." name="descripcion" rows="4"></textarea>
+                                     <label for="descripcion">Descripción:</label>
+                                  </div>
+                                  <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Enviar</button>
+                                  </div>
+                                </form>
+                            </div>
+                         </div>
+                        {% if request.session.logueo %}
+                          <button onclick="abrirModal()" class="btn btn-primary btn-primary--size"><i class="bi bi-bookmark-heart" ></i> Enviar mensaje</button>
+                        {% else %}
+                          <a  href="{% url 'reserva' hotel.id %}" style="text-align: center;" class="btn btn-primary btn-primary--size"><i class="bi bi-bookmark-heart" ></i> Enviar mensaje</a>
+                        {% endif %}
+                    </div>
+                    <ul class="comodidades d-flex">
+                        {% for comodidad in comodidades %}
+                            {% if comodidad.cantidad > 1 %}
+                                {% if comodidad.comodidad.nombre == "Huesped" %}
+                                <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}es</li>
+                                {% else %}
+                                <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}s</li>
+                                {% endif %}
+                            {% else %}
+                            <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% if hotel.promedio_valoracion > 4 %}
+                    <div class="popular d-flex">
+                        <div class="popular--texto d-flex">
+                            <i class="bi bi-star-fill"></i>
+                            <p class="m-0">Según los usuarios, uno de los hoteles más populares</p>
+                        </div>
+                        <div class="popular--puntuacion d-flex">
+                            <p class="m-0 popular__tamaño">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
+                            <div class="popular__estrellas d-flex">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                        </div>
+                        <p class="m-0 popular__tamaño">({{ hotel.opiniones_count }})</p>
+                    </div>
                     {% else %}
                     <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn"><i
                             class="bi bi-bookmark-heart"></i> Favoritos</a>
@@ -204,5 +348,22 @@
 
 {% block scripts %}
 <script src="{% static 'planning_travel/js/hotel_detail.js' %}"></script>
+<script>
+    function abrirModal() {
+    document.getElementById('modal').style.display = 'block';
+}
+
+// Función para cerrar el modal
+function cerrarModal() {
+    document.getElementById('modal').style.display = 'none';
+}
+
+// Cierra el modal si se hace clic fuera del contenido del modal
+window.onclick = function(event) {
+    if (event.target === document.getElementById('modal')) {
+        cerrarModal();
+    }
+}
+</script>
 
 {% endblock %}

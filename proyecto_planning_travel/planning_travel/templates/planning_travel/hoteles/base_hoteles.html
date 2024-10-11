@@ -78,6 +78,8 @@
                     <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
                     <li class="dropdown-elemento"><a href="{% url 'favoritos_mostrar' %}">Ver favoritos</a></li>
                     <li class="dropdown-elemento"><a href="{% url 'reservas_mostrar' %}">Ver reservas</a></li>
+                    <li class="dropdown-elemento"><a href="{% url 'chat' %}">Mensajes</a></li>
+
                     {% if request.session.logueo.rol == 1 %}
                     <li class="dropdown-elemento"><a href="{% url 'admin' %}" class="btn-secondary">Modo admin</a></li>
                     {% endif %}
