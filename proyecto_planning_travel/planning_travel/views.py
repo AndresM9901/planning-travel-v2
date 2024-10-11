@@ -273,6 +273,7 @@ def reserva(request, id):
     else:
         return redirect('login_form')
 
+
 def verificar_disponibilidad(request):
     fecha_llegada_str = request.POST.get('fecha_llegada')
     fecha_salida_str = request.POST.get('fecha_salida')
@@ -877,22 +878,34 @@ def perfil_actualizar(request):
     if request.method == 'POST':
         id = request.POST.get('id')
         nombre = request.POST.get('nombre')
+        apellido = request.POST.get('apellido')
         correo = request.POST.get('correo')
-        try:
-            # Obtén el objeto Usuario por su ID
-            usuario = Usuario.objects.get(pk=id)
-            usuario.nombre = nombre
-            usuario.correo = correo
-            usuario.save()
-            messages.success(request, "Perfil actualizado correctamente")
-            return redirect('ver_perfil')  # Redirecciona a una página después de la actualización
-        except Usuario.DoesNotExist:
-            messages.error(request, "El usuario no existe")
-        except Exception as e:
-            messages.error(request, f'Error: {e}')
+        if nombre == '' or apellido == '' or correo == '':
+            messages.error(request, "Todos los campos son obligatorios")
+        elif nombre.isalpha() == False:
+            messages.error(request, "El nombre solo puede contener letras y espacios")
+        elif apellido.isalpha() == False:
+            messages.error(request, "El apellido solo puede contener letras y espacios")
+        elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
+                messages.error(request, "El correo no es válido")
+        else:
+            try:
+                # Obtén el objeto Usuario por su ID
+                usuario = Usuario.objects.get(pk=id)
+                usuario.nombre = nombre
+                usuario.apellido = apellido 
+                usuario.email = correo
+                usuario.save()
+                messages.success(request, "Perfil actualizado correctamente")
+                
+                return redirect('ver_perfil')  
+            except Usuario.DoesNotExist:
+                messages.error(request, "El usuario no existe")
+            except Exception as e:
+                messages.error(request, f'Error: {e}')
     else:
         messages.warning(request, 'No se enviaron datos')
-    return redirect('ver_perfil')  # Redirecciona en caso de un error o método GET
+    return redirect('ver_perfil')
 
 def index(request):
     return render(request, 'planning_travel/inicio.html')
@@ -1186,6 +1199,12 @@ def hoteles_actualizar(request):
         messages.warning(request,'No se enviaron datos')
 
 # hoteles anfitrion form  
+import re
+import json
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Hotel, Habitacion, Usuario, Categoria, Servicio, Foto
+
 def hoteles_form_anfitrion(request):
     categorias = Categoria.objects.all()
     servicios = Servicio.objects.all()
@@ -1207,15 +1226,12 @@ def hoteles_form_anfitrion(request):
             if not nombre or not descripcion or not direccion or not categoria_id or not ciudad:
                 raise ValueError("Todos los campos son obligatorios.")
 
-            # Validar que los campos de texto no contengan números
-            if re.search(r'\d', nombre):
-                raise ValueError("El nombre del hotel no debe contener números.")
-            if re.search(r'\d', descripcion):
-                raise ValueError("La descripción no debe contener números.")
-            if re.search(r'\d', direccion):
-                raise ValueError("La dirección no debe contener números.")
-            if re.search(r'\d', ciudad):
-                raise ValueError("La ciudad no debe contener números.")
+            # Validar que los campos de texto no contengan números ni caracteres especiales
+            if re.search(r'[^a-zA-ZñÑ\s.,-]', nombre):
+                raise ValueError("El nombre no debe tener caracteres especiales")
+
+            if re.search(r'[^a-zA-Z\s]', ciudad):
+                raise ValueError("La ciudad solo debe contener letras y espacios.")
 
             # Validar habitaciones antes de crear el hotel
             if habitaciones_data:
@@ -1280,9 +1296,7 @@ def hoteles_form_anfitrion(request):
             return redirect('hoteles_form_anfitrion')  
 
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
-
-
-  
+ 
 # dueño hotel 
 
 def dueno_hotel(request): 
