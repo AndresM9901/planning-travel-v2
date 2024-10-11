@@ -25,21 +25,26 @@
     <div id="contenedor_info_tabla">
         <table>
             <tr class="tabla_grupo">
+                <td class="tabla_gris">Nombre Hotel</td>
                 <td class="tabla_gris">Fecha Llegada</td>
                 <td class="tabla_gris">Fecha Salida</td>
                 <td class="tabla_gris">Nombre</td>
                 <td class="tabla_gris">Fecha Realización</td>
             </tr>
-            {% if reserva.hotel.propietario.id == request.session.logueo.id %}
-            {% for r in reserva_usuario %}
-            <tr class="tabla_grupo">
-                <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
-                <td class="tabla">{{ r.reserva.fecha_salida }}</td>
-                <td class="tabla">{{ r.usuario.nombre }}</td>
-                <td class="tabla">{{ r.fecha_realizacion }}</td>
-            </tr>
+            {% for hotel in hoteles %}
+                {% if hotel.propietario.id == request.session.logueo.id  %}
+                {{ hotel.propietario.id }}
+                {% for r in data %} 
+                        <tr class="tabla_grupo">
+                            <td class="tabla">{{ r.reserva.habitacion.hotel.nombre }}</td>
+                            <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
+                            <td class="tabla">{{ r.reserva.fecha_salida}}</td>
+                            <td class="tabla">{{ r.usuario.nombre }}</td>
+                            <td class="tabla">{{ r.fecha_realizacion }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
-            {% endif %}
         </table>
     </div>
 </div>

@@ -15,6 +15,7 @@
     <div id="seccion2">
         {% for hotel in data %}
         {% if hotel.propietario.id == request.session.logueo.id %}
+        <a href="#"style="text-decoration: none;">
         <div class="carta">
             <div class="imagen-card">
                 {% if hotel.foto_set.first %}
@@ -27,7 +28,7 @@
                 <p class="contenido-card">{{ hotel.nombre }}</p>
                 <p class="ubicacion">{{ hotel.ciudad }}</p>
             </div>
-        </div>
+        </div></a>
         {% endif %}
         {% endfor %}
     </div>

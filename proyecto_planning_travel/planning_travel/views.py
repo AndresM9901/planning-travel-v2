@@ -875,14 +875,14 @@ def dueno_hotel(request):
         return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html')
     else:
         return redirect('login')
-
-def dueno_hoy(request):
-    q = Reserva.objects.all()
-    ru = ReservaUsuario.objects.select_related('usuario','reserva').all()
+    
+def dueno_hoy(request): 
+    hoteles = Hotel.objects.all() 
+    reservas_usuario = ReservaUsuario.objects.all()
     logueo = request.session.get("logueo", False)
     if logueo:
-        contexto = { 'data': q , 'reserva_usuario' : ru  }
-        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)
+        contexto = { 'hoteles': hoteles, 'data': reservas_usuario ,} 
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)         
     else:
         return redirect('login')
 
