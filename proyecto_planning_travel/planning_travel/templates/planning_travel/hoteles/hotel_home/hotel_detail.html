@@ -121,7 +121,6 @@
                         <p class="m-0">{{ hotel.ciudad }}</p>
                     </div>
                     <div class="botones-head d-flex">
-                        <a href="" class="btn"><i class="bi bi-arrow-left-right btn-icon"></i> Comparar</a>
                         {% if request.session.logueo %}
                         {% if hotel.id in favoritos %}
                             <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn" style="color: white; background-color:#ff5c5c"><i class="bi bi-bookmark-heart" ></i> Favoritos</a>

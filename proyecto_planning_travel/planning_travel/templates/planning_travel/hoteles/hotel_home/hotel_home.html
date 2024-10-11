@@ -11,7 +11,7 @@
 {% block content %}
 <main>
     <section class="barra-servicios d-flex">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordenar">Ordenar</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordenar"><i class="bi bi-sort-up"></i> Ordenar</button>
         <div class="modal fade" id="ordenar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtros">Filtros</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtros"><i class="bi bi-funnel"></i> Filtros</button>
         <div class="modal fade" id="filtros" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -111,10 +111,6 @@
     >
         {% for hotel, fotos in hoteles %}
         <div class="card-hotel d-flex">
-            <button class="btn-compare btns-card">
-                <i class="bi bi-arrow-left-right btn-icon"></i>
-                <span class="compare-title">Comparar</span>
-            </button>
             {% if request.session.logueo %}
                 {% if hotel.id in favoritos %}
                     <a href="{% url 'favoritos_crearUser' id_hotel=hotel.id %}" class="btn-favorite btns-card" style="color: white; background-color:#ff5c5c">
@@ -151,29 +147,31 @@
                     </div>
                 </div>
             </div>
-            <div class="hotel-info d-flex">
-                <div class="hotel-info-left">
-                    <h1 class="hotel-title">{{ hotel.nombre }}</h1>
-                    <p class="hotel-city">{{ hotel.ciudad }}</p>
-                    <p class="hotel-category">{{ hotel.categoria }}</p>
-                </div>
-                <div class="hotel-info-right d-flex">
-                    <div class="hotel-rating-container d-flex">
-                        <p class="hotel-rating">
-                            {% if hotel.promedio_valoracion >= 0 %}
-                            {{ hotel.promedio_valoracion | floatformat:1 }}
-                            {% else %}
-                            0
-                            {% endif %}
-                            <i class="bi bi-star-fill"></i>
-                        </p>
-                        <p class="hotel-opinions">({% if hotel.opiniones_count %}{{ hotel.opiniones_count }}{% else %}0{% endif %} opiniones)</p>
+            <div class="hotel-info d-flex flex-column">
+                <div class="d-flex flex-row contenedor-info-opinion">
+                    <div class="hotel-info-left">
+                        <h1 class="hotel-title">{{ hotel.nombre }}</h1>
+                        <p class="hotel-city">{{ hotel.ciudad }}</p>
+                        <p class="hotel-category">{{ hotel.categoria }}</p>
                     </div>
-                    <div class="hotel-price-container d-flex">
-                        <p class="text">Desde</p>
+                    <div class="hotel-info-right d-flex">
+                        <div class="hotel-rating-container d-flex">
+                            <p class="hotel-rating">
+                                {% if hotel.promedio_valoracion >= 0 %}
+                                {{ hotel.promedio_valoracion | floatformat:1 }}
+                                {% else %}
+                                0
+                                {% endif %}
+                                <i class="bi bi-star-fill"></i>
+                            </p>
+                            <p class="hotel-opinions">({% if hotel.opiniones_count %}{{ hotel.opiniones_count }}{% else %}0{% endif %} opiniones)</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="hotel-price-container d-flex">
+                        <p class="text desde">Desde</p>
                         <a class="hotel-price" onclick="detallesDelHotel(`{% url 'detalle_hotel' hotel.id %}`)">$ {{ hotel.precio_minimo | floatformat:0 }}</a>
                     </div>
-                </div>
             </div>
         </div>
         {% endfor %}

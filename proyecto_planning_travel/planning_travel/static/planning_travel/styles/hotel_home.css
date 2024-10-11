@@ -181,9 +181,12 @@
 
 .hotel-info {
     justify-content: space-between;
-    align-items: center;
     padding: 8px 12px;
     width: 100%;
+}
+.contenedor-info-opinion{
+    justify-content: space-between;
+    align-items: center;
 }
 
 .hotel-title {
@@ -220,9 +223,11 @@
 }
 
 .hotel-price-container {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-end;
     gap: 8px;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .hotel-price-container p {

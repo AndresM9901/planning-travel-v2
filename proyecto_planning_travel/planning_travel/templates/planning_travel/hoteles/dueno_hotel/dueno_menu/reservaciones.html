@@ -2,8 +2,32 @@
 {% load static %} 
 {% block titulo %}Hoy{% endblock %}
 {% block estilos %} 
-<link rel="stylesheet" href="{% static 'planning_travel/styles/dueno_reservaciones.css' %}">
+<link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_reservaciones.css' %}">
 {% endblock %}
 {% block contenedor %}
-
+<div class="contenedor">
+    <div class="contenedor_titulo">
+        <a class="flecha" href="{% url 'dueno_hoy' %}" ><i class="bi bi-caret-left"></i></a>
+        <p class="titulo_reserva">Reservaciones</p>
+    </div>
+    <div id="contenedor_info_tabla">  
+        <table>
+            <tr class="tabla_grupo">
+                <td class="tabla_gris">Fecha Llegada</td>
+                <td class="tabla_gris">Fecha Salida</td>
+                <td class="tabla_gris">Nombre</td>
+                <td class="tabla_gris">Fecha Realización</td>
+            </tr>
+            {% for r in reserva_usuario %}
+            <tr class="tabla_grupo">
+                <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
+                <td class="tabla">{{ r.reserva.fecha_salida }}</td>
+                <td class="tabla">{{ r.usuario.nombre }}</td>
+                <td class="tabla">{{ r.fecha_realizacion }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>  
+    </div>
+</div>
 {% endblock %}

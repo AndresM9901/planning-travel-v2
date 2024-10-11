@@ -119,8 +119,8 @@ def inicio(request):
      # Obtener precios mínimos de habitaciones para cada hotel
     precios_minimos = {}
     for habitacion in Habitacion.objects.all():
-        if habitacion.id not in precios_minimos:
-            Habitacion.objects.filter(hotel=hotel).aggregate(min_price=Min('precio'))['min_price']
+        if habitacion.hotel.id not in precios_minimos:
+            precios_minimos[habitacion.hotel.id] = habitacion.precio
         else:
             precios_minimos[habitacion.hotel.id] = min(precios_minimos[habitacion.hotel.id], habitacion.precio)
 
@@ -258,6 +258,34 @@ def reserva(request, id):
     else:
         return redirect('login_form')
 
+def guardar_opinion(request):
+    if 'logueo' not in request.session:
+        # Redirigir al login si el usuario no está logueado
+        messages.error(request, 'Debes estar logueado para dejar una opinión.')
+        return redirect('login')
+    if request.method == 'POST':
+        hotel_id = request.POST.get('hotel_id')
+        contenido = request.POST.get('contenido').strip()  
+        puntuacion = request.POST.get('puntuacion')
+        
+        if not contenido:
+            messages.error(request, 'El contenido de la opinión no puede estar vacío.')
+            return redirect('detalle_hotel', id=hotel_id) 
+        try:
+            opinion = Opinion(
+                id_hotel_id=hotel_id,
+                id_usuario=request.user,  
+                contenido=contenido,
+                puntuacion=puntuacion
+            )
+            opinion.save()
+
+            messages.success(request, 'Opinión guardada exitosamente.')
+            return redirect('detalle_hotel', id=hotel_id)
+
+        except Exception as e:
+            messages.error(request, f'Error: {str(e)}')
+            return redirect('detalle_hotel', id=hotel_id)
 
 def verificar_disponibilidad(request):
     fecha_llegada_str = request.POST.get('fecha_llegada')
@@ -272,13 +300,13 @@ def verificar_disponibilidad(request):
     habitaciones_ocupadas = Habitacion.objects.filter(
         reserva__fecha_llegada__lte=fecha_salida,
         reserva__fecha_salida__gte=fecha_llegada
-    ).values_list('num_habitacion', flat=True)
+    ).values_list('id', 'num_habitacion')
 
     habitaciones_disponibles = Habitacion.objects.exclude(
         reserva__fecha_llegada__lte=fecha_salida,
         reserva__fecha_salida__gte=fecha_llegada
-    ).values_list('num_habitacion', flat=True)
-    print(f'{fecha_llegada}, {fecha_salida}')
+    ).values_list('id', 'num_habitacion')
+    print(f'{habitaciones_ocupadas}, {habitaciones_disponibles}')
     return JsonResponse({
         'habitaciones_ocupadas': list(habitaciones_ocupadas),
         'habitaciones_disponibles': list(habitaciones_disponibles)
@@ -708,7 +736,8 @@ def login(request):
                             "id": q.id,
                             "nombre": q.nombre,
                             "rol": q.rol,
-                            "nombre_rol": q.get_rol_display()
+                            "nombre_rol": q.get_rol_display(),
+                            "foto":q.foto.url
                         }
                         request.session["carrito"] = []
                         request.session["items"] = 0
@@ -720,7 +749,6 @@ def login(request):
                 except Exception as e:
                     print(f'{user}, {password}')
                     messages.error(request, "Error: Usuario o contraseña incorrectos...")
-
     else:
         return redirect("login_form")  # Redirige solo en caso de GET
     # Renderiza la misma página de inicio de sesión con los mensajes de error
@@ -729,7 +757,6 @@ def login(request):
 def registrar(request):
     if request.method == "POST":
         nombre = request.POST.get("nombre")
-        apellido = request.POST.get("apellido")
         correo = request.POST.get("correo")
         clave = request.POST.get("clave")
         confirmar_clave = request.POST.get("confirmar_clave")
@@ -746,7 +773,6 @@ def registrar(request):
             try:
                 q = Usuario(
                     nombre=nombre,
-                    apellido=apellido,
                     email=correo,
                     password=make_password(clave),
                     nick=nick
@@ -1025,8 +1051,8 @@ def dueno_hoy(request):
     ru= ReservaUsuario.objects.all()
     logueo = request.session.get("logueo", False)
     if logueo:
-        contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
-        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)
+        contexto = { 'hoteles': hoteles, 'data': reservas_usuario} 
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)         
     else:
         return redirect('login')
 
@@ -1034,21 +1060,27 @@ def dueno_calendario(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
 
 def dueno_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
+    hoteles = Hotel.objects.prefetch_related('foto_set').all()
+    contexto = {'data': hoteles}
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html', contexto)
 
 
 
 def dueno_info(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
+    opinion = Opinion.objects.select_related('id_hotel','id_usuario').all()
+    contexto = {'data': opinion}
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html', contexto) 
 
 def dueno_ingresos(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html') 
+    r = Reserva.objects.all()
+    contexto = { 'data': r }
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto)
 
-def dueno_nuevo_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
-
-def dueno_reservaciones(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/nuevo_anuncio.html') 
+def dueno_reservaciones(request):
+    q = Reserva.objects.all()
+    ru = ReservaUsuario.objects.select_related('usuario').all()
+    contexto = { 'data': q , 'reserva_usuario' : ru  } 
+    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html', contexto) 
 
 #andres
 def reservas_mostrar(request):
@@ -1426,6 +1458,10 @@ def dueno_nuevo_anuncio(request):
 
 def dueno_reservaciones(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/nuevo_anuncio.html') 
+
+    return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
+
+  
 
 # Crud Comodidades
 

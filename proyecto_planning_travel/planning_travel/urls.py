@@ -58,7 +58,7 @@ urlpatterns = [
     path("recuperar_clave/", views.recuperar_clave, name="recuperar_clave"),
 	path("verificar_recuperar/", views.verificar_recuperar, name="verificar_recuperar"),
     
-    #dueño hotel
+    # dueño hotel
     path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
     path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
     path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
@@ -66,7 +66,6 @@ urlpatterns = [
     path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 
     path('dueno_info/', views.dueno_info, name='dueno_info'), 
     path('dueno_ingresos/', views.dueno_ingresos, name='dueno_ingresos'), 
-    path('dueno_nuevo_anuncio/', views.dueno_nuevo_anuncio, name='dueno_nuevo_anuncio'), 
     path('dueno_reservaciones/', views.dueno_reservaciones, name='dueno_reservaciones'), 
 
     # Crud de Categorias
