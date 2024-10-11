@@ -1044,11 +1044,18 @@ def enviar_mensaje(request, id_hotel):
     else:
         return redirect('login_form')
         
+# dueño hotel cambios sofia
 
-def dueno_hoy(request):
-    q = Reserva.objects.all()
-    h= Habitacion.objects.all()
-    ru= ReservaUsuario.objects.all()
+def dueno_hotel(request):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html')
+    else:
+        return redirect('login')
+    
+def dueno_hoy(request): 
+    hoteles = Hotel.objects.all() 
+    reservas_usuario = ReservaUsuario.objects.all()
     logueo = request.session.get("logueo", False)
     if logueo:
         contexto = { 'hoteles': hoteles, 'data': reservas_usuario} 
@@ -1063,8 +1070,6 @@ def dueno_anuncio(request):
     hoteles = Hotel.objects.prefetch_related('foto_set').all()
     contexto = {'data': hoteles}
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html', contexto)
-
-
 
 def dueno_info(request): 
     opinion = Opinion.objects.select_related('id_hotel','id_usuario').all()
@@ -1427,41 +1432,7 @@ def hoteles_form_anfitrion(request):
 
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
  
-# dueño hotel 
 
-def dueno_hotel(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html') 
-
-def dueno_hoy(request): 
-    q = Reserva.objects.all()
-    h= Habitacion.objects.all()
-    ru= ReservaUsuario.objects.all()
-    contexto = { 'data': q , 'habitacion':h , 'reserva_usuario' : ru}
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto) 
-
-def dueno_calendario(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
-
-def dueno_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_anuncio.html') 
-
-
-
-def dueno_info(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html') 
-
-def dueno_ingresos(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html') 
-
-def dueno_nuevo_anuncio(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html') 
-
-def dueno_reservaciones(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/nuevo_anuncio.html') 
-
-    return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/hoteles_form_anfitrion.html', contexto)
-
-  
 
 # Crud Comodidades
 

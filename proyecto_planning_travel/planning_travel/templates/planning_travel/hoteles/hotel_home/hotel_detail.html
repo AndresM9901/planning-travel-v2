@@ -226,6 +226,49 @@
                     <p>{{ hotel.descripcion }}</p>
                 </details>
             </div>
+            <div class="divisor"></div>      
+            <!-- Contenedor centrado -->
+            <div class="text-center my-4">
+                <!-- Botón para abrir la modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#opinionModal">
+                    Dejar Opinión
+                </button>
+            </div>
+            <!-- Modal -->
+            <!-- Modal para dejar una opinión -->
+            <div class="modal fade" id="opinionModal" tabindex="-1" aria-labelledby="opinionModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="opinionModalLabel">Dejar una Opinión</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="opinionForm" method="post" action="{% url 'guardar_opinion' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
+                                <div class="mb-3">
+                                    <label for="contenido" class="form-label">Contenido</label>
+                                    <textarea class="form-control" id="contenido" name="contenido" rows="3"
+                                        required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="puntuacion" class="form-label">Puntuación</label>
+                                    <select class="form-select" id="puntuacion" name="puntuacion" required>
+                                        <option value="">Seleccionar Puntuación</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enviar Opinión</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="divisor"></div>
             <div class="comentarios">
                 {% for comentario in opiniones %}

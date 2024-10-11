@@ -180,9 +180,9 @@
 }
 
 .hotel-info {
-    justify-content: space-between;
+    
     padding: 8px 12px;
-    width: 100%;
+    width: 80%;
 }
 .contenedor-info-opinion{
     justify-content: space-between;
@@ -223,7 +223,7 @@
 }
 
 .hotel-price-container {
-    flex-direction: row;
+    flex-direction: column;
     align-items: flex-end;
     gap: 8px;
     align-items: center;
