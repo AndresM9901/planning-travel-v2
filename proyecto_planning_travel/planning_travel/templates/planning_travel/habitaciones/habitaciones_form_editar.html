@@ -1,57 +1,54 @@
 {% extends 'planning_travel/base.html' %}
 {% load static %}
 
-{% block titulo %}Formulario Habitaciones{% endblock %}
+{% block titulo %} Actualizar Habitación {% endblock %}
 
 {% block contenedor %}
-    <div class="container my-5 w-25">
-        <h1 class="text-center">Actualizar Habitación</h1>
-        <form action="{% url 'habitaciones_actualizar' %}" method="post">
-            {% csrf_token %}
-            <input hidden type="text" name="id" value="{{ habitacion.id }}">
-            <div class="form-floating mb-3">
-                <input type="number" value="{{ habitacion.num_habitacion }}" class="form-control" id="num_habitacion" placeholder="Numero de la habitacion" name="num_habitacion">
-                <label for="num_habitacion">Numero de la habitacion</label>
-            </div>
-            <div class="form-floating mb-3 col-12 p-1">
-                <select class="form-select" id="hotel" name="hotel" required>
-                    <option value="">Seleccionar Hotel</option>
-                    {% for c in data %}
-                    <option value="{{ c.id }}" {% if habitacion.id_hotel.id == c.id %}selected{% endif %}>{{ c.nombre }}</option>
-                    {% endfor %}
-                </select>
-                <label for="hotel">Hotel</label>
-            </div>
-            <div class="form-group mb-3">
-                <input type="checkbox" class="btn-check" id="ocupado" autocomplete="off" name="ocupado">
-                <label class="btn" for="ocupado"> Disponible </label>
-            </div>
+<div class="container my-5 w-50">
+    <h1 class="text-center">Actualizar Habitación</h1>
+    <form action="{% url 'habitaciones_actualizar' %}" method="post">
+        {% csrf_token %}
+        
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="num_habitacion" name="num_habitacion" placeholder="Número de Habitación" value="{{ habitacion.num_habitacion }}" required>
+            <label for="num_habitacion">Número de Habitación</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="hotel" name="hotel" placeholder="Hotel" value="{{ habitacion.hotel.nombre }}" readonly required>
+            <label for="hotel">Hotel</label>
+            <input type="hidden" name="hotel" value="{{ habitacion.hotel.id }}">
+        </div>
 
-            <div class="form-floating mb-3">
-                <input type="number" class="form-control" id="capacidad_huesped" placeholder="Capacidad de huespedes" name="capacidad_huesped" value="{{ habitacion.capacidad_huesped }}">
-                <label for="capacidad_huesped">Capacidad de Huespedes</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" value="{{ habitacion.tipoHabitacion }}" class="form-control" id="tipoHabitacion" placeholder="Tipo de habitación" name="tipoHabitacion">
-                <label for="tipoHabitacion">Tipo de habitación</label>
-            </div>
-            <div class="form-floating mb-3 col-12 p-1">
-                <select class="form-select" id="foto" name="foto" required>
-                    <option value="">Seleccionar Foto</option>
-                    {% for c in foto %}
-                    <option value="{{ c.id }}" {% if habitacion.foto.id == c.id %}selected{% endif %}>{{ c.url_foto }}</option>
-                    {% endfor %}
-                </select>
-                <label for="hotel">Url de la foto</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text"  value="{{ habitacion.precio }}" class="form-control" id="precio" placeholder="precio" name="precio">
-                <label for="precio">Precio</label>
-            </div>
- 
-            <div class="row my-2">
-                <button type="submit" class="btn btn-primary"> Actualizar</button>
-            </div>
-        </form>
-    </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" id="ocupado" name="ocupado" required>
+                <option value="on" {% if habitacion.ocupado %}selected{% endif %}>Ocupado</option>
+                <option value="off" {% if not habitacion.ocupado %}selected{% endif %}>Disponible</option>
+            </select>
+            <label for="ocupado">Estado</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="capacidad_huesped" name="capacidad_huesped" placeholder="Capacidad de Huéspedes" value="{{ habitacion.capacidad_huesped }}" required>
+            <label for="capacidad_huesped">Capacidad de Huéspedes</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="tipoHabitacion" name="tipoHabitacion" placeholder="Tipo de Habitación" value="{{ habitacion.tipo_habitacion }}" required>
+            <label for="tipoHabitacion">Tipo de Habitación</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="precio" name="precio" placeholder="Precio" step="0.01" value="{{ habitacion.precio }}" required>
+            <label for="precio">Precio</label>
+        </div>
+
+        <input type="hidden" name="id" value="{{ habitacion.id }}">
+
+        <div class="row my-2">
+            <button type="submit" class="btn btn-primary">Actualizar Habitación</button>
+        </div>
+        
+    </form>
+</div>
 {% endblock %}

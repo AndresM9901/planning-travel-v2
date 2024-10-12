@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tienda - {% block titulo %}{% endblock %}</title>
+    <title> admin {% block titulo %}{% endblock %}</title>
 
     <!-- iconos -->
     {% block css %}{% endblock %}
@@ -32,25 +32,6 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Reportes
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'reportes_listar' %}">Ver Reportes</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'reportes_moderador_listar' %}">Ver Reportes del Moderador</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'clientes_listar' %}">Ver Clientes</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'perfil_usuarios_listar' %}">Ver Perfil de Usuario</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Hoteles
                         </a>
                         <ul class="dropdown-menu">
@@ -61,21 +42,20 @@
                                 <a class="dropdown-item" href="{% url 'categorias_listar' %}">Ver Categorias</a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'hoteles_comodidades_listar' %}">Ver Comodidades de los Hoteles</a>
+                                <a class="dropdown-item" href="{% url 'hoteles_comodidades_listar' %}">Ver Servicios</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'comodidades_listar' %}"> Ver Servicios de los hoteles</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'reservas_listar' %}">Ver Reservas</a>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'reservas_usuarios_listar' %}">Ver Reservas de los Usuarios</a>
-                            </li>
-                            <!--
-                            <li>
-                                <a class="dropdown-item" href="">Ver Puntuaciones</a>
-                            </li>
-                            -->
+
                             <li>
                                 <a class="dropdown-item" href="{% url 'habitaciones_listar' %}">Ver Habitaciones</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'fotos_listar' %}">Ver Fotos</a>
                             </li>
                             <!--
                             <li>
@@ -88,16 +68,10 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Login</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Usuarios</a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'usuarios_listar' %}">Ver Usuarios</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'clientes_listar' %}">Ver Clientes</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'fotos_listar' %}">Ver Fotos</a>
+                                <a class="dropdown-item" href="{% url 'usuarios_listar' %}">Ver usuarios</a>
                             </li>
                         </ul>
                     </li>

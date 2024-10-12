@@ -3,8 +3,6 @@ from . import views
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as views_rest
 
-# Hola mundo
-
 router = DefaultRouter()
 router.register(r'categoria', views.CategoriaViewSet)
 router.register(r'hotel', views.HotelViewSet)
@@ -28,7 +26,7 @@ urlpatterns = [
     path('api/1.0/', include(router.urls)),
     path('api/1.0/token-auth/', views.CustomAuthToken.as_view()),
     path('detalle_hotel/<int:id>/', views.detalle_hotel, name="detalle_hotel"),
-    path('administrador/', views.index, name="admin"),
+    path('administrador/', views.administrador, name="administrador"),
 
     path('guardar_opinion/', views.guardar_opinion, name='guardar_opinion'),
     # Reservas
@@ -111,13 +109,6 @@ urlpatterns = [
     path('fotos_eliminar/<int:id>', views.fotos_eliminar, name='fotos_eliminar'),
     path('fotos_form_editar/<int:id>', views.fotos_form_editar, name='fotos_form_editar'),
     
-    # Crud de hotelComodidad
-    path('hoteles_comodidades_listar/', views.hoteles_comodidades, name='hoteles_comodidades_listar'),
-    path('hoteles_comodidades_form/', views.hoteles_comodidades_form, name='hoteles_comodidades_form'),
-    path('hoteles_comodidades_crear/', views.hoteles_comodidades_crear, name='hoteles_comodidades_crear'),
-    path('hoteles_comodidades_actualizar/', views.hoteles_comodidades_actualizar, name='hoteles_comodidades_actualizar'),
-    path('hoteles_comodidades_eliminar/<int:id>', views.hoteles_comodidades_eliminar, name='hoteles_comodidades_eliminar'),
-    path('hoteles_comodidades_form_editar/<int:id>', views.hoteles_comodidades_form_editar, name='hoteles_comodidades_form_editar'),
     
     # Crud de Reservas
     path('reservas_listar/', views.reservas, name='reservas_listar'),
@@ -159,13 +150,21 @@ urlpatterns = [
     path('perfil_usuarios_eliminar/<int:id>', views.perfil_usuarios_eliminar, name="perfil_usuarios_eliminar"),
     path('perfil_usuarios_form_editar/<int:id>/', views.perfil_usuarios_form_editar, name="perfil_usuarios_form_editar"),
 
-    # Crud de Comodidades
-    path('comodidades_listar/', views.comodidades, name='comodidades_listar'),
-    path('comodidades_form/', views.comodidades_form, name='comodidades_form'),
-    path('comodidades_crear/', views.comodidades_crear, name='comodidades_crear'),
-    path('comodidades_eliminar/<int:id>', views.comodidades_eliminar, name='comodidades_eliminar'),
-    path('comodidades_form_editar/<int:id>', views.comodidades_form_editar, name='comodidades_formulario_editar'),
-    path('comodidades_actualizar/', views.comodidades_actualizar, name='comodidades_actualizar'),
+     # Crud de Servicios
+    path('servicios/', views.servicios, name='hoteles_comodidades_listar'),
+    path('servicios_form/', views.servicios_form, name='hoteles_comodidades_form'),
+    path('servicios_crear/', views.servicios_crear, name='hoteles_comodidades_crear'),
+    path('servicios_actualizar/', views.servicios_actualizar, name='hoteles_comodidades_actualizar'),
+    path('servicios_eliminar/<int:id>', views.servicios_eliminar, name='hoteles_comodidades_eliminar'),
+    path('servicios_form_editar/<int:id>', views.servicios_form_editar, name='hoteles_comodidades_form_editar'),
+
+    # Crud de Servicios del hotel
+    path('servicios_hotel/', views.servicios_hotel, name='comodidades_listar'),
+    path('servicios_hotel_form/', views.servicios_hotel_form, name='comodidades_form'),
+    path('servicios_hotel_crear/', views.servicios_hotel_crear, name='comodidades_crear'),
+    path('servicios_hotel_eliminar/<int:id>', views.servicios_hotel_eliminar, name='comodidades_eliminar'),
+    path('servicios_hotel_form_editar/<int:id>', views.servicios_hotel_form_editar, name='servicios_hotel_form_editar'),
+    path('servicios_hotel_actualizar/', views.servicios_hotel_actualizar, name='comodidades_actualizar'),
 
     # Crud de habitaciones
     path('habitaciones_listar/', views.habitaciones, name="habitaciones_listar"),
@@ -229,6 +228,7 @@ urlpatterns = [
     path('enviar_mensaje/<int:id_hotel>/', views.enviar_mensaje, name="enviar_mensaje"),
     path('enviar_men/', views.enviar_men, name='enviar_men'),
     path('chat/', views.chat, name='chat'),
+    path('error/', views.error_page, name='error')
 ]
 
 # from django.contrib.auth.models import User

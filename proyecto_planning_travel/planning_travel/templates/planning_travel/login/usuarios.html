@@ -4,13 +4,12 @@
 {% block contenedor %}
     <h1>Usuarios</h1>
     <a class="btn btn-success" href="{% url 'usuarios_form' %}">Agregar Usuarios</a>
-
+    <div style="margin:40px">
     <table class="table">
         <thead>
             <th>ID</th>
             <th>Nombre</th>
             <th>Correo</th>
-            <th>Contraseña</th>
             <th>Rol</th>
             <th>Foto</th>
             <th>Acciones</th>
@@ -20,8 +19,7 @@
             <tr>
                 <td>{{ r.id }}</td>
                 <td>{{ r.nombre }}</td>
-                <td>{{ r.correo }}</td>
-                <td>{{ r.contrasena }}</td>
+                <td>{{ r.email }}</td>
                 <td>{{ r.rol }}</td>
                 <td>{% if r.foto.url != '' %}<img width="100" height="100" src="{{ r.foto.url }}" alt="">{% endif %}</td>
                 <td>
@@ -55,4 +53,5 @@
             <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
         </ul>
     </nav>
+    </div>  
 {% endblock %}

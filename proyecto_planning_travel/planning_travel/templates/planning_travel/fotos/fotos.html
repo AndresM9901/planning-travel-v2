@@ -2,13 +2,13 @@
 {% load static %} 
 {% block titulo %}Fotos{% endblock %}
 {% block contenedor %}
-    <h1>Fotos</h1>
-    <a class="btn btn-success" href="{% url 'fotos_form' %}">Agregar fotos</a>
-
+    <h1 class="text-center mt-5">Fotos</h1>
+    <a class="btn btn-primary ms-4 mb-4" href="{% url 'fotos_form' %}">Agregar fotos</a>
+    <div style="margin:40px">
     <table class="table">
-        <thead>
+        <thead class="table-info">
             <th>ID</th>
-            <th>Id Hotel</th>
+            <th>Nombre del Hotel</th>
             <th>Foto</th>
             <th>Descripcion</th>
             <th>Acciones</th>
@@ -21,12 +21,6 @@
                 <td>{% if r.url_foto.url != '' %}<img width="100" height="100" src="{{ r.url_foto.url }}" alt="">{% endif %}</td>
                 <td>{{ r.descripcion }}</td>
                 <td>
-                    <button
-                        type="button"
-                        class="btn btn-info"
-                    >
-                        <i class="bi bi-eye-fill"></i>
-                    </button>
                     <a
                         class="btn btn-warning"
                         href="{% url 'fotos_form_editar' r.id %}"
@@ -51,4 +45,5 @@
             <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
         </ul>
     </nav>
+</div>  
 {% endblock %}

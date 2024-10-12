@@ -1,24 +1,27 @@
 {% extends 'planning_travel/base.html' %}
 {% load static %}
-
-{% block titulo %}Formulario Editar Comodidad{% endblock %}
-
+{% block titulo %}Actualizar Servicio del Hotel{% endblock %}
 {% block contenedor %}
     <div class="container my-5 w-25">
-        <h1 class="text-center">Actualizar Comodidad</h1>
-        <form action="{% url 'comodidades_actualizar' %}" method="post">
+        <h1 class="text-center">Actualizar Servicio del Hotel</h1>
+        <form action="{% url 'comodidades_actualizar' %}" method="post"> 
             {% csrf_token %}
-            <input hidden type="text" name="id" value="{{ data.id }}">
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nombre" placeholder="Nombre" name="nombre" value="{{ data.nombre }}">
-                <label for="nombre">Nombre</label>
+            <input type="hidden" name="id_servicio" value="{{ servicio.id }}">
+            <div class="form-floating mb-3 col-12 p-1">
+                <input type="text" class="form-control" id="hotel" value="{{ servicio.id_hotel.nombre }}" readonly>
+                <label for="hotel">Hotel</label>
             </div>
-            <div class="form-floating">
-                <input type="text" class="form-control" id="descripcion" placeholder="Descripcion" name="descripcion" value="{{ data.descripcion }}">
-                <label for="descripcion">Descripcion</label>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="servicio" name="servicio" required>
+                    <option value="">Seleccionar Servicio</option>
+                    {% for s in servicios %}
+                        <option value="{{ s.id }}" {% if s.id == servicio.id_servicio.id %}selected{% endif %}>{{ s.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="servicio">Servicio</label>
             </div>
             <div class="row my-2">
-                <button type="submit" class="btn btn-primary">Actualizar</button>
+                <button type="submit" class="btn btn-primary">Actualizar Servicio</button>
             </div>
         </form>
     </div>

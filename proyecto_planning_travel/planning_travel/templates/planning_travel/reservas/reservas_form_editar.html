@@ -6,17 +6,10 @@
         <h1 class="text-center">Actualizar Reservas</h1>
         <form action="{% url 'reservas_actualizar' %}" method="post">
             {% csrf_token %}
-            <input hidden type="text" name="id" value="{{ data.id }}">
+            <input type="hidden" name="id" value="{{ data.id }}">
             <div class="form-floating mb-3 col-12 p-1">
-                <select class="form-select" id="habitacion" name="habitacion" required>
-                    <option value="">Seleccionar Hotel</option>
-                    {% for c in habitacion %}
-                        <option value="{{ c.id }}" {% if data.habitacion.id == c.id %}selected{% endif %}>{{ c.num_habitacion }}</option>
-                    {% endfor %}
-                </select>
-                <label for="habitacion"
-                    >Número de la Habitación</label
-                >
+                <input type="text" class="form-control" id="habitacion" name="habitacion" value="{{ data.habitacion }}" readonly>
+                <label for="habitacion">Número de la Habitación</label>
             </div>
             <div class="form-floating mb-3">
                 <input type="date" class="form-control" id="fecha_llegada" placeholder="Fecha de Llegada" name="fecha_llegada" value="{{ data.fecha_llegada|date:'Y-m-d' }}">
@@ -27,8 +20,12 @@
                 <label for="fecha_salida">Fecha de Salida</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="number" class="form-control" id="cantidad_personas" placeholder="Número de Personas" name="cantidad_personas" value="{{ data.cantidadPersonas }}">
+                <input type="number" class="form-control" id="cantidad_personas" placeholder="Número de Personas" name="cantidad_personas" value="{{ data.cantidad_personas }}">
                 <label for="cantidad_personas">Número de Personas</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="total" placeholder="Costo Total" name="total" value="{{ data.total|floatformat:2 }}">
+                <label for="total">Costo Total</label>
             </div>
             <div class="row my-2">
                 <button type="submit" class="btn btn-primary">Registrar</button>
