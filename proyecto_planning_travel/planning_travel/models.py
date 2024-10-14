@@ -90,8 +90,8 @@ class PisosHotel(models.Model):
 #         return f'{self.valoracion}'
 
 class Opinion(models.Model):
-    id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
-    id_usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
+    id_hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     contenido = models.TextField(max_length=300)
     puntuacion = models.IntegerField(validators=[
             MinValueValidator(1, message="La puntuación debe ser como mínimo 1."),
@@ -103,7 +103,7 @@ class Opinion(models.Model):
         return f'{self.id_hotel}'
     
 class Foto(models.Model):
-    id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
+    id_hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     url_foto = models.ImageField(upload_to="planning_travel/media/")
     descripcion = models.CharField(max_length=255)
 
@@ -133,8 +133,8 @@ class HotelCategoria(models.Model):
         return f'{self.id_hotel}'
 
 class HotelServicio(models.Model):
-    id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)
-    id_servicio = models.ForeignKey(Servicio, on_delete=models.DO_NOTHING)
+    id_hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    id_servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.id_hotel}'
@@ -166,7 +166,7 @@ class MetodoPago(models.Model):
         return f'{self.tipo_pago}'
 
 class Reserva(models.Model):
-    habitacion = models.ForeignKey(Habitacion, on_delete=models.DO_NOTHING)
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
     fecha_llegada = models.DateField()
     fecha_salida = models.DateField()
     cantidad_personas = models.IntegerField()
@@ -176,8 +176,8 @@ class Reserva(models.Model):
         return f'{self.habitacion}'
 
 class ReservaUsuario(models.Model):
-    usuario = models.ForeignKey(Usuario, on_delete=models.DO_NOTHING)
-    reserva = models.ForeignKey(Reserva, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    reserva = models.ForeignKey(Reserva, on_delete=models.CASCADE)
     ESTADO_RESERVA = (
         (1, 'reservada'),
         (2, 'libre'),

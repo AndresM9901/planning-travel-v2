@@ -8,7 +8,6 @@
 }
 #seccion2{
     display: flex;
-    flex-direction: colum;
     flex-wrap: wrap;
 }
 #anuncio{
@@ -31,7 +30,7 @@
 .imagen{
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
-    width: 100%;
+    width: 134%;
     height: 100%;
 }
 .contenido-card{

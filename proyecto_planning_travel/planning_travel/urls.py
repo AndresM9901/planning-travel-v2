@@ -92,7 +92,17 @@ urlpatterns = [
 
     # Form Hotel como anfitrion
     path('hoteles_form_anfitrion/', views.hoteles_form_anfitrion, name='hoteles_form_anfitrion'),
+    path('hoteles/eliminar/<int:hotel_id>/', views.hoteles_anfitrion_eliminar, name='hoteles_anfitrion_eliminar'),
+    path('editar_hotel_anfitrion/<int:hotel_id>/', views.editar_hotel_anfitrion, name='editar_hotel_anfitrion'),
+    path('actualizar_hotel_anfitrion/', views.actualizar_hotel_anfitrion, name='actualizar_hotel_anfitrion'),
     
+    # habitaciones como anfitrion
+    path('hoteles/<int:hotel_id>/form/', views.habitacion_anfitrion_form, name='habitacion_anfitrion_form'),
+    path('hoteles/<int:hotel_id>/crear/', views.crear_habitacion_anfitrion, name='anfitrion_habitaciones_crear'),
+    path('habitacion_anfitrion/<int:hotel_id>/', views.habitacion_anfitrion, name='habitacion_anfitrion'),
+    path('habitacion/eliminar/<int:id>/', views.habitacion_anfitrion_eliminar, name='habitacion_anfitrion_eliminar'),
+    path('habitacion/editar/<int:id>/', views.editar_habitacion_form, name='editar_habitacion_form'),
+    path('habitacion/actualizar/<int:id>/', views.actualizar_habitacion, name='actualizar_habitacion_anfitrion'),
     # # Crud de puntuaciones
     # path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
     # path('puntuaciones_form/', views.puntuaciones_form, name='puntuaciones_form'),

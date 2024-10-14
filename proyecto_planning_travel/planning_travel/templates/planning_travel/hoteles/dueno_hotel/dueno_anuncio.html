@@ -4,7 +4,17 @@
 {% block estilos %}
 <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_anuncio.css' %}">
 {% endblock %}
+
 {% block contenedor %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags and message.tags != 'error' %}{{ message.tags }}{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <div id="contenedor">
     <div id="seccion1">
         <p id="anuncio">Tus Hoteles</p>
@@ -26,12 +36,19 @@
             <div class="card-body">
                 <p class="contenido-card ">{{ hotel.nombre }}</p>
                 <p class="ubicacion ">{{ hotel.ciudad }}</p>
-                <button class="boton-card  p-2">Editar hotel</button>
-                <button class="boton-card  p-2">Editar Habitaciones</button>
+
+                <a class="btn" href="{% url 'editar_hotel_anfitrion' hotel.id %}"><button class="boton-card  p-2">Editar hotel</button></a>
+                <a class="btn" href="{% url 'habitacion_anfitrion' hotel.id %}"><button class="boton-card  p-2">Editar habitacion</button></a>
+
+             </div>
+             <div>
+                <a href="javascript:eliminar('{% url 'hoteles_anfitrion_eliminar' hotel.id %}')" class="btn btn-primary ms-5 mb-2 mt-2"><i
+                    class="bi bi-x-lg"></i> </a> 
              </div>
         </div>
         {% endif %}
         {% endfor %}
     </div>
 </div>
+
 {% endblock %}
