@@ -1,5 +1,6 @@
 #contenedor{
     padding: 5% 10%;
+    height: 100%;
 }
 .dueno-hoy{
     display: flex;

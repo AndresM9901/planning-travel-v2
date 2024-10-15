@@ -1,5 +1,6 @@
 .contenedor{
     margin: 3% 10%;
+    height: 100%;
 }
 .contenedor_titulo{
     display: flex;
