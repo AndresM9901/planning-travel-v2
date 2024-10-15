@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="height: 100%;">
 
 <head>
     <meta charset="UTF-8">
@@ -16,7 +16,7 @@
     {% block estilos %}{% endblock %}
 </head>
 
-<body>
+<body style="display: flex;flex-direction: column;height: 100%;">
     <nav class="nav-bar navbar">
         <div>
             <a class="navbar-brand logo" href="{% url 'inicio' %}">
@@ -27,7 +27,7 @@
             <li><a class="navbar_item" href="{% url 'dueno_hoy' %}">Hoy</a></li>
             <li><a class="navbar_item" href="{% url 'dueno_anuncio' %}">Hotel</a> </li>
             <li><a class="navbar_item" href="{% url 'dueno_mensaje' %}">Mensajes</a> </li>
-<!--            <li class="nav-item dropdown">
+                        <li class="nav-item dropdown">
                 <a class="navbar_item dropdown-togglem " href="#" id="navbarDropdownMenuLink" role="button"
                     data-bs-toggle="dropdown">Menú <i class="bi bi-caret-down-fill"></i></a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -36,15 +36,30 @@
                     <li><a class="dropdown-item" href="{% url 'dueno_reservaciones' %}">Reservaciones</a></li>
                 </ul>
             </li>
-        -->
         </div>
         <div>
-            <a class="navbar-button" href="{% url 'ver_perfil' %}"><img src="{{ request.session.logueo.foto }}" class="foto"></img> </a>
+            <a class="navbar-button" href="{% url 'ver_perfil' %}"><img src="{{ request.session.logueo.foto }}"
+                    class="foto"></img> </a>
         </div>
     </nav>
     {% block contenedor %}
     {% endblock %}
     {% block content %}{% endblock %}
+    <footer class="info">
+        <p style="border-top: solid 1.5px #ff5c5c;width: 100%;display: flex;align-items: center;justify-content: center;padding: 10px;">Calle # 123, Medellín</p>
+        <p>(123) 456-7890</p>
+        <p>planning_travel@gmail.com</p>
+        <p>Lunes a Viernes, 9:00 AM - 6:00 PM</p>
+        <div class="redes-sociales">
+            <a href="#" ><i class="bi bi-facebook"></i></a>
+            <a href="#" ><i class="bi bi-instagram"></i></a>
+            <a href="#" ><i class="bi bi-whatsapp"></i></a>
+        </div>
+        <a class="terminos" href="#">Términos y condiciones</a>
+        <p> Copyright © 2024
+            Planning Travel. Todos los derechos reservados.
+        </p>
+    </footer>
     {% block scripts %}{% endblock %}
     <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>
 </body>

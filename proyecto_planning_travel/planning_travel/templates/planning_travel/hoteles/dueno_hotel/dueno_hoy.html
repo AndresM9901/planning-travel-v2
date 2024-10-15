@@ -8,47 +8,39 @@
 <div id="contenedor">
     <div class="dueno-hoy">
         <p id="saludo">¡{{ request.session.logueo.nombre }}, te damos la bienvenida!</p>
+        <div>
+            <a class="btn btn-primary" href="{% url 'hoteles_form_anfitrion' %}" id="boton-completar-anuncio">Registra tu hotel!</a>
+            <a href="{% url 'dueno_reservaciones' %}" class="btn" id="boton-reservaciones">Todas las reservaciones</a>
+        </div>
+    </div>
+    
+    <form method="post" id="form-filtrar">
+        {% csrf_token %}
+        <button style="font-size: 20px;" type="submit" name="deshacer_filtro" class="btn"><i class="bi bi-arrow-counterclockwise"></i></button>
+        <button style="font-size: 20px;" type="submit" name="filtrar_en_curso" class="btn">En Curso</button>
+    </form>
 
-        <a class="btn btn-primary" href="{% url 'hoteles_form_anfitrion' %}" id="boton-completar-anuncio">Registra tu hotel!</a>
-    </div>
-    <div class="dueno-hoy">
-        <p id="titulo1">Tus reservaciones</p>
-        <a href="{% url 'dueno_info' %}" class="btn" id="boton-reservaciones">Todas las reservaciones ({{ data.count }})</a>
-    </div>
-    <!--  <div>
-        <ul id="nav-dueno-hoy">
-            <a class="item-nav-dueno" href="#">En curso ()</a>
-            <a class="item-nav-dueno" href="#">llegará pronto ()</a>
-            <a class="item-nav-dueno" href="#">Agendadas ()</a>
-        </ul>
-    </div>-->
     <div id="contenedor_info_tabla">
         <table>
             <tr class="tabla_grupo">
-            
                 <td class="tabla_gris">Nombre Hotel</td>
                 <td class="tabla_gris">Fecha Llegada</td>
                 <td class="tabla_gris">Fecha Salida</td>
                 <td class="tabla_gris">Nombre</td>
-                <td class="tabla_gris">Fecha Realización</td>
+                <td class="tabla_gris">Detalles Hotel</td>
             </tr>
-            {% for hotel in hoteles %}
-                {% if hotel.propietario.id == request.session.logueo.id %}
-                    {% for r in data %}
-                    <tr class="tabla_grupo">
-                        <td class="tabla">{{ r.reserva.habitacion.hotel.propietario.id}}</td>
-                        <td class="tabla">{{ r.reserva.habitacion.hotel.nombre }}</td>
-                        <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
-                        <td class="tabla">{{ r.reserva.fecha_salida }}</td>
-                        <td class="tabla">{{ r.usuario.nombre }}</td>
-                        <td class="tabla">{{ r.fecha_realizacion }}</td>
-                    </tr>
-                    {% endfor %}
-                {% endif %}
+            {% for r in data %}
+                <tr class="tabla_grupo">
+                    <td class="tabla">{{ r.reserva.habitacion.hotel.nombre }}</td>
+                    <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
+                    <td class="tabla">{{ r.reserva.fecha_salida }}</td>
+                    <td class="tabla">{{ r.usuario.nombre }}</td>
+                    <td class="tabla">
+                        <a href="{% url 'reserva_detalle' r.reserva.id %}" class="boton-detalle-hotel">Ver Detalles</a>
+                    </td>
+                </tr>
             {% endfor %}
         </table>
     </div>
 </div>
-{% block scripts %}
-{% endblock %}
 {% endblock %}

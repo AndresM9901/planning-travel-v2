@@ -59,6 +59,7 @@ urlpatterns = [
     # dueño hotel
     path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
     path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
+    path('reserva_detalle/<int:reserva_id>/', views.reserva_detalle, name='reserva_detalle'),      
     path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
     path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
     path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 

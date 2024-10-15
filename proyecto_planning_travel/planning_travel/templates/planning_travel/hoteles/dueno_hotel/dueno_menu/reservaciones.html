@@ -8,26 +8,36 @@
 <div class="contenedor">
     <div class="contenedor_titulo">
         <a class="flecha" href="{% url 'dueno_hoy' %}" ><i class="bi bi-caret-left"></i></a>
-        <p class="titulo_reserva">Reservaciones</p>
+        <p class="titulo_reserva">Reservaciones ({{ data.count }})</p>
     </div>
-    <div id="contenedor_info_tabla">  
+    <div id="contenedor_info_tabla">
         <table>
             <tr class="tabla_grupo">
+
+                <td class="tabla_gris">Nombre Hotel</td>
                 <td class="tabla_gris">Fecha Llegada</td>
                 <td class="tabla_gris">Fecha Salida</td>
                 <td class="tabla_gris">Nombre</td>
-                <td class="tabla_gris">Fecha Realización</td>
+                <td class="tabla_gris">Detalles</td>
             </tr>
-            {% for r in reserva_usuario %}
-            <tr class="tabla_grupo">
-                <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
-                <td class="tabla">{{ r.reserva.fecha_salida }}</td>
-                <td class="tabla">{{ r.usuario.nombre }}</td>
-                <td class="tabla">{{ r.fecha_realizacion }}</td>
-            </tr>
+            {% for hotel in hoteles %}
+                {% if hotel.propietario.id == request.session.logueo.id %}
+                {% for r in data %}
+                <tr class="tabla_grupo">
+                    <td class="tabla">{{ r.reserva.habitacion.hotel.nombre }}</td>
+                    <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
+                    <td class="tabla">{{ r.reserva.fecha_salida }}</td>
+                    <td class="tabla">{{ r.usuario.nombre }}</td>
+                    <td class="tabla">
+                        <a href="{% url 'reserva_detalle' r.reserva.id %}" class="boton-detalle-hotel">Ver Detalles</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            
+                {% endif %}
             {% endfor %}
         </table>
-    </div>  
+    </div> 
     </div>
 </div>
 {% endblock %}

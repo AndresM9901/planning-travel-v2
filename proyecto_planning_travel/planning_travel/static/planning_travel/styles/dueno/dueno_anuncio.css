@@ -22,7 +22,7 @@
     border-radius: 15px;
 }
 .imagen-card{
-    width: 300px;
+    width: 350px;
     height: 250px;
     background: rgb(221, 221, 221);
     border-top-left-radius: 15px;
@@ -39,12 +39,10 @@
     font-size: 20px;
     padding-top: 12px;
     margin: 0;
-    padding-left: 20px;
 }
 .ubicacion{
     color: rgb(148, 148, 148);
     font-size: 14px;
-    padding-left: 20px;
 }
 .boton-card{
     border: 1px solid #ff5c5c;

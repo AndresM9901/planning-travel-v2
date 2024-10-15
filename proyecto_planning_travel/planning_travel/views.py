@@ -3,6 +3,8 @@ from .models import *
 from .serializers import *
 from .decorators import admin_required 
 from datetime import datetime
+from django.utils import timezone
+from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -13,7 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from rest_framework import status, viewsets, generics, permissions
@@ -1061,15 +1063,61 @@ def dueno_hotel(request):
     else:
         return redirect('login')
     
+# views.py# views.py
+from django.utils import timezone
+from datetime import timedelta
+
 def dueno_hoy(request): 
-    hoteles = Hotel.objects.all() 
-    reservas_usuario = ReservaUsuario.objects.all()
     logueo = request.session.get("logueo", False)
     if logueo:
-        contexto = { 'hoteles': hoteles, 'data': reservas_usuario} 
+        usuario_id = logueo.get('id')
+        usuario_logueado = Usuario.objects.get(id=usuario_id)
+
+        # Obtén todos los hoteles del propietario
+        hoteles = Hotel.objects.filter(propietario=usuario_logueado)
+
+        # Calcula las fechas para las reservas dentro de una semana antes y después
+        fecha_actual = timezone.now().date()
+        fecha_inicio = fecha_actual - timedelta(weeks=1)
+        fecha_fin = fecha_actual + timedelta(weeks=1)
+
+        # Inicializa las reservas
+        reservas_usuario = ReservaUsuario.objects.filter(
+            reserva__habitacion__hotel__in=hoteles,
+            reserva__fecha_llegada__gte=fecha_inicio,
+            reserva__fecha_llegada__lte=fecha_fin
+        )
+
+        # Filtrar reservas en curso si se presiona el botón
+        if request.method == 'POST':
+            if 'filtrar_en_curso' in request.POST:
+                reservas_usuario = reservas_usuario.filter(
+                    reserva__fecha_llegada__lte=fecha_actual,
+                    reserva__fecha_salida__gte=fecha_actual
+                )
+            elif 'deshacer_filtro' in request.POST:
+                # Al deshacer el filtro, se mantienen las reservas en el rango de semanas
+                reservas_usuario = ReservaUsuario.objects.filter(
+                    reserva__habitacion__hotel__in=hoteles,
+                    reserva__fecha_llegada__gte=fecha_inicio,
+                    reserva__fecha_llegada__lte=fecha_fin
+                )
+
+        contexto = {
+            'hoteles': hoteles, 
+            'data': reservas_usuario
+        } 
         return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)         
     else:
         return redirect('login')
+
+def reserva_detalle(request, reserva_id):
+    reserva = get_object_or_404(Reserva, id=reserva_id)
+    contexto = {
+        'reserva': reserva,
+        # Añade cualquier otra información que necesites
+    }
+    return render(request, 'planning_travel/hoteles/dueno_hotel/reserva_detalle.html', contexto)
 
 def dueno_calendario(request): 
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
@@ -1090,11 +1138,27 @@ def dueno_ingresos(request):
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto)
 
 def dueno_reservaciones(request):
-    q = Reserva.objects.all()
-    ru = ReservaUsuario.objects.select_related('usuario').all()
-    contexto = { 'data': q , 'reserva_usuario' : ru  } 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html', contexto) 
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        # Accede al ID desde el diccionario
+        usuario_id = logueo.get('id')
+        usuario_logueado = Usuario.objects.get(id=usuario_id)
+        
+        # Obtén todos los hoteles del propietario
+        hoteles = Hotel.objects.filter(propietario=usuario_logueado)
 
+        # Filtra las reservas de los hoteles del propietario
+        reservas_usuario = ReservaUsuario.objects.filter(
+            reserva__habitacion__hotel__in=hoteles
+        )
+        
+        contexto = {
+            'hoteles': hoteles, 
+            'data': reservas_usuario
+        } 
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html', contexto)         
+    else:
+        return redirect('login')
 #andres
 def reservas_mostrar(request):
     logueo = request.session.get("logueo", False)
