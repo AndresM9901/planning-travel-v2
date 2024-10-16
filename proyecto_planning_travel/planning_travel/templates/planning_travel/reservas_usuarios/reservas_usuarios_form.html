@@ -15,24 +15,16 @@
                         <option value="{{ c.id }}">{{ c.nombre }}</option>
                     {% endfor %}
                 </select>
-                <label for="categoria">Usuario</label>
+                <label for="usuario">Usuario</label>
             </div>
             <div class="form-floating mb-3 ">
                 <select class="form-select" id="reserva" name="reserva" required>
                     <option value="">Seleccionar Reserva</option>
                     {% for c in reserva %}
-                        <option value="{{ c.id }}">{{ c.habitacion }}</option>
+                        <option value="{{ c.id }}">{{ c.id }}</option>
                     {% endfor %}
                 </select>
-                <label for="categoria">Reserva</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="estado_reserva" placeholder="Estado de la reserva" name="estado_reserva">
-                <label for="estado_reserva">Estado de la reserva</label>
-            </div>
-            <div class="form-floating mb-3">
-                <input type="datetime-local" class="form-control" id="fecha_realizacion" placeholder="Fecha de realizacion" name="fecha_realizacion">
-                <label for="fecha_realizacion"> Fecha de realizacion </label>
+                <label for="reserva">Reserva</label>
             </div>
             <div class="row my-2">
                 <button type="submit" class="btn btn-primary">Registrar</button>

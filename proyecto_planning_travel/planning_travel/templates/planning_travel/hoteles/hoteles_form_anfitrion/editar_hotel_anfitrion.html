@@ -1,0 +1,88 @@
+{% extends "planning_travel/hoteles/dueno_hotel/dueno_hotel.html" %}
+{% load static %}
+
+{% block titulo %}Editar Hotel{% endblock %}
+{% block estilos %}
+<link rel="stylesheet" href="{% static 'planning_travel/styles/hoteles_anfitrion.css' %}" />
+{% endblock %}
+
+{% block contenedor %}
+
+<div class="container my-5 w-50">
+    <!-- PASO 1  -->
+    <h1 class="text-center">Editar Hotel</h1>
+    <form action="{% url 'actualizar_hotel_anfitrion' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
+        <div>
+            <!-- Información del hotel -->
+            <div class="form-floating mb-3 mt-4">
+                <input type="text" class="form-control" id="nombre" placeholder="Nombre" name="nombre"
+                       value="{{ hotel.nombre }}">
+                <label for="nombre">Nombre</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="descripcion" placeholder="Descripción" name="descripcion"
+                       value="{{ hotel.descripcion }}">
+                <label for="descripcion">Descripción</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="direccion" placeholder="Dirección" name="direccion"
+                       value="{{ hotel.direccion }}">
+                <label for="direccion">Dirección</label>
+            </div>
+            <div class="form-floating mb-3 col-12 p-1">
+                <select class="form-select" id="categoria" name="categoria" required>
+                    <option value="">Seleccionar Categoría</option>
+                    {% for c in categorias %}
+                    <option value="{{ c.id }}" {% if c.id == hotel.categoria.id %}selected{% endif %}>{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <label for="categoria">Categoría</label>
+            </div>
+            <div class="form-floating mb-5">
+                <input type="text" class="form-control" id="ciudad" placeholder="Ciudad" name="ciudad"
+                       value="{{ hotel.ciudad }}">
+                <label for="ciudad">Ciudad</label>
+            </div>
+        </div>
+
+        <!-- PASO 2  -->
+        <h1 class="text-center">Comodidades o Servicios</h1>
+        {% for c in servicios %}
+        <div class="checkbox-container">
+            <input 
+                type="checkbox" 
+                id="servicio{{ c.id }}" 
+                name="servicios" 
+                value="{{ c.id }}"
+                {% if c.id in servicios_seleccionados %} checked {% endif %}>
+            <label for="servicio{{ c.id }}" class="checkbox-label">
+                <img src="{{ c.icono.url }}" alt="{{ c.nombre }}">
+                {{ c.nombre }}
+            </label>
+        </div>
+        {% endfor %}
+
+        <!-- Fotos -->
+        <h1 class="text-center">Fotos del hotel</h1>
+        <div class="mb-3">
+            <label for="fotos" class="form-label">Nuevas Fotos (Se borrarán las fotos actuales y solo estarán las nuevas)</label>
+            <input type="file" class="form-control" id="fotos" name="fotos" multiple>
+            <label for="" class="mt-2">Si no quieres modificar tus fotos, puedes dejarlo los archivos vacio</label>
+        </div>
+        <div class="form-floating mb-5">
+            <input type="text" class="form-control" id="descripcion_foto" placeholder="Descripción"
+                   name="descripcion_foto">
+            <label for="descripcion_foto">Añade una breve descripción</label>
+        </div>
+
+        <!-- Botón de envío -->
+        <div class="row my-4">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

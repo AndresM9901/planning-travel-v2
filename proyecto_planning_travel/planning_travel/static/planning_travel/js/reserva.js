@@ -14,6 +14,9 @@ fechaLlegada.addEventListener('change', () => {
 function verificarDisponibilidad(url) {
     const csrftoken = getCookie('csrftoken');
 
+    // Limpiar mensajes de disponibilidad y restablecer botones antes de la verificación
+    $('.mensaje-disponibilidad').remove(); // Limpiar todos los mensajes
+    $(".habitacion").prop('disabled', false).removeClass('habitacion-ocupada'); // Habilitar todos los botones y quitar la clase
 
     $.ajax({
         url,
@@ -29,18 +32,41 @@ function verificarDisponibilidad(url) {
     })
     .done(function(data) {
         const habitacionesOcupadas = data.habitaciones_ocupadas;
-        const habitacionesDisponibles = data.habitaciones_disponibles;
         console.log(data);
+
+        // Variable para determinar si hay habitaciones disponibles
+        let hayDisponibles = true;
+
         habitacionesOcupadas.forEach(numHabitacion => {
-            $(`#habitacion-${numHabitacion}`).parent().addClass('habitacion-ocupada');
-            $(`#habitacion-${numHabitacion}`).parent().removeClass('habitacion-disponible');
-            $(`#habitacion-${numHabitacion}`).prop('disabled', true);
+            const habitacionElement = $(`#habitacion-${numHabitacion}`);
+            const parent = habitacionElement.parent();
+
+            // Deshabilitar el botón y agregar la clase de ocupada
+            habitacionElement.prop('disabled', true);
+            habitacionElement.addClass('habitacion-ocupada');
+
+            hayDisponibles = false; // Si hay habitaciones ocupadas, cambia el estado
         });
+
+        // Mostrar mensaje de disponibilidad
+        const mensaje = $('<div class="mensaje-disponibilidad"></div>');
+        if (hayDisponibles) {
+            mensaje.text('Todas las habitaciones están disponibles.').addClass('disponible');
+        } else {
+            mensaje.text('Algunas habitaciones no están disponibles.').addClass('no-disponible');
+        }
+
+        // Añadir el mensaje a un lugar visible
+        $('#mensaje-global').html(mensaje); // Asegúrate de tener un contenedor con este ID
     })
-    .fail(function(xhr, textStatus, errorThrown) { // Cambiar error por xhr, textStatus, errorThrown
+    .fail(function(xhr, textStatus, errorThrown) {
         console.error(`Error al verificar disponibilidad ${errorThrown}`);
     });
 }
+
+
+
+
 
 function mostrarHabitacionesDisponibles(habitacionesDisponibles) {
     // Obtener todas las habitaciones en el formulario
@@ -87,18 +113,25 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function obtenerTotal(url, id) {
+    // Obtener el precio por noche
     $.ajax({
         url,
         type: 'GET',
         data: {'habitacion': id},
         success: function(response) {
-            $('#total').text(`Total: ${response.precio}`)
+            const fechaLlegada = new Date($('#fecha_llegada').val());
+            const fechaSalida = new Date($('#fecha_salida').val());
+            
+            // Comprobar si ambas fechas están seleccionadas
+            if (!isNaN(fechaLlegada) && !isNaN(fechaSalida) && fechaSalida > fechaLlegada) {
+                const cantidadDias = (fechaSalida - fechaLlegada) / (1000 * 60 * 60 * 24); // Convertir a días
+                const total = precioPorNoche * cantidadDias;
+            }
         },
-        error: function(error) {
-            console.log(error);
-        }
     });
 }
+
+
 
 function formatDate(date) {
     // Asegurarse de que 'date' sea un objeto Date válido

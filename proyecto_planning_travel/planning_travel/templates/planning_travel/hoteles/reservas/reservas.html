@@ -13,19 +13,24 @@
     <form action="{% url 'separar_reserva' hotel.id %}" method="post" class="form-reserva d-flex">
         {% csrf_token %}
         <h3 class="titulo">Reservar</h3>
-        <div id="total">
-            Total: $0
+        <div id="tota">
+            <p>Precio por noche: {{ habitaciones.0.precio }}</p>
         </div>
         <div class="hotel d-flex">
-            <div class="d-flex habitaciones">
+            <div id="mensaje-global" style="margin-bottom: 15px;"></div>
+
+            <div class="d-flex pisos">
                 {% for habitacion in habitaciones %}
-                <div class="habitacion-item">
+                <div class="habitaciones">
                     <input type="radio" value="{{ habitacion.id }}" class="habitacion" name="habitacion" id="habitacion-{{ habitacion.id }}" onclick="obtenerTotal(`{% url 'obtener_precio' %}`, {{ habitacion.id }})">
-                    <label for="habitacion-{{ habitacion.id }}">{{ habitacion.num_habitacion }} </label>
+                    <label for="habitacion-{{ habitacion.id }}"> Habitación: {{ habitacion.num_habitacion }} </label>
                 </div>
                 {% endfor %}
             </div>
         </div>
+        
+        
+        
         <div class="datos d-flex">
             <div class="grupo-fechas d-flex">
                 <div class="contenedor-fehcas">
@@ -44,7 +49,8 @@
                 <label for="num_personas">Huespedes</label>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Reservar</button>
+        <button type="submit" class="btn">Reservar</button>
+
     </form>
 </main>
 {% endblock %}

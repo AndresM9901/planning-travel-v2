@@ -1,0 +1,200 @@
+{% extends 'planning_travel/hoteles/base_hoteles.html' %}
+{% load static %}
+
+{% block title %}Reserva{% endblock %}
+{% block content %}
+<style>
+    
+    .btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 25px;
+    background-color: #ff5c5c; /* Cambia el color aquí */
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #ff5c5c; /* Cambia el color del hover aquí */
+}
+
+.btn.secondary {
+    background-color: #ff5c5c; /* Asegúrate de que coincida */
+}
+
+.btn.secondary:hover {
+    background-color: #ff5c5c; /* Cambia el color del hover aquí también */
+}
+
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .container:hover {
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .reserva-details {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #3498db;
+        border-radius: 4px;
+        background-color: #ecf6fd;
+    }
+
+    .reserva-details h2 {
+        color: #2980b9;
+        margin-bottom: 15px;
+    }
+
+    .reserva-details p {
+        font-size: 16px;
+        margin: 5px 0;
+    }
+
+    .btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 25px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        background-color: #2980b9;
+    }
+
+    .btn.secondary {
+        background-color: #ff5c5c;
+    }
+
+    .btn.secondary:hover {
+        background-color: #ff5c5c;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            width: 90%;
+            padding: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+    .opciones-pago {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #3498db;
+    border-radius: 4px;
+    background-color: #ecf6fd;
+}
+
+.opciones-pago h4 {
+    color: #2980b9;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.opciones-pago label {
+    display: block;
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+}
+
+.opciones-pago input[type="radio"] {
+    margin-right: 10px;
+    accent-color: #3498db; /* Cambia el color del círculo del radio */
+}
+
+.opciones-pago input[type="radio"]:hover {
+    transform: scale(1.1); /* Efecto de zoom al pasar el cursor */
+}
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+</style>
+
+<div class="container" style="margin-top: 30px;">
+    <h1>Resumen de tu Reserva</h1>
+    <div class="reserva-details">
+        <h2>Detalles de la Reserva</h2>
+        <p><strong>Número de Habitación:</strong> {{ resumen.habitacion_num }}</p>
+        <p><strong>Fecha de Llegada:</strong> {{ resumen.fecha_llegada }}</p>
+        <p><strong>Fecha de Salida:</strong> {{ resumen.fecha_salida }}</p>
+        <p><strong>Número de Personas:</strong> {{ resumen.cantidad_personas }}</p>
+        <p><strong>Total a Pagar:</strong> ${{ resumen.total }}</p>
+    </div>
+    <div class="opciones-pago">
+        <h4>Opciones de Pago</h4>
+        <label>
+            <input type="radio" name="opcionPago" value="pagoSalida">
+            Pagar al salir
+        </label>
+        <div id="error-message" class="error-message" style="display: none; color: red; margin-bottom: 15px;"></div>
+
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <form id="reservaForm" action="{% url 'confirmar_reserva' resumen.hotel_id %}" method="POST" style="flex: 1; margin-right: 10px;">
+            {% csrf_token %}
+            <input type="hidden" name="hotel_id" value="{{ resumen.hotel_id }}">
+            <input type="hidden" name="fecha_llegada" value="{{ resumen.fecha_llegada }}">
+            <input type="hidden" name="fecha_salida" value="{{ resumen.fecha_salida }}">
+            <input type="hidden" name="num_personas" value="{{ resumen.cantidad_personas }}">
+            <input type="hidden" name="total" value="{{ resumen.total|floatformat:2|default:"0.00" }}">  <!-- Asegúrate de que sea un número decimal -->
+            <input type="hidden" name="habitacion" id="habitacion-id" value="{{ resumen.habitacion_id }}">
+
+            
+
+            <a href="{% url 'inicio' %}" class="btn secondary" style="width: 230px; margin-right: 65px;">Cancelar</a>
+            <button type="submit" class="btn secondary" style="width: 230px;">Siguiente</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('reservaForm').addEventListener('submit', function(event) {
+        const opcionPago = document.querySelector('input[name="opcionPago"]:checked');
+        const errorMessage = document.getElementById('error-message');
+
+        // Limpiar mensaje de error anterior
+        errorMessage.style.display = 'none';
+        errorMessage.textContent = '';
+
+        if (!opcionPago) {
+            event.preventDefault(); // Evita que el formulario se envíe
+            errorMessage.textContent = 'Debes seleccionar un método de pago.'; // Mensaje de error
+            errorMessage.style.display = 'block'; // Muestra el mensaje
+        }
+    });
+</script>
+{% endblock %}

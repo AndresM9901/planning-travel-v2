@@ -4,318 +4,242 @@
 
 {% block title %}{{ hotel.nombre }}{% endblock %}
 {% block estilos %}
-<link
-    rel="stylesheet"
-    href="{% static 'planning_travel/styles/hotel_detail.css' %}"
-/>
-<style>
-    .modalDialog {
-    position: fixed;
-    font-family: Arial, Helvetica, sans-serif;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 99999;
-    opacity:0;
-    pointer-events: none;
-  }
-  .modalDialog:target {
-    opacity:1;
-    pointer-events: auto;
-  }
-  .modalDialog > div {
-    width: 500px;
-    position: center;
-    margin: 5% auto;
-      height: 730px;
-    border-radius: 10px;
-    background: #fff;
-    -webkit-transition: opacity 400ms ease-in;
-  -moz-transition: opacity 400ms ease-in;
-  transition: opacity 400ms ease-in;
-  }
-  .close {
-    background: #606061;
-    color: #FFFFFF;
-    line-height: 25px;
-    position: absolute;
-    right: 3px;
-    text-align: center;
-    top: 7px;
-    width: 24px;
-    text-decoration: none;
-    font-weight: bold;
-    -webkit-border-radius: 12px;
-    -moz-border-radius: 12px;
-    border-radius: 12px;
-    -moz-box-shadow: 1px 1px 3px #000;
-    -webkit-box-shadow: 1px 1px 3px #000;
-    box-shadow: 1px 1px 3px #000;
-  }
-  .close:hover { background: #ff5c5c; }
-  .modal {
-    display: none; /* Oculta la modal por defecto */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-  }
-  
-  .modal-contenido {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-  
-  .cerrar {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    cursor: pointer;
-    font-size: 20px;
-    color: #aaa;
-  }
+<link rel="stylesheet" href="{% static 'planning_travel/styles/hotel_detail.css' %}" />
 
-</style>
 {% endblock %}
 {% block content %}
-    <main class="container-details d-flex">
-        <div class="head-container d-flex">
-            <div class="container-gallery">
-                <div class="carrusel-container">
-                    <div class="carrusel">
-                        {% for foto in fotos %}
-                        <div class="carrusel-item">
-                            <img
-                                src="{{ foto.url_foto.url }}"
-                                alt=""
-                            />
-                        </div>
-                        {% endfor %}
+<main class="container-details d-flex">
+    <div class="head-container d-flex">
+        <div class="container-gallery">
+            <div class="carrusel-container">
+                <div class="carrusel">
+                    {% for foto in fotos %}
+                    <div class="carrusel-item">
+                        <img src="{{ foto.url_foto.url }}" alt="" />
                     </div>
-                    <div class="carrusel-indicators"></div>
-                    <div class="carrusel-controls">
-                        <div class="carrusel-control prev">
-                            <i class="bi bi-caret-left-fill"></i>
-                        </div>
-                        <div class="carrusel-control next">
-                            <i class="bi bi-caret-right-fill"></i>
-                        </div>
+                    {% endfor %}
+                </div>
+                <div class="carrusel-indicators"></div>
+                <div class="carrusel-controls">
+                    <div class="carrusel-control prev">
+                        <i class="bi bi-caret-left-fill"></i>
+                    </div>
+                    <div class="carrusel-control next">
+                        <i class="bi bi-caret-right-fill"></i>
                     </div>
                 </div>
             </div>
-            <div class="container-info d-flex">
-                <div class="head-info d-flex">
-                    <div class="d-flex flex-column">
-                        <h1 class="hotel-title">{{ hotel.nombre }}</h1>
-                        <p class="m-0">{{ hotel.ciudad }}</p>
-                    </div>
-                    <div class="botones-head d-flex">
-                        {% if request.session.logueo %}
-                        {% if hotel.id in favoritos %}
-                            <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn" style="color: white; background-color:#ff5c5c"><i class="bi bi-bookmark-heart" ></i> Favoritos</a>
-    
-                            {% else %}
-                            <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn"><i class="bi bi-bookmark-heart"></i> Favoritos</a>
-    
-                            {% endif %}
-                        {% else %}
-                        <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn"><i class="bi bi-bookmark-heart"></i> Favoritos</a>
-                        {% endif %}
-                        <a href="{% url 'reserva' hotel.id %}" class="btn btn-primary">Reserva ya</a>
-                    </div>
+        </div>
+        <div class="container-info d-flex">
+            <div class="head-info d-flex">
+                <div class="d-flex flex-column">
+                    <h1 class="hotel-title">{{ hotel.nombre }}</h1>
+                    <p class="m-0">{{ hotel.ciudad }}</p>
                 </div>
-                <div class="body-info d-flex">
-                    <div class="propietario d-flex">
-                        <div class="propietario__info d-flex">
-                            <img class="propietario__img" src="{{ hotel.propietario.foto.url}}" alt="">
-                            <div class="propietario__details">
-                                <p class="titulo">{{ hotel.propietario.nombre }}</p>
-                                <p class="parrafo">{{ hotel.propietario.email }}</p>
-                            </div>
+                <div class="botones-head d-flex">
+                    {% if request.session.logueo %}
+                    {% if hotel.id in favoritos %}
+                    <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn"
+                        style="color: white; background-color:#ff5c5c"><i class="bi bi-bookmark-heart"></i>
+                        Favoritos</a>
+
+                    {% else %}
+                    <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn"><i
+                            class="bi bi-bookmark-heart"></i> Favoritos</a>
+
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'favoritos_crearUser3' id_hotel=hotel.id %}" class="btn"><i
+                            class="bi bi-bookmark-heart"></i> Favoritos</a>
+                    {% endif %}
+                    <a href="{% url 'reserva' hotel.id %}" class="btn btn-primary">Reserva ya</a>
+                </div>
+            </div>
+            <div class="body-info d-flex">
+                <div class="propietario d-flex">
+                    <div class="propietario__info d-flex">
+                        <img class="propietario__img" src="{{ hotel.propietario.foto.url}}" alt="">
+                        <div class="propietario__details">
+                            <p class="titulo">{{ hotel.propietario.nombre }}</p>
+                            <p class="parrafo">{{ hotel.propietario.email }}</p>
                         </div>
-                        <div id="modal" class="modal" style="display: none;">
-                            <div class="modal-contenido">
-                                <span class="cerrar" onclick="cerrarModal()">&times;</span>
-                                <h1 class="text-center">Enviar Mensaje</h1>
+                    </div>
+
+                    {% if request.session.logueo %}
+                    <button data-bs-toggle="modal" data-bs-target="#enviar_msj"
+                        class="btn btn-primary btn-primary--size">
+                        <i class="bi bi-bookmark-heart"></i> Enviar mensaje
+                    </button>
+                    {% else %}
+                    <a href="{% url 'login' %}" style="text-align: center;" class="btn btn-primary btn-primary--size">
+                        <i class="bi bi-bookmark-heart"></i> Enviar mensaje
+                    </a>
+                    {% endif %}
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="enviar_msj" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
                                 <form action="{% url 'enviar_mensaje' hotel.id %}" method="post">
-                                  {% csrf_token %}
-                                  <div class="form-floating mb-3">
-                                     <textarea class="form-control" id="descripcion" placeholder="Escribe tu mensaje aquí..." name="descripcion" rows="4"></textarea>
-                                     <label for="descripcion">Descripción:</label>
-                                  </div>
-                                  <div class="text-center">
-                                    <button type="submit" class="btn btn-primary">Enviar</button>
-                                  </div>
+                                    {% csrf_token %}
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Mensaje al hotel</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="message-text" class="col-form-label">Contenido</label>
+                                            <textarea class="form-control" id="message-text" name="contenido"
+                                                required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Cerrar</button>
+                                        <button type="submit" class="btn btn-primary">Enviar</button>
+                                    </div>
                                 </form>
                             </div>
-                         </div>
-                        {% if request.session.logueo %}
-                          <button onclick="abrirModal()" class="btn btn-primary btn-primary--size"><i class="bi bi-bookmark-heart" ></i> Enviar mensaje</button>
-                        {% else %}
-                          <a  href="{% url 'reserva' hotel.id %}" style="text-align: center;" class="btn btn-primary btn-primary--size"><i class="bi bi-bookmark-heart" ></i> Enviar mensaje</a>
-                        {% endif %}
-                    </div>
-                    <ul class="comodidades d-flex">
-                        {% for comodidad in comodidades %}
-                            {% if comodidad.cantidad > 1 %}
-                                {% if comodidad.comodidad.nombre == "Huesped" %}
-                                <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}es</li>
-                                {% else %}
-                                <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}s</li>
-                                {% endif %}
-                            {% else %}
-                            <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}</li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                    {% if hotel.promedio_valoracion > 4 %}
-                    <div class="popular d-flex">
-                        <div class="popular--texto d-flex">
-                            <i class="bi bi-star-fill"></i>
-                            <p class="m-0">Según los usuarios, uno de los hoteles más populares</p>
                         </div>
-                        <div class="popular--puntuacion d-flex">
-                            <p class="m-0 popular__tamaño">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
-                            <div class="popular__estrellas d-flex">
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                                <i class="bi bi-star-fill"></i>
-                            </div>
-                        </div>
-                        <p class="m-0 popular__tamaño">({{ hotel.opiniones_count }})</p>
                     </div>
+
+                </div>
+                <ul class="comodidades d-flex">
+                    {% for comodidad in comodidades %}
+                    {% if comodidad.cantidad > 1 %}
+                    {% if comodidad.comodidad.nombre == "Huesped" %}
+                    <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}es</li>
                     {% else %}
-                    <div class="opiniones d-flex">
-                        <div class="opiniones--puntuacion d-flex">
-                            <i class="bi bi-star-fill"></i>
-                            <p class="m-0">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
-                        </div>
-                        <span class="separador">·</span>
-                        <p class="m-0 opiniones--cantidad">{{ hotel.opiniones_count }} opiniones</p>
-                    </div>
+                    <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}s</li>
                     {% endif %}
-                    <div class="servicios d-flex">
-                        {% for servicio in servicios %}
-                        <div class="servicio d-flex">
-                            <img class="servicio--icono" src="{{ servicio.icono.url }}" alt="">
-                            <p class="servicio--texto">{{ servicio.nombre }}</p>
+                    {% else %}
+                    <li class="comodidad-item">{{comodidad.cantidad}} {{ comodidad.comodidad.nombre }}</li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+                {% if hotel.promedio_valoracion > 4 %}
+                <div class="popular d-flex">
+                    <div class="popular--texto d-flex">
+                        <i class="bi bi-star-fill"></i>
+                        <p class="m-0">Según los usuarios, uno de los hoteles más populares</p>
+                    </div>
+                    <div class="popular--puntuacion d-flex">
+                        <p class="m-0 popular__tamaño">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
+                        <div class="popular__estrellas d-flex">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
                         </div>
-                        {% endfor %}
+                    </div>
+                    <p class="m-0 popular__tamaño">({{ hotel.opiniones_count }})</p>
+                </div>
+                {% else %}
+                <div class="opiniones d-flex">
+                    <div class="opiniones--puntuacion d-flex">
+                        <i class="bi bi-star-fill"></i>
+                        <p class="m-0">{{ hotel.promedio_valoracion|floatformat:1 }}</p>
+                    </div>
+                    <span class="separador">·</span>
+                    <p class="m-0 opiniones--cantidad">{{ hotel.opiniones_count }} opiniones</p>
+                </div>
+                {% endif %}
+                <div class="servicios d-flex">
+                    {% for servicio in servicios %}
+                    <div class="servicio d-flex">
+                        <img class="servicio--icono" src="{{ servicio.icono.url }}" alt="">
+                        <p class="servicio--texto">{{ servicio.nombre }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="divisor"></div>
+    <div class="body d-flex">
+        <div class="descripcion">
+            <details>
+                <summary>Descripcion</summary>
+                <p>{{ hotel.descripcion }}</p>
+            </details>
+        </div>
+        <div class="divisor"></div>
+        <!-- Contenedor centrado -->
+        <div class="text-center my-4">
+            <!-- Botón para abrir la modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#opinionModal">
+                Dejar Opinión
+            </button>
+        </div>
+        <!-- Modal -->
+        <!-- Modal para dejar una opinión -->
+        <div class="modal fade" id="opinionModal" tabindex="-1" aria-labelledby="opinionModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="opinionModalLabel">Dejar una Opinión</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="opinionForm" method="post" action="{% url 'guardar_opinion' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
+                            <div class="mb-3">
+                                <label for="contenido" class="form-label">Contenido</label>
+                                <textarea class="form-control" id="contenido" name="contenido" rows="3"
+                                    required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="puntuacion" class="form-label">Puntuación</label>
+                                <select class="form-select" id="puntuacion" name="puntuacion" required>
+                                    <option value="">Seleccionar Puntuación</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enviar Opinión</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
         <div class="divisor"></div>
-        <div class="body d-flex">
-            <div class="descripcion">
-                <details>
-                    <summary>Descripcion</summary>
-                    <p>{{ hotel.descripcion }}</p>
-                </details>
-            </div>
-            <div class="divisor"></div>      
-            <!-- Contenedor centrado -->
-            <div class="text-center my-4">
-                <!-- Botón para abrir la modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#opinionModal">
-                    Dejar Opinión
-                </button>
-            </div>
-            <!-- Modal -->
-            <!-- Modal para dejar una opinión -->
-            <div class="modal fade" id="opinionModal" tabindex="-1" aria-labelledby="opinionModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="opinionModalLabel">Dejar una Opinión</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="opinionForm" method="post" action="{% url 'guardar_opinion' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="hotel_id" value="{{ hotel.id }}">
-                                <div class="mb-3">
-                                    <label for="contenido" class="form-label">Contenido</label>
-                                    <textarea class="form-control" id="contenido" name="contenido" rows="3"
-                                        required></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="puntuacion" class="form-label">Puntuación</label>
-                                    <select class="form-select" id="puntuacion" name="puntuacion" required>
-                                        <option value="">Seleccionar Puntuación</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Enviar Opinión</button>
-                            </form>
-                        </div>
+        <div class="comentarios">
+            {% for comentario in opiniones %}
+            <div class="card-comentario">
+                <div class="comentario-header d-flex">
+                    <img class="comentario__imagen" src="{{ comentario.id_usuario.foto.url }}" alt="">
+                    <div class="info-usuario d-flex">
+                        <p class="info__nombre">{{ comentario.id_usuario.nombre }}</p>
+                        <p class="info__lugar">Ciudad donde vive</p>
                     </div>
                 </div>
-            </div>
-            <div class="divisor"></div>
-            <div class="comentarios">
-                {% for comentario in opiniones %}
-                <div class="card-comentario">
-                    <div class="comentario-header d-flex">
-                        <img class="comentario__imagen" src="{{ comentario.id_usuario.foto.url }}" alt="">
-                        <div class="info-usuario d-flex">
-                            <p class="info__nombre">{{ comentario.id_usuario.nombre }}</p>
-                            <p class="info__lugar">Ciudad donde vive</p>
+                <div class="comentario-body">
+                    <div class="info-comentario d-flex">
+                        <div class="puntuacion">
+                            {% for i in comentario.puntuacion %}
+                            <i class="bi bi-star-fill"></i>
+                            {% endfor %}
                         </div>
+                        <p class="m-0">{{ comentario.fecha }}</p>
                     </div>
-                    <div class="comentario-body">
-                        <div class="info-comentario d-flex">
-                            <div class="puntuacion">
-                                {% for i in comentario.puntuacion %}
-                                <i class="bi bi-star-fill"></i>
-                                {% endfor %}
-                            </div>
-                            <p class="m-0">{{ comentario.fecha }}</p>
-                        </div>
-                        <p class="m-0">{{ comentario.contenido }}</p>
-                    </div>
+                    <p class="m-0">{{ comentario.contenido }}</p>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
-    </main>
+    </div>
+</main>
 {% endblock %}
 
 {% block scripts %}
 <script src="{% static 'planning_travel/js/hotel_detail.js' %}"></script>
-<script>
-    function abrirModal() {
-    document.getElementById('modal').style.display = 'block';
-}
 
-// Función para cerrar el modal
-function cerrarModal() {
-    document.getElementById('modal').style.display = 'none';
-}
-
-// Cierra el modal si se hace clic fuera del contenido del modal
-window.onclick = function(event) {
-    if (event.target === document.getElementById('modal')) {
-        cerrarModal();
-    }
-}
-</script>
 
 {% endblock %}

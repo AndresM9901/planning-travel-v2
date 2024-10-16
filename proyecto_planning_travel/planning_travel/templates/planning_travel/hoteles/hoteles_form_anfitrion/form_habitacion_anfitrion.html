@@ -1,0 +1,59 @@
+{% extends "planning_travel/hoteles/dueno_hotel/dueno_hotel.html" %}
+{% load static %}
+
+{% block titulo %} Crear Habitación {% endblock %}
+
+{% block contenedor %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags and message.tags != 'error' %}{{ message.tags }}{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="container my-5 w-50">
+    <h1 class="text-center">Crear Habitación para {{ hotel.nombre }}</h1> 
+    <form action="{% url 'anfitrion_habitaciones_crear' hotel.id %}" method="post">
+        {% csrf_token %}
+        
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="num_habitacion" name="num_habitacion" placeholder="Número de Habitación" required>
+            <label for="num_habitacion">Número de Habitación</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="hotel" name="hotel" value="{{ hotel.nombre }}" readonly>
+            <label for="hotel">Hotel</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <select class="form-select" id="ocupado" name="ocupado" required>
+                <option value="True">Ocupado</option>
+                <option value="False">Disponible</option>
+            </select>
+            <label for="ocupado">Estado de la Habitación</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="capacidad_huesped" name="capacidad_huesped" placeholder="Capacidad de Huéspedes" required>
+            <label for="capacidad_huesped">Capacidad de Huéspedes (max 10)</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="tipoHabitacion" name="tipoHabitacion" placeholder="Tipo de Habitación" required>
+            <label for="tipoHabitacion">Tipo de Habitación (doble, sencilla, familiar, etc)</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="precio" name="precio" placeholder="Precio" step="0.01" required>
+            <label for="precio">Precio</label>
+        </div>
+
+        <div class="row my-2">
+            <button type="submit" class="btn btn-primary">Crear Habitación</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

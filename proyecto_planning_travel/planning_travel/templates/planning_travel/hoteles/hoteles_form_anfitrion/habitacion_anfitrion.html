@@ -1,0 +1,54 @@
+{% extends "planning_travel/hoteles/dueno_hotel/dueno_hotel.html" %}
+{% block titulo %}Lista de Habitaciones del Hotel{% endblock %}
+{% block contenedor %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags and message.tags != 'error' %}{{ message.tags }}{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h1 class="text-center mt-5">Habitaciones del Hotel {{ hotel.nombre }}</h1>
+<a href="{% url 'habitacion_anfitrion_form' hotel.id %}" class="btn-primary " >Agregar Habitacion al hotel {{ hotel.nombre }}</a>
+<div style="margin:40px"> 
+    <table class="table">
+        <thead class="table-info">
+            <tr>
+                <th>Número de habitación</th>
+                <th>Estado</th>
+                <th>Capacidad de huéspedes</th>
+                <th>Tipo de habitación</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in habitaciones %}
+            <tr>
+                <td>{{ h.num_habitacion }}</td>
+                <td>
+                    {% if r.ocupado %}
+                        Disponible
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </td>
+                <td>{{ h.capacidad_huesped }}</td>
+                <td>{{ h.tipo_habitacion }}</td>
+                <td>{{ h.precio }}</td>
+                <td>
+                    <a class="btn btn-warning" href="{% url 'editar_habitacion_form' h.id %}"><i class="bi bi-pencil"></i></a>
+                    <a href="javascript:eliminar('{% url 'habitacion_anfitrion_eliminar' h.id %}')" class="btn btn-danger"><i class="bi bi-x-lg"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No hay habitaciones disponibles.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

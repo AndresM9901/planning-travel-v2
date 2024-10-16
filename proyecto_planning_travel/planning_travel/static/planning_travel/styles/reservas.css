@@ -1,52 +1,170 @@
+body {
+    font-family: Arial, sans-serif; /* Fuente moderna */
+}
+
+main {
+    max-width: 800px; /* Máximo ancho para la página */
+    margin: 20px auto; /* Centrar en la página */
+    background-color: white; /* Fondo blanco para el contenido */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.titulo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ff5c5c; /* Color principal */
+    text-align: center; /* Centrar título */
+    margin-bottom: 20px; /* Espaciado inferior */
+}
+
+.form-reserva {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+
+#tota {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: right; /* Alinear a la derecha */
+    color: #ff5c5c; /* Color principal */
+}
+
+.hotel {
+    display: flex;
+    flex-direction: column; /* Colocar los pisos verticalmente */
+    border: 1px solid #ddd; /* Borde suave */
+    border-radius: 10px; /* Bordes redondeados */
+    padding: 16px; /* Espaciado interno */
+}
+
+.pisos {
+    display: flex;
+    flex-direction: column; /* Disposición vertical de habitaciones */
+    gap: 10px;
+}
+
+.habitaciones {
+    border: 2px solid #ddd; /* Borde suave */
+    border-radius: 10px; /* Bordes redondeados */
+    padding: 10px; /* Espaciado interno */
+    display: flex; /* Para alinear texto y radio button */
+    align-items: center;
+    transition: border-color 0.3s; /* Transición suave al cambiar de color */
+}
+
+.habitaciones:hover {
+    border-color: #ff5c5c; /* Color principal al pasar el mouse */
+}
+
+input[type="radio"] {
+    margin-right: 10px; /* Espaciado entre el radio button y el texto */
+    
+}
+
+.datos {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contenedor-fehcas {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+input[type="date"] {
+    padding: 10px; /* Espaciado interno */
+    border: 1px solid #ddd; /* Borde suave */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: border-color 0.3s; /* Transición suave */
+}
+
+input[type="date"]:focus {
+    border-color: #ff5c5c; /* Color principal al enfocar */
+    outline: none; /* Sin borde externo */
+}
+
+
+.btn:hover {
+    background-color: #d44a4a; /* Color más oscuro al pasar el mouse */
+}
 .form-reserva {
     padding: 16px 8px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 16px;
-    margin: 50px 30%;
-    -webkit-box-shadow: 0px 0px 47px -4px rgba(217,217,217,1);
--moz-box-shadow: 0px 0px 47px -4px rgba(217,217,217,1);
-box-shadow: 0px 0px 47px -4px rgba(217,217,217,1);
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .titulo {
     font-size: 32px;
     font-weight: bold;
+    color: #ff5c5c;
+}
+
+.subtitulo {
+    font-size: 24px;
+    color: #555;
+    margin-bottom: 16px;
+}
+
+.total-price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
 }
 
 .hotel {
+    gap: 16px;
+    flex-direction: column;
+    width: 100%;
+}
+
+.pisos {
     gap: 8px;
-    flex-direction: row;
-    border-radius: 5px;
-    border: 1px solid rgb(136, 136, 136);
-    max-width: 600px;
-    justify-content: center;
-    align-items: center;
-    padding: 4px 8px;
-    flex-wrap: wrap;
 }
 
 .habitaciones {
-    border: 1px solid black;
-    padding: 4px 8px;
-    border-radius: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    transition: transform 0.2s;
 }
 
-.habitacion-ocupada {
-    border: 1px solid red !important;
+.habitaciones:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-.habitacion-disponible {
-    border: 1px solid green;
+.habitacion-label {
+    display: block;
+    cursor: pointer;
+    text-decoration: none;
 }
 
-.i-ocupado {
-    color: red;
+.habitacion-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.i-disponible {
-    color: green;
+.habitacion-info h5 {
+    margin: 0;
+    color: #ff5c5c;
+}
+
+.habitacion-info p {
+    margin: 4px 0 0;
+    color: #555;
 }
 
 .datos {
@@ -62,8 +180,27 @@ box-shadow: 0px 0px 47px -4px rgba(217,217,217,1);
     gap: 16px;
 }
 
-.pago {
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.btn {
+    background-color: #ff5c5c; /* Color principal */
+    color: white; /* Texto blanco */
+    padding: 10px 20px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
 }
+.mensaje-disponibilidad {
+    font-size: 14px; /* Tamaño de fuente */
+    margin-bottom: 10px; /* Espaciado inferior */
+    font-weight: bold; /* Negrita */
+    text-align: center; /* Centrado */
+}
+
+.mensaje-disponibilidad.disponible {
+    color: #28a745; /* Color verde para habitaciones disponibles */
+}
+
+.mensaje-disponibilidad.no-disponible {
+    color: #dc3545; /* Color rojo para habitaciones no disponibles */
+}
+
+
+

@@ -4,35 +4,41 @@
 {% block titulo %} Reservas Usuarios {% endblock %}
 
 {% block contenedor %}
-<h1>Reservas Usuarios</h1>
-<a class="btn btn-success" href="{% url 'reservas_usuarios_form' %}"> Agregar Reserva Usuario</a>
-
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{% if message.tags and message.tags != 'error' %}{{ message.tags }}{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+<h1 class="text-center mt-5">Reservas Usuarios</h1>
+<a class="btn btn-primary ms-4 mb-4" href="{% url 'reservas_usuarios_form' %}"> Agregar Reserva Usuario</a>
+<div style="margin:40px">
 <table class="table">
-    <thead>
+    <thead class="table-info">
         <th>ID</th>
         <th>Usuario</th>
         <th>Numero de habitación Reservada</th>
         <th>Estado de la reserva</th>
-        <th>fecha de realizacion</th>
         <th>Acciones</th>
     </thead>
     <tbody>
         {% for r in data %}
         <tr>
             <td>{{ r.id }}</td>
-            <td>{{ r.usuario}}</td>
+            <td>{{ r.usuario }}</td>
             <td>{{ r.reserva }}</td>
-            <td>{{ r.estado_reserva }}</td>
-            <td>{{ r.fecha_realizacion }}</td>
             <td>
-                <button
-                    type="button"
-                    class="btn btn-info"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modalVer-1"
-                >
-                    <i class="bi bi-eye-fill"></i>
-                </button>
+                <select name="estado_reserva" class="form-select" data-id="{{ r.id }}" onchange="actualizarEstado(this)">
+                    <option value="1" {% if r.estado_reserva == 1 %}selected{% endif %}>Reservada</option>
+                    <option value="2" {% if r.estado_reserva == 2 %}selected{% endif %}>En curso</option>
+                    <option value="3" {% if r.estado_reserva == 3 %}selected{% endif %}>Cancelada</option>
+                    <option value="4" {% if r.estado_reserva == 4 %}selected{% endif %}>Finalizado</option>
+                </select>
+            </td>
+
+            <td>
                 <a
                     class="btn btn-warning"
                     href="{% url 'reservas_usuarios_form_editar' r.id %}"
@@ -57,5 +63,38 @@
         <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
     </ul>
 </nav>
+</div>
+
+<!-- JavaScript para manejar el cambio de estado -->
+<script>
+    function actualizarEstado(selectElement) {
+        const reservaId = selectElement.getAttribute('data-id');
+        const nuevoEstado = selectElement.value;
+
+        // Crear la solicitud AJAX
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "", true); // Envío al mismo endpoint sin cambiar la URL
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}'); // Incluye el CSRF token para la seguridad
+
+        // Manejar la respuesta de la solicitud
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Estado actualizado correctamente.");
+            } else if (xhr.readyState === 4) {
+                console.error("Error al actualizar el estado.");
+            }
+        };
+
+        // Crear el cuerpo de la solicitud con el ID de la reserva y el nuevo estado
+        const data = JSON.stringify({
+            reserva_id: reservaId,
+            estado_reserva: nuevoEstado
+        });
+
+        // Enviar la solicitud AJAX con los datos
+        xhr.send(data);
+    }
+</script>
 
 {% endblock %}
