@@ -1,0 +1,49 @@
+{% extends 'planning_travel/hoteles/base_hoteles.html' %}
+{% load static %}
+
+{% block title %}Resumen de Reserva{% endblock %}
+{% block content %}
+    <style>
+main {
+    max-width: 800px; /* Máximo ancho para la página */
+    margin: 20px auto; /* Centrar en la página */
+    background-color: white; /* Fondo blanco para el contenido */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    padding: 20px; /* Espaciado interno */
+}
+
+h1 {
+    color: #ff5c5c; /* Color principal */
+    text-align: center; /* Centrar título */
+}
+
+.detalles-reserva, .opciones-pago {
+    margin-bottom: 20px; /* Espaciado inferior */
+}
+button {
+    background-color: #ff5c5c; /* Color principal */
+    color: white; /* Texto blanco */
+    padding: 10px 20px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar cursor al pasar sobre el botón */
+}
+
+button:hover {
+    background-color: #d44a4a; /* Color más oscuro al pasar el mouse */
+}
+
+    </style>
+</head>
+<body>
+    <main>
+        <div></div>
+        <h1>¡Reserva Confirmada!</h1>
+                <p style="text-align:  center;">Gracias por elegir nuestro hotel. Su reserva ha sido realizada exitosamente.</p>
+                <p style="text-align: center; margin-bottom: 30px;">Recuerde que podrá realizar el pago al salir del hotel.</p>
+        <div style="display: flex; justify-content: center;">
+            <button>Regresar a la Reserva</button>
+        </div>
+    </main>
+{% endblock %}

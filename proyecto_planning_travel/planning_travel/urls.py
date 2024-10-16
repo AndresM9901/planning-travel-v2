@@ -238,7 +238,10 @@ urlpatterns = [
     path('enviar_mensaje/<int:id_hotel>/', views.enviar_mensaje, name="enviar_mensaje"),
     path('enviar_men/', views.enviar_men, name='enviar_men'),
     path('chat/', views.chat, name='chat'),
-    path('error/', views.error_page, name='error')
+    path('error/', views.error_page, name='error'),
+    path('resumen/<int:reserva_id>/', views.resumen, name='resumen'),
+    path('confirmar_reserva/<int:id>/', views.confirmar_reserva, name='confirmar_reserva'),
+    path('gracias/<int:reserva_id>/', views.gracias_view, name='gracias'),
 ]
 
 # from django.contrib.auth.models import User

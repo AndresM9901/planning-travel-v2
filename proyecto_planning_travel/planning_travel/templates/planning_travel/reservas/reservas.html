@@ -1,5 +1,5 @@
-{% extends 'planning_travel/base.html' %} 
-{% load static %} 
+{% extends 'planning_travel/base.html' %}
+{% load static %}
 {% block titulo %}Reservas{% endblock %}
 {% block contenedor %}
     <h1 class="text-center mt-5">Reservas</h1>
@@ -12,7 +12,7 @@
             <th>Fecha de llegada</th>
             <th>Fecha de salida</th>
             <th>Cantidad de personas</th>
-            <th>Costo Total </th>
+            <th>Costo Total</th>
             <th>Acciones</th>
         </thead>
         <tbody>
@@ -25,16 +25,12 @@
                 <td>{{ r.cantidad_personas }}</td>
                 <td>{{ r.total }}</td>
                 <td>
-                    <a
-                        class="btn btn-warning"
-                        href="{% url 'reservas_form_editar' r.id %}"
-                        ><i class="bi bi-pencil"></i
-                    ></a>
-                    <a
-                        href="javascript:eliminar('{% url 'reservas_eliminar' r.id %}')"
-                        class="btn btn-danger"
-                        ><i class="bi bi-x-lg"></i
-                    ></a>
+                    <a class="btn btn-warning" href="{% url 'reservas_form_editar' r.id %}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="javascript:eliminar('{% url 'reservas_eliminar' r.id %}')" class="btn btn-danger">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
                 </td>
             </tr>
             {% endfor %}
@@ -49,5 +45,5 @@
             <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
         </ul>
     </nav>
-</div>
+    </div>
 {% endblock %}

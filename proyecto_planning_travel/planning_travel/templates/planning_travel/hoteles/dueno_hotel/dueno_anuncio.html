@@ -33,18 +33,16 @@
                 <img class="imagen" src="{% static 'path/to/default/image.jpg' %}" alt="Imagen no disponible">
                 {% endif %}
             </div>
-            <div class="card-body">
+            <div class="card-body carta-boton">
                 <p class="contenido-card ">{{ hotel.nombre }}</p>
                 <p class="ubicacion ">{{ hotel.ciudad }}</p>
 
-                <a class="btn" href="{% url 'editar_hotel_anfitrion' hotel.id %}"><button class="boton-card  p-2">Editar hotel</button></a>
-                <a class="btn" href="{% url 'habitacion_anfitrion' hotel.id %}"><button class="boton-card  p-2">Editar habitacion</button></a>
+                <a class="boton-card  p-2" href="{% url 'editar_hotel_anfitrion' hotel.id %}">Editar hotel</a>
+                <a class="boton-card  p-2" href="{% url 'habitacion_anfitrion' hotel.id %}">Editar habitacion</a>
 
              </div>
-             <div>
-                <a href="javascript:eliminar('{% url 'hoteles_anfitrion_eliminar' hotel.id %}')" class="btn btn-primary ms-5 mb-2 mt-2"><i
+                <a href="javascript:eliminar('{% url 'hoteles_anfitrion_eliminar' hotel.id %}')" class="boton-delete"><i
                     class="bi bi-x-lg"></i> </a> 
-             </div>
         </div>
         {% endif %}
         {% endfor %}

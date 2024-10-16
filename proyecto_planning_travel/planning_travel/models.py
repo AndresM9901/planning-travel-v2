@@ -29,8 +29,7 @@ class Usuario(AbstractUser):
     ROLES = (
         (1, "Administrador"),
         (2, "Anfitrion"),
-        (3, "Cliente"),
-        (4, "Moderador")
+        (3, "Cliente")
     )
     rol = models.IntegerField(choices=ROLES, default=3)
     foto = models.ImageField(upload_to="planning_travel/media/", default='planning_travel/media/batman.png')
@@ -180,8 +179,9 @@ class ReservaUsuario(models.Model):
     reserva = models.ForeignKey(Reserva, on_delete=models.CASCADE)
     ESTADO_RESERVA = (
         (1, 'reservada'),
-        (2, 'libre'),
-        (3, 'cancelada')
+        (2, 'En curso'),
+        (3, 'cancelada'),
+        (4, 'finalizado')
     )
     estado_reserva = models.IntegerField(choices=ESTADO_RESERVA, default=1)
     fecha_realizacion = models.DateTimeField(auto_now_add=True)

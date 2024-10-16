@@ -2,11 +2,11 @@
 {% load static %} 
 {% block titulo %}Usuarios{% endblock %}
 {% block contenedor %}
-    <h1>Usuarios</h1>
-    <a class="btn btn-success" href="{% url 'usuarios_form' %}">Agregar Usuarios</a>
+    <h1 class="text-center mt-5">Usuarios</h1>
+    <a class="btn btn-primary ms-4 mb-4" href="{% url 'usuarios_form' %}">Agregar Usuarios</a>
     <div style="margin:40px">
     <table class="table">
-        <thead>
+        <thead class="table-info">
             <th>ID</th>
             <th>Nombre</th>
             <th>Correo</th>
@@ -20,15 +20,18 @@
                 <td>{{ r.id }}</td>
                 <td>{{ r.nombre }}</td>
                 <td>{{ r.email }}</td>
-                <td>{{ r.rol }}</td>
+                <td>
+                    <select class="form-select" data-id="{{ r.id }}" onchange="cambiarRol(this)">
+                       
+                        <option value="1" {% if r.rol == 1 %} selected {% endif %}>Administrador</option>
+                        <option value="2" {% if r.rol == 2 %} selected {% endif %}>Anfitrión</option>
+                        <option value="3" {% if r.rol == 3 %} selected{% endif %}>Cliente</option>
+                    </select>
+                </td>
+                
                 <td>{% if r.foto.url != '' %}<img width="100" height="100" src="{{ r.foto.url }}" alt="">{% endif %}</td>
                 <td>
-                    <button
-                        type="button"
-                        class="btn btn-info"
-                    >
-                        <i class="bi bi-eye-fill"></i>
-                    </button>
+        
                     <a
                         class="btn btn-warning"
                         href="{% url 'usuarios_form_editar' r.id %}"
@@ -54,4 +57,36 @@
         </ul>
     </nav>
     </div>  
+
+    <script>
+        function cambiarRol(selectElement) {
+            const usuarioId = selectElement.getAttribute('data-id');
+            const nuevoRol = selectElement.value;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "", true); // Se mantiene la URL vacía para enviar la solicitud a la misma página
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}'); 
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.message) {
+                        alert(response.message);
+                    } else {
+                        alert('Error al actualizar el rol: ' + response.error);
+                    }
+                } else if (xhr.readyState === 4) {
+                    console.error("Error al actualizar el rol.");
+                }
+            };
+
+            const data = JSON.stringify({
+                usuario_id: usuarioId,
+                rol: nuevoRol
+            });
+
+            xhr.send(data);
+        }
+    </script>
 {% endblock %}

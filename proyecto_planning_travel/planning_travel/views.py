@@ -152,7 +152,7 @@ def inicio(request):
 
 @admin_required
 def administrador(request):
-    return render(request,'planning_travel/base.html')
+    return render(request,'planning_travel/administrador.html')
 
 def error_page(request):
     return render(request, 'planning_travel/error.html')  # Crea un archivo error.html
@@ -296,82 +296,189 @@ def guardar_opinion(request):
             return redirect('detalle_hotel', id=hotel_id)
 
 def verificar_disponibilidad(request):
-    fecha_llegada_str = request.POST.get('fecha_llegada')
-    fecha_salida_str = request.POST.get('fecha_salida')
-    
-    if fecha_llegada_str is None or fecha_salida_str is None:
-        return JsonResponse({'error': 'Las fechas de llegada y salida son necesarias'}, status=400)
-    
-    fecha_llegada = datetime.strptime(fecha_llegada_str, '%Y-%m-%d')
-    fecha_salida = datetime.strptime(fecha_salida_str, '%Y-%m-%d')
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            fecha_llegada = data.get('fecha_llegada')
+            fecha_salida = data.get('fecha_salida')
 
-    habitaciones_ocupadas = Habitacion.objects.filter(
-        reserva__fecha_llegada__lte=fecha_salida,
-        reserva__fecha_salida__gte=fecha_llegada
-    ).values_list('id', 'num_habitacion')
+            if not fecha_llegada or not fecha_salida:
+                return JsonResponse({'error': 'Las fechas son obligatorias.'}, status=400)
 
-    habitaciones_disponibles = Habitacion.objects.exclude(
-        reserva__fecha_llegada__lte=fecha_salida,
-        reserva__fecha_salida__gte=fecha_llegada
-    ).values_list('id', 'num_habitacion')
-    print(f'{habitaciones_ocupadas}, {habitaciones_disponibles}')
-    return JsonResponse({
-        'habitaciones_ocupadas': list(habitaciones_ocupadas),
-        'habitaciones_disponibles': list(habitaciones_disponibles)
-    })
+            # Convertir las fechas de string a objeto datetime
+            fecha_llegada = datetime.strptime(fecha_llegada, '%Y-%m-%d')
+            fecha_salida = datetime.strptime(fecha_salida, '%Y-%m-%d')
+
+            # Lógica para verificar habitaciones ocupadas
+            habitaciones_ocupadas = Habitacion.objects.filter(
+                reserva__fecha_llegada__lt=fecha_salida,
+                reserva__fecha_salida__gt=fecha_llegada
+            ).values_list('id', flat=True)
+
+            return JsonResponse({
+                'habitaciones_ocupadas': list(habitaciones_ocupadas)
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Error en los datos enviados.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Método no permitido.'}, status=405)
     
 def separar_reserva(request, id):
     if request.method == 'POST':
-        habitacion = request.POST.get('habitacion')
+        habitacion_id = request.POST.get('habitacion')
+        fecha_llegada_str = request.POST.get('fecha_llegada')
+        fecha_salida_str = request.POST.get('fecha_salida')
+        num_huespedes = request.POST.get('num_personas')
+        hotel = Hotel.objects.get(pk=id)
+
+        # Verificar que se seleccionaron fechas
+        if not fecha_llegada_str or not fecha_salida_str:
+            messages.error(request, 'Debes seleccionar fechas de llegada y salida.')
+            return redirect(reverse('reserva', kwargs={'id': hotel.id}))
+
+        try:
+            # Convertir las fechas de string a objetos de fecha
+            fecha_llegada = datetime.strptime(fecha_llegada_str, '%Y-%m-%d').date()
+            fecha_salida = datetime.strptime(fecha_salida_str, '%Y-%m-%d').date()
+
+            # Calcular la cantidad de días
+            cantidad_dias = (fecha_salida - fecha_llegada).days
+            if cantidad_dias <= 0:
+                messages.error(request, 'La fecha de salida debe ser posterior a la de llegada.')
+                return redirect(reverse('reserva', kwargs={'id': hotel.id}))
+
+            # Intentar obtener la habitación
+            qh = Habitacion.objects.get(pk=habitacion_id, hotel=hotel)
+
+            # Verificar que la cantidad de huéspedes no supere la capacidad
+            if int(num_huespedes) > qh.capacidad_huesped:
+                messages.error(request, 'La cantidad de huéspedes no puede superar la capacidad de la habitación.')
+                return redirect(reverse('reserva', kwargs={'id': hotel.id}))
+
+            # Verificar disponibilidad de la habitación
+            reservas_existentes = Reserva.objects.filter(
+                habitacion=qh,
+                fecha_llegada__lt=fecha_salida,
+                fecha_salida__gt=fecha_llegada
+            )
+
+            if reservas_existentes.exists():
+                messages.error(request, 'La habitación no está disponible en esas fechas.')
+                return redirect(reverse('reserva', kwargs={'id': hotel.id}))
+
+            # Calcular el total basado en el precio por noche
+            total = float(qh.precio) * cantidad_dias  # Asegúrate de que `precio` sea un número
+            total = round(total, 2)  # Redondear a dos decimales
+
+            # Preparar los datos para el resumen
+            resumen_data = {
+                'habitacion_num': qh.num_habitacion,
+                'fecha_llegada': fecha_llegada.strftime('%Y-%m-%d'),
+                'habitacion_id': qh.id,
+                'fecha_salida': fecha_salida.strftime('%Y-%m-%d'),
+                'cantidad_personas': int(num_huespedes),
+                'total': total,  # Asegúrate de que sea un número decimal
+                'hotel_id': hotel.id,
+            }
+
+            # Redirigir a la página de resumen con los datos
+            return render(request, 'planning_travel/hoteles/reservas/resumen.html', {'resumen': resumen_data})
+
+        except Habitacion.DoesNotExist:
+            messages.error(request, 'La habitación seleccionada no existe.')
+        except Exception as e:
+            messages.error(request, 'Ocurrió un error: ' + str(e))
+
+        return redirect(reverse('reserva', kwargs={'id': hotel.id}))
+
+    return redirect('inicio')
+
+
+def confirmar_reserva(request, id):
+    if request.method == 'POST':
+        habitacion_id = request.POST.get('habitacion')
         fecha_llegada = request.POST.get('fecha_llegada')
         fecha_salida = request.POST.get('fecha_salida')
         num_huespedes = request.POST.get('num_personas')
-        hotel = Hotel.objects.get(pk=id)
-        try:
-            qh = Habitacion.objects.get(pk=habitacion)
-            reserva = Reserva(
-                habitacion=qh,
-                fecha_llegada=fecha_llegada,
-                fecha_salida=fecha_salida,
-                cantidad_personas=num_huespedes,
-                total=qh.precio
-            )
-            reserva.save()
-            if request.session['logueo']:
-                usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
-                reserva_usuario = ReservaUsuario(
-                    usuario=usuario,
-                    reserva=reserva
-                )
-                reserva_usuario.save()
-            else:
-                messages.success(request, "Primero inicia sesion")
-                url = reverse('reserva', kwargs={'id': hotel.id})
-                return redirect(url)
-            messages.success(request, "Fue reservado correctamente")
-        except Exception as e:
-            # messages.error(request,f'Error: {e}')
-            messages.error(request, 'Todos los campos son obligatorios')
-            url = reverse('reserva', kwargs={'id': hotel.id})
-            return redirect(url)
+        total = request.POST.get('total')
+        opcion_pago = request.POST.get('opcionPago')  # Get selected payment option
 
-    else:
-        hotel = Hotel.objects.get(pk=PisosHotel.objects.get(pk=Habitacion.objects.get(pk=habitacion.id)))
-        url = reverse('reserva', kwargs={'id': hotel.id})
-        messages.warning(request, 'No se pudo hacer la reserva')
-        return redirect(url)
+        hotel = Hotel.objects.get(pk=id)
+
+        try:
+            total = float(total.replace(',', '.'))
+            qh = Habitacion.objects.get(pk=habitacion_id, hotel=hotel)
+            reservas_existentes = Reserva.objects.filter(
+                habitacion=qh,
+                fecha_llegada__lt=fecha_salida,
+                fecha_salida__gt=fecha_llegada
+            )
+
+            if reservas_existentes.exists():
+                messages.error(request, 'La habitación no está disponible en esas fechas.')
+                return redirect(reverse('reserva', kwargs={'id': hotel.id}))
+
+            else:
+                reserva = Reserva(
+                    habitacion=qh,
+                    fecha_llegada=fecha_llegada,
+                    fecha_salida=fecha_salida,
+                    cantidad_personas=num_huespedes,
+                    total=total
+                )
+                reserva.save()
+
+                if request.session.get('logueo'):
+                    usuario = Usuario.objects.get(pk=request.session['logueo']['id'])
+                    reserva_usuario = ReservaUsuario(usuario=usuario, reserva=reserva)
+                    reserva_usuario.save()
+
+                messages.success(request, "Fue reservado correctamente.")
+
+                if opcion_pago == 'pagoAhora':
+                    return redirect('pago', reserva_id=reserva.id) 
+                else:
+                    return redirect('gracias', reserva_id=reserva.id)  
+
+        except Habitacion.DoesNotExist:
+            messages.error(request, "La habitación no existe en este hotel.")
+        except ValueError:
+            messages.error(request, "El total debe ser un número válido.")
+        except Exception as e:
+            messages.error(request, 'Error: ' + str(e))
+
+        return redirect(reverse('reserva', kwargs={'id': id}))
     return redirect('inicio')
+
 
 def obtener_precio(request):
     habitacion_seleccionada = request.GET.get('habitacion')
-    
     precio = 0
     
     if habitacion_seleccionada:
-        habitacion = Habitacion.objects.get(pk=habitacion_seleccionada)
-        precio = habitacion.precio
-        
+        try:
+            habitacion = Habitacion.objects.get(pk=habitacion_seleccionada)
+            precio = habitacion.precio
+        except Habitacion.DoesNotExist:
+            return JsonResponse({'error': 'Habitación no encontrada'}, status=404)
+    
     return JsonResponse({'precio': precio})
+
+def resumen(request, reserva_id):
+    try:
+        reserva = Reserva.objects.get(pk=reserva_id)
+        return render(request, 'planning_travel/hoteles/reservas/resumen.html', {'reserva': reserva})
+    except Reserva.DoesNotExist:
+        return redirect('inicio')
+def gracias_view(request, reserva_id):
+    try:
+        reserva = Reserva.objects.get(pk=reserva_id)
+        return render(request, 'planning_travel/hoteles/reservas/gracias.html', {'reserva': reserva})
+    except Reserva.DoesNotExist:
+        return redirect('inicio')
 
 def agregar_pago(request):
     return redirect('ver_perfil')
@@ -658,15 +765,15 @@ class DeleteUserView(generics.DestroyAPIView):
             return Response({'error': 'El usuario especificado no existe'}, status=status.HTTP_404_NOT_FOUND)
 
 # Crud de Categorias
+@admin_required
 def categorias(request):
-    # select * from categorias
     consulta = Categoria.objects.all()
     context = {'data': consulta}
     return render(request, 'planning_travel/categorias/categorias.html', context)
-
+@admin_required
 def categorias_form(request):
     return render(request, 'planning_travel/categorias/categorias_form.html')
-
+@admin_required
 def categorias_crear(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -685,7 +792,7 @@ def categorias_crear(request):
     else:
         messages.warning(request, 'No se enviaron datos')
         return redirect('categorias_listar')
-
+@admin_required
 def categorias_eliminar(request, id):
     try:
         q = Categoria.objects.get(pk = id)
@@ -695,14 +802,14 @@ def categorias_eliminar(request, id):
         messages.error(request,f'Error: {e}')
 
     return redirect('categorias_listar')
-
+@admin_required
 def categorias_formulario_editar(request, id):
 
     q = Categoria.objects.get(pk = id)
     contexto = {'data': q}
 
     return render(request, 'planning_travel/categorias/categorias_form_editar.html', contexto)
-
+@admin_required
 def categorias_actualizar(request):
     if request.method == 'POST':
         id = request.POST.get('id')
@@ -925,10 +1032,8 @@ def index(request):
 # dueño hotel cambios sofia
 
 def enviar_men(request):
-    if request.method == 'POST':
-        print("Datos POST recibidos:", request.POST)  
-        
-        contenido = request.POST.get('mensaje')
+    if request.method == 'POST':        
+        contenido = request.POST.get('contenido')
         destinatario_id = request.POST.get('destinatario_id')  
         remitente_id = request.session["logueo"]["id"]
 
@@ -1028,7 +1133,7 @@ def enviar_mensaje(request, id_hotel):
     if logueo:
         hotel = get_object_or_404(Hotel, pk=id_hotel)
         user=request.session["logueo"]["id"]        
-        contenido = request.POST.get('descripcion')
+        contenido = request.POST.get('contenido')
 
         if contenido == "":
             messages.error(request, "El campo no puede estar vacio")
@@ -1194,6 +1299,21 @@ def registrar_form(request):
 # Crud de Usuarios
 @admin_required
 def usuarios(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        usuario_id = data.get('usuario_id')
+        nuevo_rol = data.get('rol')
+
+        try:
+            usuario = Usuario.objects.get(id=usuario_id)
+            usuario.rol = nuevo_rol
+            usuario.save()
+            return JsonResponse({'message': 'Rol actualizado correctamente.'})
+        except Usuario.DoesNotExist:
+            return JsonResponse({'error': 'Usuario no encontrado.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
     q = Usuario.objects.all()
     contexto = {'data': q}
     return render(request, 'planning_travel/login/usuarios.html', contexto)
@@ -1445,7 +1565,6 @@ def hoteles_anfitrion_eliminar(request, hotel_id):
         hotel = get_object_or_404(Hotel, pk=hotel_id)
         
         if hotel.propietario.id == request.session["logueo"]["id"]:
-            print(hotel)
             hotel.delete()
             messages.success(request, '¡Hotel eliminado correctamente!')
 
@@ -1454,7 +1573,7 @@ def hoteles_anfitrion_eliminar(request, hotel_id):
     
     except Exception as e:
         messages.error(request, f'Error al eliminar el hotel: Debes eliminar las habitaciones de este hotel')
-    
+
     return redirect('dueno_anuncio') 
 def editar_hotel_anfitrion(request, hotel_id):
     hotel = get_object_or_404(Hotel, pk=hotel_id)
@@ -1497,18 +1616,17 @@ def crear_habitacion_anfitrion(request, hotel_id):
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipoHabitacion')
         precio = request.POST.get('precio')
-
-        # Validar que todos los campos sean obligatorios
+        if re.search(r'[^a-zA-ZñÑ\s.,-]', num_habitacion):
+                raise ValueError("El Número de habitación no debe contener caracteres especiales.")
+        
         if not all([num_habitacion, capacidad_huesped, tipo_habitacion, precio]):
             messages.error(request, "Todos los campos son obligatorios.")
             return redirect('habitacion_anfitrion_form', hotel_id=hotel_id)
 
-        # Convertir a los tipos de datos adecuados
         num_habitacion = int(num_habitacion)
         capacidad_huesped = int(capacidad_huesped)
         precio = float(precio)
 
-        # Validaciones de valores negativos
         if num_habitacion < 0:
             messages.error(request, "El número de habitación no puede ser negativo.")
             return redirect('habitacion_anfitrion_form', hotel_id=hotel_id)
@@ -1544,17 +1662,13 @@ def habitacion_anfitrion_eliminar(request, id):
     return redirect('habitacion_anfitrion',hotel_id=hotel_id )  
 
 def editar_habitacion_form(request, id):
-    # Obtener la habitación a editar
     habitacion = get_object_or_404(Habitacion, id=id)
-
-    # Renderizar el formulario de edición con los datos actuales de la habitación
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/editar_habitacion_anfitrion.html', {
         'habitacion': habitacion,
     })
 
 
 def actualizar_habitacion(request, id):
-    # Obtener la habitación a actualizar
     habitacion = get_object_or_404(Habitacion, id=id)
     hotel_id = habitacion.hotel.id
     if request.method == 'POST':
@@ -1563,15 +1677,17 @@ def actualizar_habitacion(request, id):
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipoHabitacion')
         precio = request.POST.get('precio')
-
-        # Validación de campos
+        if re.search(r'[^a-zA-ZñÑ\s.,-]', num_habitacion):
+            messages.error(request, "No puede contener caracteres especiales")
+            return redirect('editar_habitacion_form', id=id)
+        num_habitacion = int(num_habitacion)
+        capacidad_huesped = int(capacidad_huesped)
+        precio = float(precio)
         if not all([num_habitacion, capacidad_huesped, tipo_habitacion, precio]):
             messages.error(request, "Todos los campos son obligatorios.")
             return redirect('editar_habitacion_form', id=id)
 
-        num_habitacion = int(num_habitacion)
-        capacidad_huesped = int(capacidad_huesped)
-        precio = float(precio)
+        
 
         if num_habitacion < 0:
             messages.error(request, "El número de habitación no puede ser negativo.")
@@ -1584,8 +1700,6 @@ def actualizar_habitacion(request, id):
         if precio < 0:
             messages.error(request, "El precio no puede ser negativo.")
             return redirect('editar_habitacion_form', id=id)
-
-        # Actualizar la habitación
         habitacion.num_habitacion = num_habitacion
         habitacion.ocupado = ocupado
         habitacion.capacidad_huesped = capacidad_huesped
@@ -1594,7 +1708,7 @@ def actualizar_habitacion(request, id):
         habitacion.save()
 
         messages.success(request, "Habitación actualizada exitosamente.")
-        return redirect('habitacion_anfitrion', hotel_id=hotel_id)  # Cambia esto según sea necesario
+        return redirect('habitacion_anfitrion', hotel_id=hotel_id)  
 
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/editar_habitacion_form.html', {
         'habitacion': habitacion,
@@ -1604,80 +1718,63 @@ def actualizar_hotel_anfitrion(request):
     if request.method == 'POST':
         hotel_id = request.POST.get('hotel_id')
         hotel = get_object_or_404(Hotel, id=hotel_id)
-        # Obtener los datos del formulario
         nombre = request.POST.get('nombre')
         descripcion = request.POST.get('descripcion')
         direccion = request.POST.get('direccion')
         categoria = request.POST.get('categoria')
         ciudad = request.POST.get('ciudad')
-        servicios_seleccionados = request.POST.getlist('servicios')  # Obtener la lista de servicios
-        fotos = request.FILES.getlist('fotos')  # Obtener las fotos subidas
+        servicios_seleccionados = request.POST.getlist('servicios')  
+        fotos = request.FILES.getlist('fotos')
         descripcion_foto = request.POST.get('descripcion_foto')
 
-        # Actualizar los campos del hotel
         
         try:
-            # Validar que todos los campos del hotel estén completos
             if not nombre or not descripcion or not direccion or not categoria or not ciudad:
                 raise ValueError("Todos los campos son obligatorios.")
-
-            # Validar que los campos de texto no contengan números ni caracteres especiales
             if re.search(r'[^a-zA-ZñÑ\s.,-]', nombre):
                 raise ValueError("El nombre no debe contener números ni caracteres especiales.")
 
             if re.search(r'[^a-zA-Z\s]', ciudad):
                 raise ValueError("La ciudad solo debe contener letras y espacios.")
 
-            # Actualizar los campos del hotel
             hotel.nombre = nombre
             hotel.descripcion = descripcion
             hotel.direccion = direccion
-            hotel.categoria_id = categoria  # Asegúrate de que esto es correcto
+            hotel.categoria_id = categoria 
             hotel.ciudad = ciudad
-
-            # Guardar el hotel
             hotel.save()
 
-            # Limpiar servicios existentes
             HotelServicio.objects.filter(id_hotel=hotel).delete()
 
-            # Actualizar los servicios del hotel
             for servicio_id in servicios_seleccionados:
                 servicio = Servicio.objects.get(pk=servicio_id)
-                # Crear la relación en HotelServicio
                 HotelServicio.objects.create(id_hotel=hotel, id_servicio=servicio)
 
-            # Manejo de fotos
-            # Eliminar fotos existentes
-            if fotos:  # Verifica si se han subido nuevas fotos
-                # Eliminar fotos existentes solo si hay nuevas
+            if fotos:  
                 Foto.objects.filter(id_hotel=hotel).delete()
                 
-                # Agregar nuevas fotos
                 for foto in fotos:
                     nueva_foto = Foto(id_hotel=hotel, url_foto=foto, descripcion=descripcion_foto)
                     nueva_foto.save()
 
-            # Mensaje de éxito
             messages.success(request, 'Hotel actualizado correctamente.')
-            return redirect('dueno_anuncio')  # Cambia esto al nombre de la vista a la que quieres redirigir
+            return redirect('dueno_anuncio') 
 
         except ValueError as e:
-            messages.error(request, str(e))  # Agrega el mensaje de error
+            messages.error(request, str(e)) 
             return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html', {
                 'hotel': hotel,
-                'categorias': Categoria.objects.all(),  # Asegúrate de pasar las categorías también
-                'servicios': Servicio.objects.all(),  # Asegúrate de pasar los servicios también
-                'servicios_seleccionados': hotel.servicios.all(),  # Servicios seleccionados
-                'fotos_existentes': hotel.foto_set.all()  # Usa 'foto_set' para acceder a las fotos relacionadas
+                'categorias': Categoria.objects.all(),  
+                'servicios': Servicio.objects.all(),
+                'servicios_seleccionados': hotel.servicios.all(), 
+                'fotos_existentes': hotel.foto_set.all()  
             })
 
-    # Si no es un POST, simplemente renderiza el formulario con los datos actuales
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html', {
         'hotel': hotel,
-        'categorias': Categoria.objects.all(),  # Asegúrate de pasar las categorías también
-        'servicios': Servicio.objects.all(),  # Asegúrate de pasar los servicios también
-        'servicios_seleccionados': hotel.servicios.all()  # O como sea que almacenes tus servicios
+        'categorias': Categoria.objects.all(), 
+        'servicios': Servicio.objects.all(),  
+        'servicios_seleccionados': hotel.servicios.all()  
     })
 
 # Crud Servicios del hotel
@@ -1711,39 +1808,36 @@ def servicios_hotel_form(request):
     return render(request, 'planning_travel/comodidades/comodidad_form.html', contexto)
 @admin_required
 def servicios_hotel_crear(request):
-    hoteles = Hotel.objects.all()  # Asegúrate de obtener los hoteles
-    servicios = Servicio.objects.all()  # Asegúrate de obtener los servicios
+    hoteles = Hotel.objects.all()  
+    servicios = Servicio.objects.all()  
     if request.method == 'POST':
-        hotel_id = request.POST.get('hotel')  # Obtener el ID del hotel
-        servicio_id = request.POST.get('servicio')  # Obtener el ID del servicio
+        hotel_id = request.POST.get('hotel')  
+        servicio_id = request.POST.get('servicio')  
 
         servicio_existente = HotelServicio.objects.filter(id_hotel_id=hotel_id, id_servicio_id=servicio_id).exists()
 
         if servicio_existente:
             messages.error(request, "Este servicio ya está asignado a este hotel.")
-            return redirect('comodidades_listar')  # Redirige a la lista de servicios
+            return redirect('comodidades_listar')  
         else:
             try:
-                # Validar que los campos no estén vacíos
                 if not hotel_id or not servicio_id:
                     raise ValueError("Todos los campos son obligatorios.")
 
-                # Guardar la relación entre el hotel y el servicio
                 servicio_hotel = HotelServicio(
-                    id_hotel_id=hotel_id,  # Usar el ID del hotel
-                    id_servicio_id=servicio_id  # Usar el ID del servicio
+                    id_hotel_id=hotel_id,
+                    id_servicio_id=servicio_id 
                 )
                 servicio_hotel.save()
                 messages.success(request, "Servicio registrado correctamente.")
-                return redirect('comodidades_listar')  # Redirigir después de guardar
+                return redirect('comodidades_listar')  
 
             except Exception as e:
                 messages.error(request, f'Error: {e}')
-                return redirect('comodidades_crear')  # Redirigir al formulario en caso de error
+                return redirect('comodidades_crear')  
     else:
         messages.warning(request, 'No se enviaron datos')
 
-    # Pasar los hoteles y servicios al contexto para el formulario
     contexto = {'hoteles': hoteles, 'servicios': servicios}
     return render(request, 'planning_travel/comodidades/comodidad.html', contexto)
 @admin_required  
@@ -1788,30 +1882,25 @@ def servicios_hotel_form_editar(request, id):
 @admin_required
 def servicios_hotel_actualizar(request):
     if request.method == 'POST':
-        # Obtener los datos del formulario
-        hotel_id = request.POST.get('hotel')  # ID del hotel
-        servicio_id = request.POST.get('servicio')  # ID del servicio
+        hotel_id = request.POST.get('hotel') 
+        servicio_id = request.POST.get('servicio') 
 
-        # Verificar si ya existe este servicio para el hotel antes de actualizar
         servicio_existente = HotelServicio.objects.filter(id_hotel_id=hotel_id, id_servicio_id=servicio_id).exists()
 
         if servicio_existente:
             messages.error(request, "Este servicio ya está asignado a este hotel.")
         else:
             try:
-                # Obtener el servicio a actualizar
                 id_servicio = request.POST.get('id_servicio')
                 servicio = get_object_or_404(HotelServicio, id=id_servicio)
 
-                # Actualizar el servicio
                 servicio.id_servicio_id = servicio_id
-                servicio.save()  # Guarda los cambios
+                servicio.save() 
                 messages.success(request, "Servicio actualizado correctamente")
-                return redirect('comodidades_listar')  # Redirige a la lista de servicios
+                return redirect('comodidades_listar')  
             except Exception as e:
                 messages.error(request, f'Error al actualizar el servicio: {e}')
 
-    # Si no es POST, redirige de vuelta
     return redirect('comodidades_listar')
 
 # Crud habitaciones
@@ -1836,21 +1925,19 @@ def habitaciones_crear(request):
         ocupado = True if ocupado == 'on' else False    
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipoHabitacion')
-        precio = request.POST.get('precio')  # Obtén el precio del formulario
+        precio = request.POST.get('precio') 
 
-        # Asegúrate de convertir la capacidad y el precio a los tipos correctos
         try:
             capacidad_huesped = int(capacidad_huesped)
-            precio = float(precio)  # Convertir el precio a decimal
+            precio = float(precio)  
 
-            # Crea la instancia de Habitacion
             q = Habitacion( 
                 num_habitacion=num_habitacion,
-                hotel=hotel,  # Cambié id_hotel a hotel para que coincida con el ForeignKey
+                hotel=hotel,  
                 ocupado=ocupado,
                 capacidad_huesped=capacidad_huesped,
                 tipo_habitacion=tipo_habitacion,
-                precio=precio,  # Asegúrate de incluir el precio
+                precio=precio, 
             )
             q.save()
             messages.success(request, "La habitación fue creada correctamente.")
@@ -1885,20 +1972,20 @@ def habitaciones_actualizar(request):
         id = request.POST.get('id')
         num_habitacion = request.POST.get('num_habitacion')
         hotel = Hotel.objects.get(pk=request.POST.get('hotel'))
-        ocupado = request.POST.get('ocupado') == 'on'  # Simplificación de la asignación
+        ocupado = request.POST.get('ocupado') == 'on'  
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipoHabitacion')
-        precio = request.POST.get('precio')  # Se añade el precio
+        precio = request.POST.get('precio') 
 
         try:
 
             q = Habitacion.objects.get(pk=id)
             q.num_habitacion = num_habitacion
-            q.hotel = hotel  # Cambié de id_hotel a hotel
+            q.hotel = hotel 
             q.ocupado = ocupado
             q.capacidad_huesped = capacidad_huesped
             q.tipo_habitacion = tipo_habitacion
-            q.precio = precio  # Asignar el precio
+            q.precio = precio  
             q.save()
             messages.success(request, "Habitación actualizada correctamente")
         except Habitacion.DoesNotExist:
@@ -1913,9 +2000,25 @@ def habitaciones_actualizar(request):
 # Crud ReservaUsuarios
 @admin_required
 def reservas_usuarios(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            reserva_id = data.get('reserva_id')
+            nuevo_estado = data.get('estado_reserva')
+            reserva_usuario = ReservaUsuario.objects.get(id=reserva_id)
+
+            reserva_usuario.estado_reserva = nuevo_estado
+            reserva_usuario.save()
+
+        
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+      
+    
     q = ReservaUsuario.objects.all()
     contexto = {'data': q}
     return render(request, 'planning_travel/reservas_usuarios/reservas_usuarios.html', contexto)
+
 @admin_required
 def reservas_usuarios_form(request):
     q = Usuario.objects.all()
@@ -1923,29 +2026,30 @@ def reservas_usuarios_form(request):
     contexto = {'data': q, 'reserva': c}
     
     return render(request, 'planning_travel/reservas_usuarios/reservas_usuarios_form.html', contexto)
+
+from django.utils import timezone
+
 @admin_required
 def reservas_usuarios_crear(request):
     if request.method == 'POST':
-        
         usuario = Usuario.objects.get(pk=request.POST.get('usuario'))
         reserva = Reserva.objects.get(pk=request.POST.get('reserva'))
-        estado_reserva = request.POST.get('estado_reserva')
-        fecha_realizacion = request.POST.get('fecha_realizacion')
+        
         try:
             q = ReservaUsuario(
-                usuario = usuario,
-                reserva = reserva,
-                estado_reserva = estado_reserva,
-                fecha_realizacion = fecha_realizacion
+                usuario=usuario,
+                reserva=reserva,
+                estado_reserva=1,
+                fecha_realizacion=timezone.now()  
             )
             q.save()
             messages.success(request, "Fue agregado correctamente")
         except Exception as e:
-            messages.error(request,f'Error: {e}')
+            messages.error(request, f'Error: {e}')
 
         return redirect('reservas_usuarios_listar')
     else:
-        messages.warning(request,'No se enviaron datos')
+        messages.warning(request, 'No se enviaron datos')
         return redirect('reservas_usuarios_listar')
 @admin_required
 def reservas_usuarios_eliminar(request, id):
@@ -2073,7 +2177,7 @@ def fotos_form(request):
 def fotos_crear(request):
     if request.method == 'POST':
         hotel_id = request.POST.get('hotel')
-        foto = request.FILES.get('foto')  # Asegúrate de obtener el archivo
+        foto = request.FILES.get('foto')  
         descripcion = request.POST.get('descripcion')
 
         if foto and hotel_id:
@@ -2090,9 +2194,9 @@ def fotos_crear(request):
         else:
             messages.warning(request, "Por favor, completa todos los campos.")
 
-        return redirect('fotos_listar')  # Cambia la redirección según sea necesario
+        return redirect('fotos_listar')  
 
-    return render(request, 'planning_travel/fotos/fotos.html')  # Ajusta esto según tu contexto
+    return render(request, 'planning_travel/fotos/fotos.html')  
 @admin_required
 def fotos_eliminar(request, id):
     try:
@@ -2147,17 +2251,16 @@ def servicios_form(request):
 def servicios_crear(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
-        icono = request.FILES.get('icono')  # Obtener el archivo subido
+        icono = request.FILES.get('icono') 
 
-        # Crear una nueva comodidad
         try:
             comodidad = Servicio(nombre=nombre, icono=icono)
             comodidad.save()
             messages.success(request, 'Comodidad registrada correctamente.')
-            return redirect('hoteles_comodidades_listar')  # Redirige a la lista de comodidades
+            return redirect('hoteles_comodidades_listar') 
         except Exception as e:
             messages.error(request, f'Error al registrar la comodidad: {e}')
-            return redirect('hoteles_comodidades_form')  # Redirige de vuelta al formulario en caso de error
+            return redirect('hoteles_comodidades_form')  
 
     return render(request, 'planning_travel/hoteles_comodidades_form.html')
 
@@ -2174,8 +2277,8 @@ def servicios_eliminar(request, id):
     return redirect('hoteles_comodidades_listar')
 @admin_required
 def servicios_form_editar(request, id):
-    c = Servicio.objects.all()  # Obtener todos los servicios
-    r = Servicio.objects.get(pk=id)  # Obtener la comodidad específica a editar
+    c = Servicio.objects.all() 
+    r = Servicio.objects.get(pk=id)  
     contexto = {'data': r, 'comodidad': c}
     return render(request, 'planning_travel/hoteles_comodidades/hoteles_comodidades_form_editar.html', contexto)
 
@@ -2184,7 +2287,7 @@ def servicios_actualizar(request):
     if request.method == 'POST': 
         id = request.POST.get('id')    
         nombre = request.POST.get('nombre')
-        icono = request.FILES.get('icono')  # Obtener el archivo subido
+        icono = request.FILES.get('icono') 
     
         if not id or not nombre or not icono:
             messages.error(request, 'Debes llenar todos los campos')
@@ -2193,21 +2296,20 @@ def servicios_actualizar(request):
                 'comodidad': Servicio.objects.all(),
             })
         try:
-            q = Servicio.objects.get(pk=id)  # Obtener el objeto a actualizar
+            q = Servicio.objects.get(pk=id)  
             q.nombre = nombre
-            if icono:  # Solo actualiza el icono si se ha subido uno nuevo
+            if icono:  
                 q.icono = icono
-            q.save()  # Guardar los cambios
+            q.save()  
             messages.success(request, 'Comodidad actualizada correctamente.')
         except Exception as e:
             messages.error(request, f'Error al actualizar la comodidad: {e}')
     else:
         messages.warning(request, 'No se enviaron datos')
         
-    return redirect('hoteles_comodidades_listar')  # Redirigir a la lista de comodidades
+    return redirect('hoteles_comodidades_listar')  
 
 
-#andres
 def cambiar_clave(request):
     if request.method == "POST":
         logueo = request.session.get("logueo", False)
@@ -2216,7 +2318,6 @@ def cambiar_clave(request):
         c2 = request.POST.get("nueva2")
         if verify_password(request.POST.get("clave"), q.password):
             if c1 == c2:
-                # cambiar clave en DB
                 q.password = make_password(c1)
                 q.save()
                 messages.success(request, "Contraseña guardada correctamente!!")
@@ -2251,7 +2352,6 @@ def perfil_actualizar(request):
                 messages.error(request, "El correo no es válido")
         else:
             try:
-                # Obtén el objeto Usuario por su ID
                 usuario = Usuario.objects.get(pk=id)
                 usuario.nombre = nombre
                 usuario.apellido = apellido 
@@ -2271,9 +2371,8 @@ def perfil_actualizar(request):
 # Crud de Reservas
 @admin_required
 def reservas(request):
-    q = Reserva.objects.all()
-    contexto = {'data': q}
-    return render(request, 'planning_travel/reservas/reservas.html', contexto)
+    data = Reserva.objects.all()
+    return render(request, 'planning_travel/reservas/reservas.html', {'data': data})
 @admin_required
 def reservas_form(request):
     q = Habitacion.objects.all()
