@@ -1,16 +1,48 @@
-<!-- reserva_detalle.html -->
 {% extends 'planning_travel/hoteles/dueno_hotel/dueno_hotel.html' %}
 
 {% block content %}
-<div style="height: 100%; display: flex;flex-direction: column;align-items: center;justify-content: center;">
+<div
+    style="height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 30px;">
     <h2>Detalles de la Reserva</h2>
-    <p><strong>Nombre Hotel:</strong> {{ reserva.habitacion.hotel.nombre }}</p>
-    <p><strong>Fecha Llegada:</strong> {{ reserva.fecha_llegada }}</p>
-    <p><strong>Fecha Salida:</strong> {{ reserva.fecha_salida }}</p>
-    <p><strong>Cantidad de Personas:</strong> {{ reserva.cantidad_personas }}</p>
-    <p><strong>Total:</strong> {{ reserva.total }}</p>
-    <!-- Añade cualquier otro detalle necesario -->
+    <div style="height: 100%; display: flex; align-items: center; justify-content: space-between; flex-direction: row;">
+        <div>
+            {% if data_time >= reserva.reserva.fecha_salida %}
+                {% if reserva.estado_reserva == 1 %}
+                <p style="color:green"><i class="bi bi-record-circle"></i> Reservada</p>
+                {% elif reserva.estado_reserva == 2 %}
+                <p style="color:grey"><i class="bi bi-record-circle"></i> Por definir</p>
+                {% elif reserva.estado_reserva == 3 %}
+                <p style="color:red"><i class="bi bi-record-circle"></i> Cancelada</p>
+                {% endif %}
+                <p><strong>Modificar Estado de Reserva</strong></p>
+                <form style="display: flex; flex-direction: column;" method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="estado" value="1"
+                        style="border: 1px solid green; background: rgb(225, 250, 225); border-radius: 15px; margin: 5px;">
+                        Reservada</button>
+                    <button type="submit" name="estado" value="2"
+                        style="border: 1px solid grey; background: rgb(235, 235, 235); border-radius: 15px; margin: 5px;">Por
+                        definir</button>
+                    <button type="submit" name="estado" value="3"
+                        style="border: 1px solid #ff5c5c; background: #ffd7d7; border-radius: 15px; margin: 5px;">Cancelar
+                        Reserva</button>
+                </form>
+            {% else %}
+                {% if reserva.estado_reserva == 1 %}
+                <p style="color:green"><i class="bi bi-record-circle"></i> Reservada</p>
+                {% elif reserva.estado_reserva == 2 %}
+                <p style="color:grey"><i class="bi bi-record-circle"></i> Por definir</p>
+                {% elif reserva.estado_reserva == 3 %}
+                <p style="color:red"><i class="bi bi-record-circle"></i> Cancelada</p>
+                {% endif %}
+            {% endif %}
+            <p><strong>Nombre Hotel:</strong> {{ reserva.reserva.habitacion.hotel.nombre }}</p>
+            <p><strong>Fecha Llegada:</strong> {{ reserva.reserva.fecha_llegada }}</p>
+            <p><strong>Fecha Salida:</strong> {{ reserva.reserva.fecha_salida }}</p>
+            <p><strong>Cantidad de Personas:</strong> {{ reserva.reserva.cantidad_personas }}</p>
+            <p><strong>Total:</strong> {{ reserva.reserva.total }}</p>
+        </div>
+    </div>
     <a href="{% url 'dueno_hoy' %}" class="btn">Volver</a>
 </div>
-
 {% endblock %}
