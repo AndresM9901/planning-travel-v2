@@ -200,7 +200,7 @@
     }
 }
 .info {
-    height:auto;
+    height: auto;
     margin-top:20px;
     padding: 20px;
     display: flex;
@@ -208,7 +208,7 @@
     align-items: center;
     justify-content: center;
     background-color: rgb(244, 244, 244);
-    font-size: 12px;
+    font-size: 14px;
 }
 .redes-sociales{
     display: flex;

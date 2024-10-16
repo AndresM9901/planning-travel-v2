@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_hoy.css' %}">
 {% endblock %}
 {% block contenedor %}
-<div id="contenedor">
+<main id="contenedor">
     <div class="dueno-hoy">
         <p id="saludo">¡{{ request.session.logueo.nombre }}, te damos la bienvenida!</p>
         <div>
@@ -27,6 +27,7 @@
                 <td class="tabla_gris">Fecha Llegada</td>
                 <td class="tabla_gris">Fecha Salida</td>
                 <td class="tabla_gris">Nombre</td>
+                <td class="tabla_gris">Estado</td>
                 <td class="tabla_gris">Detalles Hotel</td>
             </tr>
             {% for r in data %}
@@ -36,11 +37,22 @@
                     <td class="tabla">{{ r.reserva.fecha_salida }}</td>
                     <td class="tabla">{{ r.usuario.nombre }}</td>
                     <td class="tabla">
-                        <a href="{% url 'reserva_detalle' r.reserva.id %}" class="boton-detalle-hotel">Ver Detalles</a>
+                        {% if r.estado_reserva == 1 %}
+                        <p style="color:#e0a800"><i class="bi bi-record-circle"></i> Reservada</p>
+                        {% elif r.estado_reserva == 2 %}
+                        <p style="color:green"><i class="bi bi-record-circle"></i> En curso</p>
+                        {% elif r.estado_reserva == 3 %}
+                        <p style="color:red"><i class="bi bi-record-circle"></i> Cancelada</p>
+                        {% elif r.estado_reserva == 4 %}
+                        <p style="color:grey"><i class="bi bi-record-circle"></i> Finalizada</p>
+                        {% endif %}
+                    </td>
+                    <td class="tabla">
+                        <a href="{% url 'reserva_detalle' r.id %}" class="boton-detalle-hotel">Ver Detalles</a>
                     </td>
                 </tr>
             {% endfor %}
         </table>
     </div>
-</div>
+</main>
 {% endblock %}

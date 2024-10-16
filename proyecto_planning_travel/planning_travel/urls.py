@@ -60,7 +60,6 @@ urlpatterns = [
     path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
     path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
     path('reserva_detalle/<int:reserva_id>/', views.reserva_detalle, name='reserva_detalle'),      
-    path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
     path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
     path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 
     path('dueno_info/', views.dueno_info, name='dueno_info'), 
@@ -94,6 +93,9 @@ urlpatterns = [
     # Form Hotel como anfitrion
     path('hoteles_form_anfitrion/', views.hoteles_form_anfitrion, name='hoteles_form_anfitrion'),
     
+    # Terminos 
+    path('terminos/',views.terminos, name='terminos'),
+
     # # Crud de puntuaciones
     # path('puntuaciones_listar/', views.puntuaciones, name='puntuaciones_listar'),
     # path('puntuaciones_form/', views.puntuaciones_form, name='puntuaciones_form'),

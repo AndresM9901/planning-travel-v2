@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{% static 'planning_travel/styles/dueno/dueno_reservaciones.css' %}">
 {% endblock %}
 {% block contenedor %}
-<div class="contenedor">
+<main class="contenedor">
     <div class="contenedor_titulo">
         <a class="flecha" href="{% url 'dueno_hoy' %}" ><i class="bi bi-caret-left"></i></a>
         <p class="titulo_reserva">Reservaciones ({{ data.count }})</p>
@@ -29,7 +29,7 @@
                     <td class="tabla">{{ r.reserva.fecha_salida }}</td>
                     <td class="tabla">{{ r.usuario.nombre }}</td>
                     <td class="tabla">
-                        <a href="{% url 'reserva_detalle' r.reserva.id %}" class="boton-detalle-hotel">Ver Detalles</a>
+                        <a href="{% url 'reserva_detalle' r.id %}" class="boton-detalle-hotel">Ver Detalles</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -38,6 +38,5 @@
             {% endfor %}
         </table>
     </div> 
-    </div>
-</div>
+</main>
 {% endblock %}

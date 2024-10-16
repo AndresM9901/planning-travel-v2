@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" style="height: 100%;">
+<html lang="es" style="height: 100%">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{% static 'planning_travel/styles/navbarHome.css' %}">
     {% block estilos %}{% endblock %}
 </head>
-<body style="height: 100%;min-height: 1080px;">
+<body style="height: 100%;">
     <nav class="nav-bar">
         <div class="nav-bar-left">
             <div>
@@ -72,7 +72,6 @@
                     {% endif %}
                 </div>
                 
-                
                 {% if request.session.logueo %}
                 <ul class="dropdown-user">
                     <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
@@ -113,7 +112,7 @@
             <a href="#" ><i class="bi bi-instagram"></i></a>
             <a href="#" ><i class="bi bi-whatsapp"></i></a>
         </div>
-        <a class="terminos" href="#">Términos y condiciones</a>
+        <a class="terminos" href="{% url 'terminos' %}">Términos y condiciones</a>
         <p> Copyright © 2024
             Planning Travel. Todos los derechos reservados.
         </p>

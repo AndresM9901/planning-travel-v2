@@ -1,4 +1,4 @@
-{% extends 'planning_travel/hoteles/base_hoteles3.html' %}
+{% extends 'planning_travel/hoteles/base_hoteles.html' %}
 {% load static %}
 
 {% block estilos %}
@@ -7,8 +7,8 @@
 
 {% block titulo %}mensaje{% endblock %}
 
-{% block contenedor %}
-<div id="contenedor">
+{% block content %}
+<main id="contenedor">
     <div id="lado1">
         <div id="seccion">
             <div id="seccion1">
@@ -90,10 +90,8 @@
                 </div>
             </form>
         </div>
-    </div>
-    
-    
-</div>
+    </div>        
+</main>
 
 <script>
     function openChat(remitenteId, idDestinatario) {

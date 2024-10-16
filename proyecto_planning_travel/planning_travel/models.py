@@ -187,7 +187,7 @@ class ReservaUsuario(models.Model):
     fecha_realizacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.fecha_realizacion}'
+        return f'{self.fecha_realizacion}, {self.id}'
 
 class PerfilUsuario(models.Model):
     id_hotel = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING)

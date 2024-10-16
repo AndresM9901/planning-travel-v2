@@ -11,7 +11,7 @@
 
 
 {% block content %}
-<main style="height:100%;">
+<main style="height:auto;min-height:1080px">
     <div class="barra_perfil">
         <h5 class="texto"><strong>Favoritos</strong></h5>
     </div>
@@ -49,9 +49,9 @@
                 {% endwith %}
             {% endfor %}
         {% else %}
-        <div style="display: flex; justify-content: center; align-items: center;">
-            <p style="color: gray;">No hay hoteles favoritos para mostrar.</p>
-        </div>
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <p style="color: gray;">No hay hoteles favoritos para mostrar.</p>
+            </div>
         {% endif %}
     </section>
 </main>

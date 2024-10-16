@@ -1,5 +1,6 @@
 #contenedor{
     margin: 5% 5%;
+    height: 100%;
 }
 #seccion1{
     display: flex;
