@@ -70,20 +70,17 @@ def inicio(request):
     elif orden == 'precio_desc':
         hoteles = hoteles.annotate(precio_min=Min('habitacion__precio')).order_by('-precio_min')
 
-     # Filtrar por servicios seleccionados
+    # Filtrar por servicios seleccionados
     if 'servicios' in request.GET:
         servicios_seleccionados = request.GET.getlist('servicios')
         if servicios_seleccionados:
-            # Filtra hoteles que tienen todos los servicios seleccionados
+            # Filtra hoteles que tengan al menos uno de los servicios seleccionados
             hoteles = hoteles.filter(
                 id__in=HotelServicio.objects.filter(
                     id_servicio__in=servicios_seleccionados
-                )
-                .values('id_hotel')
-                .annotate(service_count=Count('id_servicio'))
-                .filter(service_count=len(servicios_seleccionados))
-                .values_list('id_hotel', flat=True)
+                ).values_list('id_hotel', flat=True)
             )
+
     # Filtrar por ciudad
     ciudad = request.GET.get('ciudad', '')
     if ciudad:
@@ -1685,48 +1682,77 @@ def editar_habitacion_form(request, id):
 def actualizar_habitacion(request, id):
     habitacion = get_object_or_404(Habitacion, id=id)
     hotel_id = habitacion.hotel.id
+    
+    # Verificar si la habitación está reservada o en curso
+    reservas_activas = ReservaUsuario.objects.filter(
+        reserva__habitacion=habitacion,
+        estado_reserva__in=[1, 2]  # 1: reservada, 2: en curso
+    ).exists()
+
     if request.method == 'POST':
         num_habitacion = request.POST.get('num_habitacion')
         ocupado = request.POST.get('ocupado') == 'on'
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipoHabitacion')
-        precio = request.POST.get('precio')
-        if re.search(r'[^a-zA-ZñÑ\s.,-]', num_habitacion):
-            messages.error(request, "No puede contener caracteres especiales")
+        precio = request.POST.get('precio')  # Precio enviado en el formulario
+
+        # Validación de caracteres en num_habitacion
+        if re.search(r'[^a-zA-ZñÑ0-9\s.,-]', num_habitacion):
+            messages.error(request, "No puede contener caracteres especiales.")
             return redirect('editar_habitacion_form', id=id)
+        
         num_habitacion = int(num_habitacion)
         capacidad_huesped = int(capacidad_huesped)
-        precio = float(precio)
-        if not all([num_habitacion, capacidad_huesped, tipo_habitacion, precio]):
+
+        # Si la habitación está reservada o en curso, no permitir modificar el precio
+        if reservas_activas:
+            if precio:  # Solo mostrar el mensaje si hay un nuevo precio
+                precio = habitacion.precio  # Mantener el valor actual del precio
+                messages.info(request, "La habitación tiene una reserva activa. No se puede modificar el precio.")
+            else:
+                precio = habitacion.precio  # Mantener el valor actual si no se envió un nuevo precio
+        else:
+            # Si no está reservada, permitir modificar el precio
+            if precio:
+                try:
+                    precio = float(precio)
+                    if precio < 0:
+                        messages.error(request, "El precio no puede ser negativo.")
+                        return redirect('editar_habitacion_form', id=id)
+                except ValueError:
+                    messages.error(request, "Precio inválido.")
+                    return redirect('editar_habitacion_form', id=id)
+            else:
+                precio = habitacion.precio  # Mantener el valor actual si no se envió un nuevo precio
+
+        # Validaciones adicionales
+        if not all([num_habitacion, capacidad_huesped, tipo_habitacion]):
             messages.error(request, "Todos los campos son obligatorios.")
             return redirect('editar_habitacion_form', id=id)
-
-        
 
         if num_habitacion < 0:
             messages.error(request, "El número de habitación no puede ser negativo.")
             return redirect('editar_habitacion_form', id=id)
-        
+
         if capacidad_huesped < 0 or capacidad_huesped > 10:
             messages.error(request, "La capacidad de huéspedes no puede ser negativa y no puede ser mayor a 10.")
             return redirect('editar_habitacion_form', id=id)
-        
-        if precio < 0:
-            messages.error(request, "El precio no puede ser negativo.")
-            return redirect('editar_habitacion_form', id=id)
+
+        # Actualizar los campos de la habitación
         habitacion.num_habitacion = num_habitacion
         habitacion.ocupado = ocupado
         habitacion.capacidad_huesped = capacidad_huesped
         habitacion.tipo_habitacion = tipo_habitacion
-        habitacion.precio = precio
+        habitacion.precio = precio  # Utiliza el valor nuevo o el existente
         habitacion.save()
 
         messages.success(request, "Habitación actualizada exitosamente.")
-        return redirect('habitacion_anfitrion', hotel_id=hotel_id)  
+        return redirect('habitacion_anfitrion', hotel_id=hotel_id)
 
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/editar_habitacion_form.html', {
         'habitacion': habitacion,
     })
+
 
 def actualizar_hotel_anfitrion(request):
     if request.method == 'POST':
