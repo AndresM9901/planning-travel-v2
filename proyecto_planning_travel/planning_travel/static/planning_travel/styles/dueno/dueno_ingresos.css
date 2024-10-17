@@ -16,6 +16,7 @@
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: wrap;
+    height: auto;
 }
 #contenedor-ganaste{
     display: flex;

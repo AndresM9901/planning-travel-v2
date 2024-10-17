@@ -6,27 +6,28 @@
     <div style="height: 100%; display: flex; align-items: center; justify-content: space-between; flex-direction: row;">
         <div>
             {% if data_time <= reserva.reserva.fecha_salida %}
-                {% if reserva.estado_reserva == 1 %}
+                {% if r.estado_reserva == 1 %}
                 <p style="color:#e0a800"><i class="bi bi-record-circle"></i> Reservada</p>
-                {% elif reserva.estado_reserva == 2 %}
+                {% elif r.estado_reserva == 2 %}
                 <p style="color:green"><i class="bi bi-record-circle"></i> En curso</p>
-                {% elif reserva.estado_reserva == 3 %}
+                {% elif r.estado_reserva == 3 %}
                 <p style="color:red"><i class="bi bi-record-circle"></i> Cancelada</p>
-                {% elif reserva.estado_reserva == 4 %}
-                <p style="color:grey"><i class="bi bi-record-circle"></i> finalizada</p>
+                {% elif r.estado_reserva == 4 %}
+                <p style="color:grey"><i class="bi bi-record-circle"></i> Finalizada</p>
                 {% endif %}
                 <p><strong>Modificar Estado de Reserva</strong></p>
                 <form style="display: flex; flex-direction: column;" method="post">
                     {% csrf_token %}
                     <button type="submit" name="estado" value="1"
-                        style="border: 1px solid green; background: rgb(225, 250, 225); border-radius: 15px; margin: 5px;">
+                        style="border: 1px solid #e0a800; background: #fffaec; border-radius: 15px; margin: 5px;">
                         Reservada</button>
                     <button type="submit" name="estado" value="2"
-                        style="border: 1px solid grey; background: rgb(235, 235, 235); border-radius: 15px; margin: 5px;">Por
-                        definir</button>
+                        style="border: 1px solid green; background: rgb(238, 255, 238); border-radius: 15px; margin: 5px;">En curso</button>
                     <button type="submit" name="estado" value="3"
                         style="border: 1px solid #ff5c5c; background: #ffd7d7; border-radius: 15px; margin: 5px;">Cancelar
                         Reserva</button>
+                        <button type="submit" name="estado" value="4"
+                        style="border: 1px solid grey; background: #e1e1e1; border-radius: 15px; margin: 5px;">Finalizada</button>
                 </form>
             {% else %}
                 <p style="color:grey"><i class="bi bi-record-circle"></i> Finalizada</p>

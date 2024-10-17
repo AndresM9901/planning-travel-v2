@@ -20,8 +20,6 @@
                 <td class="tabla_gris">Nombre</td>
                 <td class="tabla_gris">Detalles</td>
             </tr>
-            {% for hotel in hoteles %}
-                {% if hotel.propietario.id == request.session.logueo.id %}
                 {% for r in data %}
                 <tr class="tabla_grupo">
                     <td class="tabla">{{ r.reserva.habitacion.hotel.nombre }}</td>
@@ -32,9 +30,6 @@
                         <a href="{% url 'reserva_detalle' r.id %}" class="boton-detalle-hotel">Ver Detalles</a>
                     </td>
                 </tr>
-            {% endfor %}
-            
-                {% endif %}
             {% endfor %}
         </table>
     </div> 

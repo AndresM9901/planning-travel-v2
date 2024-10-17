@@ -24,6 +24,7 @@
         <table>
             <tr class="tabla_grupo">
                 <td class="tabla_gris">Nombre Hotel</td>
+                <td class="tabla_gris">total</td>
                 <td class="tabla_gris">Fecha Llegada</td>
                 <td class="tabla_gris">Fecha Salida</td>
                 <td class="tabla_gris">Nombre</td>
@@ -33,6 +34,7 @@
             {% for r in data %}
                 <tr class="tabla_grupo">
                     <td class="tabla">{{ r.reserva.habitacion.hotel.nombre }}</td>
+                    <td class="tabla">{{ r.reserva.total }}</td>
                     <td class="tabla">{{ r.reserva.fecha_llegada }}</td>
                     <td class="tabla">{{ r.reserva.fecha_salida }}</td>
                     <td class="tabla">{{ r.usuario.nombre }}</td>

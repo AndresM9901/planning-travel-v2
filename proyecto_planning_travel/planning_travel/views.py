@@ -1033,7 +1033,6 @@ def perfil_actualizar(request):
 def index(request):
     return render(request, 'planning_travel/inicio.html')
 
-# dueño hotel cambios sofia
 
 def enviar_men(request):
     if request.method == 'POST':        
@@ -1209,6 +1208,7 @@ def dueno_hoy(request):
         return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)         
     else:
         return redirect('login')
+
 from datetime import date
 def reserva_detalle(request, reserva_id):
     reserva_usuario = get_object_or_404(ReservaUsuario, id=reserva_id)
@@ -1237,10 +1237,34 @@ def dueno_info(request):
     contexto = {'data': opinion}
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html', contexto) 
 
-def dueno_ingresos(request): 
-    r = Reserva.objects.all()
-    contexto = { 'data': r }
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto)
+def dueno_ingresos(request):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        # Asumimos que el usuario está autenticado
+        usuario_id = logueo.get('id')
+        usuario_logueado = Usuario.objects.get(id=usuario_id)
+        hoteles = Hotel.objects.filter(propietario=usuario_logueado)
+
+        fecha_actual = timezone.now().date()
+        reservas_usuario = ReservaUsuario.objects.filter(reserva__habitacion__hotel__in=hoteles)
+
+        # Inicializamos las variables para el filtrado
+        filtro = request.GET.get('filtro', None)
+        total_ganancias = 0
+
+        # Calcular total de ganancias
+        total_ganancias = sum(reserva.reserva.total for reserva in reservas_usuario)
+
+        contexto = {
+            'hoteles': hoteles,
+            'data': reservas_usuario,
+            'total_ganancias': total_ganancias,
+            'filtro': filtro,
+        }
+
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto)
+    else:
+        return redirect('login')
 
 def dueno_reservaciones(request):
     logueo = request.session.get("logueo", False)
