@@ -1,14 +1,16 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Términos y Condiciones</title>
-</head>
+
+{% extends 'planning_travel/hoteles/base_hoteles.html' %}
+{% load static %}
+
+{% block title %}Terminos{% endblock %}
+
+{% block content %}
 <body>
     <main>
+        <div style="display: flex; justify-content: center;">
         <h1>Términos y Condiciones</h1> 
-        <p>Actualizado el 2024-05-29</p>
+
+        </div>
         <h2>Términos generales</h2>
         <p>Al acceder y realizar un pedido con Planning Travel, usted confirma que está de acuerdo y sujeto a los términos de servicio contenidos en los Términos y condiciones que se describen a continuación. Estos términos se aplican a todo el sitio web y a cualquier correo electrónico u otro tipo de comunicación entre usted y Planning Travel. En ninguna circunstancia el equipo de Planning Travel será responsable de ningún daño directo, indirecto, especial, incidental o consecuente, que incluye, entre otros, la pérdida de datos o ganancias que surjan del uso o la incapacidad de usar, los materiales de este sitio, incluso si el equipo de Planning Travel o un representante autorizado han sido informados de la posibilidad de tales daños.</p>
         <p>Si su uso de materiales de este sitio resulta en la necesidad de servicio, reparación o corrección de equipos o datos, usted asume los costos de estos. Planning Travel no será responsable de ningún resultado que pueda ocurrir durante el curso del uso de nuestros recursos. Nos reservamos el derecho de cambiar los precios y revisar la política de uso de recursos en cualquier momento.</p>
@@ -104,6 +106,12 @@
         <ul>
             <li>A través de correo electrónico: planningtravel09@gmil.com</li>
         </ul>
+
+        <div style="display: flex; justify-content: center;">
+            <a href="{% url 'registrar_form' %}" class="btn secondary" style="width: 230px;background-color: #FF5C5C; color: white">Volver</a>
+        </div>
     </main>
 </body>
 </html>
+{% endblock %}
+

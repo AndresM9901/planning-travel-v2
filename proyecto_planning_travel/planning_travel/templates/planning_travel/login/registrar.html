@@ -1,3 +1,4 @@
+
 {% extends 'planning_travel/base2.html' %}
 {% load static %}
 
@@ -30,7 +31,7 @@
         overflow: hidden;
         width: 768px;
         max-width: 100%;
-        min-height: 500px;
+        min-height: 550px;
         z-index: 1;
     }
     
@@ -287,7 +288,36 @@
       font-size: 20px;
       color: #aaa;
     }
-    </style>
+    .terminos-container {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #333;
+    }
+
+    .mensaje-error {
+        color: red;
+        display: none; /* Ocultar por defecto */
+        margin-top: 10px;
+        font-size: 12px;
+    }
+
+    
+    .terminos-container {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #333;
+}
+
+.mensaje-error {
+    color: red;
+    display: none; /* Ocultar por defecto */
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+</style>
+
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 {% endblock %}
 
@@ -314,21 +344,26 @@
 
 <div class="container" id="container">
     <div class="form-container sign-in">
-        <form class="section text-center" action="{% url 'registrar' %}" method="post">
+        <form class="section text-center" action="{% url 'registrar' %}" method="post" id="registroForm">
             {% csrf_token %}
             <h1>Crear una cuenta</h1>
-            <!-- <div class="social-icons">
-                <a href="#" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
-                <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+            <input type="text" placeholder="Nombre" name="nombre" required>
+            <input type="email" placeholder="Correo" name="correo" required>
+            <input type="password" placeholder="Contraseña" name="clave" required>
+            <input type="password" placeholder="Confirmar contraseña" name="confirmar_clave" required>
+            
+            <div class="terminos-container">
+                <input type="checkbox" id="terminos" name="terminos" >
+                <label for="terminos">Acepto los <a href="{% url 'terminos' %}" style="color: #ff5c5c;">términos y condiciones</a></label>
             </div>
-            <span>o utiliza tu contraseña de correo electrónico</span> -->
-            <input type="text" placeholder="Nombre" name="nombre">
-            <input type="email" placeholder="Correo" name="correo">
-            <input type="password" placeholder="Contraseña" name="clave">
-            <input type="password" placeholder="Confirmar contraseña" name="confirmar_clave">
-            <button  class="btn mt-4" style="background-color: #ff5c5c; color: white;">Registrar</button>        
+            
+            <div class="mensaje-error" id="mensajeError">Debes aceptar los términos y condiciones para registrarte.</div>
+            
+            <button type="submit" class="btn mt-4" style="background-color: #ff5c5c; color: white;">Registrar</button>
         </form>
     </div>
+    
+    
     <div class="form-container sign-up">
         <form class="section text-center" action="{% url 'login' %}" method="post"> 
             {% csrf_token %} 
@@ -385,7 +420,18 @@
         modal.style.display = 'none';
     }
 </script>
+<script>
+    const registroForm = document.getElementById('registroForm');
+    const mensajeError = document.getElementById('mensajeError');
+    const terminosCheckbox = document.getElementById('terminos');
 
+    registroForm.addEventListener('submit', (event) => {
+        if (!terminosCheckbox.checked) {
+            event.preventDefault(); // Prevenir el envío del formulario
+            mensajeError.style.display = 'block'; // Mostrar el mensaje de error
+        } else {
+            mensajeError.style.display = 'none'; // Ocultar el mensaje si está marcado
+        }
+    });
+</script>
 {% endblock %}
-
-

@@ -150,6 +150,9 @@ def inicio(request):
     
     return render(request, 'planning_travel/hoteles/hotel_home/hotel_home.html', {'ciudades':ciudades,'favoritos':favoritos,'hoteles': hoteles_con_fotos, 'servicios': servicios, 'servicio_activo': servicio_activo})
 
+def terminos(request):
+    return render(request, "planning_travel/terminos/terminos.html")
+
 @admin_required
 def administrador(request):
     return render(request,'planning_travel/administrador.html')
@@ -869,6 +872,14 @@ def login(request):
     # Renderiza la misma página de inicio de sesión con los mensajes de error
     return render(request, "planning_travel/login/login.html")
 
+def validate_password(password):
+    # Validar que la contraseña cumpla con los requisitos
+    if (len(password) < 8 or
+        not re.search(r'[A-Z]', password) or  # Al menos una mayúscula
+        not re.search(r'[0-9]', password)):  # Al menos un número
+        return False
+    return True
+
 def registrar(request):
     if request.method == "POST":
         nombre = request.POST.get("nombre")
@@ -876,6 +887,8 @@ def registrar(request):
         clave = request.POST.get("clave")
         confirmar_clave = request.POST.get("confirmar_clave")
         nick = correo.split('@')[0]
+        
+        # Validaciones
         if nombre == "" or correo == "" or clave == "" or confirmar_clave == "":
             messages.error(request, "Todos los campos son obligatorios")
         elif not re.match(r'^[a-zA-Z ]+$', nombre):
@@ -884,6 +897,8 @@ def registrar(request):
             messages.error(request, "El correo no es válido")
         elif clave != confirmar_clave:
             messages.error(request, "Las contraseñas no coinciden")
+        elif not validate_password(clave):
+            messages.error(request, "La contraseña debe tener al menos 8 caracteres, incluir una mayúscula y un número")
         else:
             try:
                 q = Usuario(
@@ -895,11 +910,10 @@ def registrar(request):
                 q.save()
                 messages.success(request, "Usuario registrado exitosamente")
             except Exception as e:
-                messages.error(request, f"El Usuario ya existe ")
+                messages.error(request, "El Usuario ya existe ")
 
     # Renderiza la misma página de registro con los mensajes de error
-    return render(request, "planning_travel/login/login.html")
-
+    return render(request, "planning_travel/login/registrar.html")
 def logout(request):
 	try:
 		del request.session["logueo"]
