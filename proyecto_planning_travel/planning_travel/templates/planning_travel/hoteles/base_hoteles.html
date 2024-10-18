@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="height: 100%">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{% static 'planning_travel/styles/navbarHome.css' %}">
     {% block estilos %}{% endblock %}
 </head>
-<body>
+<body style="height: 100%;">
     <nav class="nav-bar">
         <div class="nav-bar-left">
             <div>
@@ -72,7 +72,6 @@
                     {% endif %}
                 </div>
                 
-                
                 {% if request.session.logueo %}
                 <ul class="dropdown-user">
                     <li class="dropdown-elemento"><a href="{% url 'ver_perfil' %}">Ver perfil</a></li>
@@ -103,6 +102,21 @@
         {% endfor %}
     {% endif %}
     {% block content %}{% endblock %}
+    <footer class="info">
+        <p style="border-top: solid 2px #ff5c5c;width: 100%;display: flex;align-items: center;justify-content: center;padding: 10px;">Cl. 63 #58B-03, Terranova, Itagüi, Antioquia</p>
+        <p>321 450 4736</p>
+        <p>planning_travel@gmail.com</p>
+        <p>Lunes a Viernes, 9:00 AM - 6:00 PM</p>
+        <div class="redes-sociales">
+            <a href="#" ><i class="bi bi-facebook"></i></a>
+            <a href="#" ><i class="bi bi-instagram"></i></a>
+            <a href="#" ><i class="bi bi-whatsapp"></i></a>
+        </div>
+        <a class="terminos" href="{% url 'terminos' %}">Términos y condiciones</a>
+        <p> Copyright © 2024
+            Planning Travel. Todos los derechos reservados.
+        </p>
+    </footer>
     {% block scripts %}{% endblock %}
     <script src="{% static 'planning_travel/js/navbarHome.js' %}"></script>
     <script src="{% static 'planning_travel/js/bootstrap.bundle.min.js' %}"></script>

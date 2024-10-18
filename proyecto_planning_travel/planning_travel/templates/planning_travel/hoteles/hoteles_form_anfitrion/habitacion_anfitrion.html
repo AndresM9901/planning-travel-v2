@@ -11,7 +11,7 @@
 {% endif %}
 
 <h1 class="text-center mt-5">Habitaciones del Hotel {{ hotel.nombre }}</h1>
-<a href="{% url 'habitacion_anfitrion_form' hotel.id %}" class="btn btn-primary ms-4 mb-4">Agregar Habitacion al hotel {{ hotel.nombre }}</a>
+<a href="{% url 'habitacion_anfitrion_form' hotel.id %}" class="btn btn-primary ms-4 mb-4" style="max-width: 20%">Agregar Habitacion a {{ hotel.nombre }}</a>
 <div style="margin:40px"> 
     <table class="table">
         <thead class="table-info">

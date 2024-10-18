@@ -3,6 +3,8 @@ from .models import *
 from .serializers import *
 from .decorators import admin_required 
 from datetime import datetime
+from django.utils import timezone
+from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password
@@ -13,7 +15,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from rest_framework import status, viewsets, generics, permissions
@@ -89,7 +91,8 @@ def inicio(request):
     valoracion = request.GET.get('valoracion', '')
     if valoracion:
         if valoracion == '2':
-            hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion__lte=3).exists()]
+            hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id).count() == 0 or Opinion.objects.filter(id_hotel=hotel.id, puntuacion__lte=3).exists()]
+            hoteles = hoteles.filter(id__in=hoteles_ids)
         elif valoracion == '3':
             hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=3).exists()]
             hoteles = hoteles.filter(id__in=hoteles_ids)
@@ -98,7 +101,7 @@ def inicio(request):
             hoteles = hoteles.filter(id__in=hoteles_ids)
         elif valoracion == '5':
             hoteles_ids = [hotel.id for hotel in hoteles if Opinion.objects.filter(id_hotel=hotel.id, puntuacion=5).exists()]
-        hoteles = hoteles.filter(id__in=hoteles_ids)
+            hoteles = hoteles.filter(id__in=hoteles_ids)
         
     habitaciones_total = []
     if 'nombre' in request.GET:
@@ -268,7 +271,6 @@ def reserva(request, id):
 
 def guardar_opinion(request):
     if 'logueo' not in request.session:
-        # Redirigir al login si el usuario no está logueado
         messages.error(request, 'Debes estar logueado para dejar una opinión.')
         return redirect('login')
     if request.method == 'POST':
@@ -292,7 +294,7 @@ def guardar_opinion(request):
             return redirect('detalle_hotel', id=hotel_id)
 
         except Exception as e:
-            messages.error(request, f'Error: {str(e)}')
+            messages.error(request, f'Error: Error al guardar')
             return redirect('detalle_hotel', id=hotel_id)
 
 def verificar_disponibilidad(request):
@@ -910,15 +912,20 @@ def registrar(request):
                 messages.error(request, "El Usuario ya existe ")
 
     # Renderiza la misma página de registro con los mensajes de error
-    return render(request, "planning_travel/login/registrar.html")
+    return render(request, "planning_travel/login/login.html")
 def logout(request):
-	try:
-		del request.session["logueo"]
-		messages.success(request, "Sesión cerrada correctamente!")
-		return redirect("inicio")
-	except Exception as e:
-		messages.warning(request, "No se pudo cerrar sesión...")
-		return redirect("inicio")
+    try:
+        del request.session["logueo"]
+        messages.success(request, "Sesión cerrada correctamente!")
+        request.session['logout'] = True 
+    except Exception as e:
+        messages.warning(request, "No se pudo cerrar sesión...")
+        request.session['logout'] = False 
+
+    response = redirect("inicio")
+    response.delete_cookie('logout') 
+    return response
+
 
 def recuperar_clave(request):
     if request.method == "POST":
@@ -1040,7 +1047,6 @@ def perfil_actualizar(request):
 def index(request):
     return render(request, 'planning_travel/inicio.html')
 
-# dueño hotel cambios sofia
 
 def enviar_men(request):
     if request.method == 'POST':        
@@ -1178,17 +1184,62 @@ def dueno_hotel(request):
         return redirect('login')
     
 def dueno_hoy(request): 
-    hoteles = Hotel.objects.all() 
-    reservas_usuario = ReservaUsuario.objects.all()
     logueo = request.session.get("logueo", False)
     if logueo:
-        contexto = { 'hoteles': hoteles, 'data': reservas_usuario} 
+        usuario_id = logueo.get('id')
+        usuario_logueado = Usuario.objects.get(id=usuario_id)
+
+        hoteles = Hotel.objects.filter(propietario=usuario_logueado)
+
+        fecha_actual = timezone.now().date()
+        fecha_inicio = fecha_actual - timedelta(weeks=1)
+        fecha_fin = fecha_actual + timedelta(weeks=1)
+        
+        reservas_usuario = ReservaUsuario.objects.filter(
+            reserva__habitacion__hotel__in=hoteles,
+            reserva__fecha_llegada__gte=fecha_inicio,
+            reserva__fecha_llegada__lte=fecha_fin
+        )
+
+        if request.method == 'POST':
+            if 'filtrar_en_curso' in request.POST:
+                reservas_usuario = reservas_usuario.filter(
+                    reserva__fecha_llegada__lte=fecha_actual,
+                    reserva__fecha_salida__gte=fecha_actual
+                )
+            elif 'deshacer_filtro' in request.POST:
+                # Al deshacer el filtro, se mantienen las reservas en el rango de semanas
+                reservas_usuario = ReservaUsuario.objects.filter(
+                    reserva__habitacion__hotel__in=hoteles,
+                    reserva__fecha_llegada__gte=fecha_inicio,
+                    reserva__fecha_llegada__lte=fecha_fin
+                )
+        
+        contexto = {
+            'hoteles': hoteles, 
+            'data': reservas_usuario
+        } 
         return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_hoy.html', contexto)         
     else:
         return redirect('login')
 
-def dueno_calendario(request): 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_calendario.html') 
+from datetime import date
+def reserva_detalle(request, reserva_id):
+    reserva_usuario = get_object_or_404(ReservaUsuario, id=reserva_id)
+    print(reserva_usuario)
+    data_time = date.today()
+    if request.method == 'POST':
+        nuevo_estado = request.POST.get('estado')
+        if nuevo_estado:
+            reserva_usuario.estado_reserva = nuevo_estado
+            reserva_usuario.save()
+            messages.success(request, 'Estado de la reserva actualizado correctamente.')
+            return redirect('dueno_hoy')
+    contexto = {
+        'reserva': reserva_usuario,
+        'data_time': data_time,
+    }
+    return render(request, 'planning_travel/hoteles/dueno_hotel/reserva_detalle.html', contexto)
 
 def dueno_anuncio(request): 
     hoteles = Hotel.objects.prefetch_related('foto_set').all()
@@ -1200,17 +1251,53 @@ def dueno_info(request):
     contexto = {'data': opinion}
     return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/info.html', contexto) 
 
-def dueno_ingresos(request): 
-    r = Reserva.objects.all()
-    contexto = { 'data': r }
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto)
+def dueno_ingresos(request):
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        # Asumimos que el usuario está autenticado
+        usuario_id = logueo.get('id')
+        usuario_logueado = Usuario.objects.get(id=usuario_id)
+        hoteles = Hotel.objects.filter(propietario=usuario_logueado)
+
+        fecha_actual = timezone.now().date()
+        reservas_usuario = ReservaUsuario.objects.filter(reserva__habitacion__hotel__in=hoteles)
+
+        # Inicializamos las variables para el filtrado
+        filtro = request.GET.get('filtro', None)
+        total_ganancias = 0
+
+        # Calcular total de ganancias
+        total_ganancias = sum(reserva.reserva.total for reserva in reservas_usuario)
+
+        contexto = {
+            'hoteles': hoteles,
+            'data': reservas_usuario,
+            'total_ganancias': total_ganancias,
+            'filtro': filtro,
+        }
+
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/ingresos.html', contexto)
+    else:
+        return redirect('login')
 
 def dueno_reservaciones(request):
-    q = Reserva.objects.all()
-    ru = ReservaUsuario.objects.select_related('usuario').all()
-    contexto = { 'data': q , 'reserva_usuario' : ru  } 
-    return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html', contexto) 
-
+    logueo = request.session.get("logueo", False)
+    if logueo:
+        usuario_id = logueo.get('id')
+        usuario_logueado = Usuario.objects.get(id=usuario_id)
+        hoteles = Hotel.objects.filter(propietario=usuario_logueado)
+        reservas_usuario = ReservaUsuario.objects.filter(
+            reserva__habitacion__hotel__in=hoteles
+        )
+        
+        contexto = {
+            'hoteles': hoteles, 
+            'data': reservas_usuario
+        } 
+        return render(request, 'planning_travel/hoteles/dueno_hotel/dueno_menu/reservaciones.html', contexto)         
+    else:
+        return redirect('login')
+    
 #andres
 def reservas_mostrar(request):
     logueo = request.session.get("logueo", False)
@@ -1498,8 +1585,8 @@ def hoteles_form_anfitrion(request):
             if not nombre or not descripcion or not direccion or not categoria_id or not ciudad:
                 raise ValueError("Todos los campos son obligatorios.")
 
-            if re.search(r'[^a-zA-ZñÑ\s.,-]', nombre):
-                raise ValueError("El nombre no debe numeros ni caracteres especiales")
+            if re.search(r'[^a-zA-ZñÑ0-9\s.,-]', nombre):
+                raise ValueError("El nombre no debe contener caracteres especiales no permitidos.")
 
             if re.search(r'[^a-zA-Z\s]', ciudad):
                 raise ValueError("La ciudad solo debe contener letras y espacios.")
@@ -1510,8 +1597,8 @@ def hoteles_form_anfitrion(request):
                     capacidad_huesped = int(habitacion['capacidad_huesped'])
                     precio = float(habitacion['precio'])
 
-                    if capacidad_huesped <= 0:
-                        raise ValueError("La capacidad de huésped debe ser un número positivo.")
+                    if capacidad_huesped <= 0 and capacidad_huesped > 10:
+                        raise ValueError("La capacidad de huésped debe ser un número positivo y menor a 10.")
                     if precio < 0:
                         raise ValueError("El precio no puede ser negativo.")
 
@@ -1623,13 +1710,21 @@ def habitacion_anfitrion_form(request, hotel_id):
 def crear_habitacion_anfitrion(request, hotel_id):
     if request.method == 'POST':
         num_habitacion = request.POST.get('num_habitacion')
-        ocupado = request.POST.get('ocupado') == 'on'  
+        ocupado = request.POST.get('ocupado') == 'on'
         capacidad_huesped = request.POST.get('capacidad_huesped')
         tipo_habitacion = request.POST.get('tipoHabitacion')
         precio = request.POST.get('precio')
-        if re.search(r'[^a-zA-ZñÑ\s.,-]', num_habitacion):
-                raise ValueError("El Número de habitación no debe contener caracteres especiales.")
+
+        # Validación de caracteres en num_habitacion
+        if re.search(r'[^a-zA-ZñÑ0-9\s.,-]', num_habitacion):
+            raise ValueError("El Número de habitación no debe contener caracteres especiales.")
         
+        # Verificar si el número de habitación ya está tomado para ese hotel
+        if Habitacion.objects.filter(hotel_id=hotel_id, num_habitacion=num_habitacion).exists():
+            messages.error(request, "El número de habitación ya está tomado en este hotel.")
+            return redirect('habitacion_anfitrion_form', hotel_id=hotel_id)
+
+        # Validación de campos obligatorios
         if not all([num_habitacion, capacidad_huesped, tipo_habitacion, precio]):
             messages.error(request, "Todos los campos son obligatorios.")
             return redirect('habitacion_anfitrion_form', hotel_id=hotel_id)
@@ -1638,18 +1733,20 @@ def crear_habitacion_anfitrion(request, hotel_id):
         capacidad_huesped = int(capacidad_huesped)
         precio = float(precio)
 
+        # Validaciones adicionales
         if num_habitacion < 0:
             messages.error(request, "El número de habitación no puede ser negativo.")
             return redirect('habitacion_anfitrion_form', hotel_id=hotel_id)
         
         if capacidad_huesped < 0 or capacidad_huesped > 10:
-            messages.error(request, "La capacidad de huéspedes no puede ser negativa y no puede ser mayor a 10")
+            messages.error(request, "La capacidad de huéspedes no puede ser negativa y no puede ser mayor a 10.")
             return redirect('habitacion_anfitrion_form', hotel_id=hotel_id)
         
-        if precio < 0 and precio > 2000000:
-            messages.error(request, "El precio no puede ser negativo.")
+        if precio < 0 or precio > 2000000:
+            messages.error(request, "El precio debe estar entre 0 y 2.000.000.")
             return redirect('habitacion_anfitrion_form', hotel_id=hotel_id)
 
+        # Crear la nueva habitación
         habitacion = Habitacion(
             num_habitacion=num_habitacion,
             hotel=get_object_or_404(Hotel, id=hotel_id),
@@ -1678,7 +1775,6 @@ def editar_habitacion_form(request, id):
         'habitacion': habitacion,
     })
 
-
 def actualizar_habitacion(request, id):
     habitacion = get_object_or_404(Habitacion, id=id)
     hotel_id = habitacion.hotel.id
@@ -1700,9 +1796,18 @@ def actualizar_habitacion(request, id):
         if re.search(r'[^a-zA-ZñÑ0-9\s.,-]', num_habitacion):
             messages.error(request, "No puede contener caracteres especiales.")
             return redirect('editar_habitacion_form', id=id)
-        
+
         num_habitacion = int(num_habitacion)
         capacidad_huesped = int(capacidad_huesped)
+
+        # Validar que el número de habitación no esté ya tomado para ese hotel
+        habitacion_existente = Habitacion.objects.filter(
+            hotel_id=hotel_id, num_habitacion=num_habitacion
+        ).exclude(id=id).exists()
+
+        if habitacion_existente:
+            messages.error(request, "Ya existe una habitación con ese número en este hotel.")
+            return redirect('editar_habitacion_form', id=id)
 
         # Si la habitación está reservada o en curso, no permitir modificar el precio
         if reservas_activas:
@@ -1752,6 +1857,7 @@ def actualizar_habitacion(request, id):
     return render(request, 'planning_travel/hoteles/hoteles_form_anfitrion/editar_habitacion_form.html', {
         'habitacion': habitacion,
     })
+
 
 
 def actualizar_hotel_anfitrion(request):
@@ -2380,33 +2486,36 @@ def perfil_actualizar(request):
     if request.method == 'POST':
         id = request.POST.get('id')
         nombre = request.POST.get('nombre')
-        apellido = request.POST.get('apellido')
         correo = request.POST.get('correo')
-        if nombre == '' or apellido == '' or correo == '':
+        foto = request.FILES.get('foto')
+
+        if nombre == '' or correo == '':
             messages.error(request, "Todos los campos son obligatorios")
-        elif nombre.isalpha() == False:
+        elif re.search(r'[^a-zA-ZñÑ\s]', nombre):
             messages.error(request, "El nombre solo puede contener letras y espacios")
-        elif apellido.isalpha() == False:
-            messages.error(request, "El apellido solo puede contener letras y espacios")
         elif not re.fullmatch(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', correo):
-                messages.error(request, "El correo no es válido")
+            messages.error(request, "El correo no es válido")
         else:
             try:
                 usuario = Usuario.objects.get(pk=id)
                 usuario.nombre = nombre
-                usuario.apellido = apellido 
                 usuario.email = correo
+                
+                if foto:
+                    usuario.foto = foto
+                
                 usuario.save()
                 messages.success(request, "Perfil actualizado correctamente")
-                
-                return redirect('ver_perfil')  
+                return redirect('ver_perfil')
             except Usuario.DoesNotExist:
                 messages.error(request, "El usuario no existe")
             except Exception as e:
                 messages.error(request, f'Error: {e}')
     else:
         messages.warning(request, 'No se enviaron datos')
+    
     return redirect('ver_perfil')
+
 
 # Crud de Reservas
 @admin_required

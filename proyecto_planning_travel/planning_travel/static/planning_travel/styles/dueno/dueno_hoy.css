@@ -1,5 +1,6 @@
 #contenedor{
     padding: 5% 10%;
+    height: 100%;
 }
 .dueno-hoy{
     display: flex;
@@ -93,8 +94,8 @@
     justify-content: center;
     border-left:1px solid rgb(209, 209, 209);
     border-right:1px solid rgb(209, 209, 209);
-    width: 280px;
-    height: 50px;
+    width: 230px;
+    height: 80px;
     padding: 5px;
 }
 .tabla_gris{
@@ -103,7 +104,14 @@
     justify-content: center;
     border-left:1px solid rgb(209, 209, 209);
     border-right:1px solid rgb(209, 209, 209);
-    width: 280px;
-    height: 50px;
+    width: 230px;
+    min-height: 50px;
     background: #EBEBEB;
+}
+.boton-detalle-hotel{
+    border: #ff5c5c solid 1px;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 15px;
+    color: black;
 }
