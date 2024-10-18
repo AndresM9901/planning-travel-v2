@@ -96,8 +96,6 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Cerrar</button>
                                         <button type="submit" class="btn btn-primary">Enviar</button>
                                     </div>
                                 </form>
@@ -147,7 +145,7 @@
                     <p class="m-0 opiniones--cantidad">{{ hotel.opiniones_count }} opiniones</p>
                 </div>
                 {% endif %}
-                <div class="servicios d-flex">
+                <div class="servicios d-flex mt-5">
                     {% for servicio in servicios %}
                     <div class="servicio d-flex">
                         <img class="servicio--icono" src="{{ servicio.icono.url }}" alt="">
@@ -203,7 +201,9 @@
                                     <option value="5">5</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary">Enviar Opinión</button>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Enviar opinion</button>
+                            </div>
                         </form>
                     </div>
                 </div>

@@ -14,15 +14,10 @@
 {% endblock %}
 
 {% block content %}
-<main>
-
-   
+<main style="height: 100%;">
     <div class="barra_perfil">
         <h5 class="texto"><strong>Reservas del usuario</strong></h5>
     </div>
-
-
-    
     {% if reservas_usuario %}
     {% for reserva_usuario in reservas_usuario %}
     <div class="card-container">
@@ -59,9 +54,6 @@
         <p style="color: gray;">No hay reservas para mostrar.</p>
     </div>
     {% endif %}
-    
-        
-    
 </main>
 <script>
 	// Función para abrir la modal

@@ -180,9 +180,8 @@
 }
 
 .hotel-info {
-    
     padding: 8px 12px;
-    width: 80%;
+    width: 100%;
 }
 .contenedor-info-opinion{
     justify-content: space-between;
@@ -216,10 +215,14 @@
     background-color: var(--secondary-color);
     padding: 4px 6px;
     border-radius: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .hotel-opinions {
     font-size: 0.75rem;
+    width: auto;
 }
 
 .hotel-price-container {

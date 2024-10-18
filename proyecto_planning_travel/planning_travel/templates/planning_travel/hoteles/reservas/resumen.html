@@ -143,43 +143,44 @@
 }
 
 </style>
-
-<div class="container" style="margin-top: 30px;">
-    <h1>Resumen de tu Reserva</h1>
-    <div class="reserva-details">
-        <h2>Detalles de la Reserva</h2>
-        <p><strong>Número de Habitación:</strong> {{ resumen.habitacion_num }}</p>
-        <p><strong>Fecha de Llegada:</strong> {{ resumen.fecha_llegada }}</p>
-        <p><strong>Fecha de Salida:</strong> {{ resumen.fecha_salida }}</p>
-        <p><strong>Número de Personas:</strong> {{ resumen.cantidad_personas }}</p>
-        <p><strong>Total a Pagar:</strong> ${{ resumen.total }}</p>
+<main style="height: 100%;min-height: 1080px;">
+    <div class="container" style="margin-top: 30px;">
+        <h1>Resumen de tu Reserva</h1>
+        <div class="reserva-details">
+            <h2>Detalles de la Reserva</h2>
+            <p><strong>Número de Habitación:</strong> {{ resumen.habitacion_num }}</p>
+            <p><strong>Fecha de Llegada:</strong> {{ resumen.fecha_llegada }}</p>
+            <p><strong>Fecha de Salida:</strong> {{ resumen.fecha_salida }}</p>
+            <p><strong>Número de Personas:</strong> {{ resumen.cantidad_personas }}</p>
+            <p><strong>Total a Pagar:</strong> ${{ resumen.total }}</p>
+        </div>
+        <div class="opciones-pago">
+            <h4>Opciones de Pago</h4>
+            <label>
+                <input type="radio" name="opcionPago" value="pagoSalida">
+                Pagar al salir de la habitacion
+            </label>
+            <div id="error-message" class="error-message" style="display: none; color: red; margin-bottom: 15px;"></div>
+    
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <form id="reservaForm" action="{% url 'confirmar_reserva' resumen.hotel_id %}" method="POST" style="flex: 1; margin-right: 10px;">
+                {% csrf_token %}
+                <input type="hidden" name="hotel_id" value="{{ resumen.hotel_id }}">
+                <input type="hidden" name="fecha_llegada" value="{{ resumen.fecha_llegada }}">
+                <input type="hidden" name="fecha_salida" value="{{ resumen.fecha_salida }}">
+                <input type="hidden" name="num_personas" value="{{ resumen.cantidad_personas }}">
+                <input type="hidden" name="total" value="{{ resumen.total|floatformat:2|default:"0.00" }}">  <!-- Asegúrate de que sea un número decimal -->
+                <input type="hidden" name="habitacion" id="habitacion-id" value="{{ resumen.habitacion_id }}">
+    
+                
+    
+                <a href="{% url 'inicio' %}" class="btn secondary" style="width: 230px; margin-right: 65px;">Cancelar</a>
+                <button type="submit" class="btn secondary" style="width: 230px;">Siguiente</button>
+            </form>
+        </div>
     </div>
-    <div class="opciones-pago">
-        <h4>Opciones de Pago</h4>
-        <label>
-            <input type="radio" name="opcionPago" value="pagoSalida">
-            Pagar al salir
-        </label>
-        <div id="error-message" class="error-message" style="display: none; color: red; margin-bottom: 15px;"></div>
-
-    </div>
-    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-        <form id="reservaForm" action="{% url 'confirmar_reserva' resumen.hotel_id %}" method="POST" style="flex: 1; margin-right: 10px;">
-            {% csrf_token %}
-            <input type="hidden" name="hotel_id" value="{{ resumen.hotel_id }}">
-            <input type="hidden" name="fecha_llegada" value="{{ resumen.fecha_llegada }}">
-            <input type="hidden" name="fecha_salida" value="{{ resumen.fecha_salida }}">
-            <input type="hidden" name="num_personas" value="{{ resumen.cantidad_personas }}">
-            <input type="hidden" name="total" value="{{ resumen.total|floatformat:2|default:"0.00" }}">  <!-- Asegúrate de que sea un número decimal -->
-            <input type="hidden" name="habitacion" id="habitacion-id" value="{{ resumen.habitacion_id }}">
-
-            
-
-            <a href="{% url 'inicio' %}" class="btn secondary" style="width: 230px; margin-right: 65px;">Cancelar</a>
-            <button type="submit" class="btn secondary" style="width: 230px;">Siguiente</button>
-        </form>
-    </div>
-</div>
+</main>
 
 <script>
     document.getElementById('reservaForm').addEventListener('submit', function(event) {

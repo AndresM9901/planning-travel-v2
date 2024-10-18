@@ -7,7 +7,6 @@ main {
     margin: 20px auto; /* Centrar en la página */
     background-color: white; /* Fondo blanco para el contenido */
     border-radius: 10px; /* Bordes redondeados */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
 }
 
 .titulo {

@@ -4,8 +4,9 @@
 {% block title %}Resumen de Reserva{% endblock %}
 {% block content %}
     <style>
-main {
+.contenedor {
     max-width: 800px; /* Máximo ancho para la página */
+    max-height: 500px;
     margin: 20px auto; /* Centrar en la página */
     background-color: white; /* Fondo blanco para el contenido */
     border-radius: 10px; /* Bordes redondeados */
@@ -37,13 +38,14 @@ button:hover {
     </style>
 </head>
 <body>
-    <main>
-        <div></div>
-        <h1>¡Reserva Confirmada!</h1>
-                <p style="text-align:  center;">Gracias por elegir nuestro hotel. Su reserva ha sido realizada exitosamente.</p>
-                <p style="text-align: center; margin-bottom: 30px;">Recuerde que podrá realizar el pago al salir del hotel.</p>
-        <div style="display: flex; justify-content: center;">
-            <button>Regresar a la Reserva</button>
+    <main style="height: 100%;">
+        <div class="contenedor">
+            <h1>¡Reserva Confirmada!</h1>
+                    <p style="text-align:  center;">Gracias por elegir nuestro hotel. Su reserva ha sido realizada exitosamente.</p>
+                    <p style="text-align: center; margin-bottom: 30px;">Recuerde que podrá realizar el pago al salir del hotel.</p>
+            <div style="display: flex; justify-content: center;">
+                <a href="{% url 'inicio' %}" class="btn btn-primary">Regresar al inicio</a>
+            </div>
         </div>
     </main>
 {% endblock %}

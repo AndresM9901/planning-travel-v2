@@ -59,7 +59,7 @@ urlpatterns = [
     # dueño hotel
     path('dueno_hotel/', views.dueno_hotel , name='dueno_hotel'), 
     path('dueno_hoy/', views.dueno_hoy, name='dueno_hoy'), 
-    path('dueno_calendario/', views.dueno_calendario, name='dueno_calendario'), 
+    path('reserva_detalle/<int:reserva_id>/', views.reserva_detalle, name='reserva_detalle'),      
     path('dueno_anuncio/', views.dueno_anuncio, name='dueno_anuncio'), 
     path('dueno_mensaje/', views.dueno_mensaje, name='dueno_mensaje'), 
     path('dueno_info/', views.dueno_info, name='dueno_info'), 
@@ -96,6 +96,9 @@ urlpatterns = [
     path('editar_hotel_anfitrion/<int:hotel_id>/', views.editar_hotel_anfitrion, name='editar_hotel_anfitrion'),
     path('actualizar_hotel_anfitrion/', views.actualizar_hotel_anfitrion, name='actualizar_hotel_anfitrion'),
     
+    # Terminos 
+    path('terminos/',views.terminos, name='terminos'),
+
     # habitaciones como anfitrion
     path('hoteles/<int:hotel_id>/form/', views.habitacion_anfitrion_form, name='habitacion_anfitrion_form'),
     path('hoteles/<int:hotel_id>/crear/', views.crear_habitacion_anfitrion, name='anfitrion_habitaciones_crear'),
@@ -242,6 +245,7 @@ urlpatterns = [
     path('resumen/<int:reserva_id>/', views.resumen, name='resumen'),
     path('confirmar_reserva/<int:id>/', views.confirmar_reserva, name='confirmar_reserva'),
     path('gracias/<int:reserva_id>/', views.gracias_view, name='gracias'),
+    path('terminos/', views.terminos, name='terminos'),
 ]
 
 # from django.contrib.auth.models import User

@@ -21,6 +21,10 @@ p {
     box-sizing: border-box;
 }
 
+main {
+    height: 100vh;
+}
+
 .header-page {
     background-color: var(--secondary-color) !important;
 }

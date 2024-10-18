@@ -9,7 +9,7 @@
 />
 {% endblock %}
 {% block content %}
-<main>
+<main style="height: auto; min-height: 1080px;">
     <section class="barra-servicios d-flex">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ordenar"><i class="bi bi-sort-up"></i> Ordenar</button>
         <div class="modal fade" id="ordenar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -73,7 +73,7 @@
                                 <div>
                                     {% for servicio in servicios %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="servicio" value="{{ servicio.id }}" id="servicio_{{ servicio.id }}" {% if servicio.id|stringformat:"s" in request.GET.servicio %}checked{% endif %}>
+                                        <input class="form-check-input" type="checkbox" name="servicios" value="{{ servicio.id }}" id="servicio_{{ servicio.id }}" {% if servicio.id|stringformat:"s" in request.GET.servicio %}checked{% endif %}>
                                         <label class="form-check-label" for="servicio_{{ servicio.id }}">
                                             {{ servicio.nombre }}
                                         </label>
@@ -180,4 +180,11 @@
 {% endblock %}
 {% block scripts %}
 <script src="{% static 'planning_travel/js/hotel_home.js' %}"></script>
+<script>
+    {% if request.session.logout %}
+        localStorage.clear(); 
+        {% comment %} Limpia la variable de sesión {% endcomment %}
+        {{ request.session.flush }}  
+    {% endif %}
+</script>
 {% endblock %}
