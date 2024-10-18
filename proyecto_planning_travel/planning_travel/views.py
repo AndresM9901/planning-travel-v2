@@ -231,8 +231,7 @@ def guardar_opinion(request):
             messages.error(request, f'Error: {str(e)}')
             return redirect('detalle_hotel', id=hotel_id)
 
-    # Si no es POST, redirigir o mostrar un error
-    return redirect('home')  # O cualquier otra página adecuada
+    return redirect('home') 
 
 def reserva(request, id):
     hotel = Hotel.objects.get(pk=id)
